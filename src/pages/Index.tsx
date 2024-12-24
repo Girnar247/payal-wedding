@@ -12,10 +12,11 @@ import { Guest, Host, EventType, EventDetails } from "@/types/guest";
 const Index = () => {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showEventConfig, setShowEventConfig] = useState(true);
   const { toast } = useToast();
 
   // Sample hosts data - in a real app, this would come from a database
-  const hosts: Host[] = [
+  const [hosts, setHosts] = useState<Host[]>([
     {
       id: "1",
       name: "Rahul Sharma",
@@ -28,10 +29,10 @@ const Index = () => {
       email: "priya@example.com",
       phone: "+91 98765 43211",
     },
-  ];
+  ]);
 
-  // Sample event details - in a real app, this would come from a database
-  const eventDetails: Record<EventType, EventDetails> = {
+  // Event details state
+  const [eventDetails, setEventDetails] = useState<Record<EventType, EventDetails>>({
     haldi: {
       date: new Date(2024, 5, 1),
       time: "10:00 AM",
@@ -57,7 +58,7 @@ const Index = () => {
       time: "7:00 PM",
       venue: "Royal Palace Gardens",
     },
-  };
+  });
 
   const handleAddGuest = (data: Omit<Guest, "id" | "rsvpStatus">) => {
     const newGuest: Guest = {
@@ -96,6 +97,32 @@ const Index = () => {
     });
   };
 
+  const handleUpdateEventDetails = (
+    eventType: EventType,
+    details: EventDetails
+  ) => {
+    setEventDetails((prev) => ({
+      ...prev,
+      [eventType]: details,
+    }));
+    toast({
+      title: "Event Updated",
+      description: `${eventType.charAt(0).toUpperCase() + eventType.slice(1)} details have been updated.`,
+    });
+  };
+
+  const handleAddHost = (host: Omit<Host, "id">) => {
+    const newHost: Host = {
+      ...host,
+      id: Math.random().toString(36).substr(2, 9),
+    };
+    setHosts([...hosts, newHost]);
+    toast({
+      title: "Host Added",
+      description: `${host.name} has been added as an event host.`,
+    });
+  };
+
   const stats = {
     totalGuests: guests.length,
     confirmed: guests.filter((g) => g.rsvpStatus === "confirmed").length,
@@ -121,49 +148,73 @@ const Index = () => {
           <p className="text-gray-600">Manage your special celebrations with elegance</p>
         </div>
 
-        <EventCalendar events={eventDetails} />
-        <HostList hosts={hosts} />
+        <EventCalendar 
+          events={eventDetails} 
+          onUpdateEvent={handleUpdateEventDetails}
+          editable={showEventConfig}
+        />
+        
+        <HostList 
+          hosts={hosts} 
+          onAddHost={handleAddHost} 
+          editable={showEventConfig}
+        />
+        
         <Dashboard {...stats} />
 
-        <div className="flex justify-center">
-          <Button
-            onClick={() => setShowAddForm(!showAddForm)}
-            variant="outline"
-            className="bg-white/50 hover:bg-white/80"
-          >
-            {showAddForm ? (
-              <>
-                <MinusCircle className="mr-2 h-4 w-4" />
-                Cancel Adding Guest
-              </>
-            ) : (
-              <>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add New Guest
-              </>
-            )}
-          </Button>
-        </div>
-
-        {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {guests.map((guest) => (
-            <GuestCard
-              key={guest.id}
-              guest={guest}
-              host={hosts.find((h) => h.id === guest.hostId) || defaultHost}
-              onEdit={() => {}}
-              onDelete={handleDeleteGuest}
-              onUpdateStatus={handleUpdateStatus}
-            />
-          ))}
-        </div>
-
-        {guests.length === 0 && !showAddForm && (
-          <div className="text-center py-12 text-gray-500">
-            <p>No guests added yet. Click the button above to add your first guest.</p>
+        {showEventConfig ? (
+          <div className="text-center">
+            <Button
+              onClick={() => setShowEventConfig(false)}
+              variant="outline"
+              className="bg-white/50 hover:bg-white/80"
+            >
+              Start Adding Guests
+            </Button>
           </div>
+        ) : (
+          <>
+            <div className="flex justify-center">
+              <Button
+                onClick={() => setShowAddForm(!showAddForm)}
+                variant="outline"
+                className="bg-white/50 hover:bg-white/80"
+              >
+                {showAddForm ? (
+                  <>
+                    <MinusCircle className="mr-2 h-4 w-4" />
+                    Cancel Adding Guest
+                  </>
+                ) : (
+                  <>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add New Guest
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {guests.map((guest) => (
+                <GuestCard
+                  key={guest.id}
+                  guest={guest}
+                  host={hosts.find((h) => h.id === guest.hostId) || defaultHost}
+                  onEdit={() => {}}
+                  onDelete={handleDeleteGuest}
+                  onUpdateStatus={handleUpdateStatus}
+                />
+              ))}
+            </div>
+
+            {guests.length === 0 && !showAddForm && (
+              <div className="text-center py-12 text-gray-500">
+                <p>No guests added yet. Click the button above to add your first guest.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

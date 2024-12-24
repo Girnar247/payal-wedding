@@ -1,13 +1,31 @@
 import { Calendar } from "./ui/calendar";
 import { Card } from "./ui/card";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 import { EventDetails, EventType } from "@/types/guest";
 
 interface EventCalendarProps {
   events: Record<EventType, EventDetails>;
+  onUpdateEvent?: (eventType: EventType, details: EventDetails) => void;
+  editable?: boolean;
 }
 
-export const EventCalendar = ({ events }: EventCalendarProps) => {
+export const EventCalendar = ({ events, onUpdateEvent, editable = false }: EventCalendarProps) => {
   const eventDates = Object.values(events).map((event) => event.date);
+
+  const handleUpdateEvent = (
+    eventType: EventType,
+    field: keyof EventDetails,
+    value: string | Date
+  ) => {
+    if (onUpdateEvent) {
+      const updatedDetails = {
+        ...events[eventType],
+        [field]: value,
+      };
+      onUpdateEvent(eventType, updatedDetails);
+    }
+  };
 
   return (
     <Card className="p-6 glass-card">
@@ -23,11 +41,49 @@ export const EventCalendar = ({ events }: EventCalendarProps) => {
             ([event, details]) => (
               <div key={event} className="p-4 bg-white/50 rounded-lg">
                 <h3 className="font-playfair capitalize text-lg">{event}</h3>
-                <p className="text-sm text-gray-600">
-                  Date: {details.date.toLocaleDateString()}
-                </p>
-                <p className="text-sm text-gray-600">Time: {details.time}</p>
-                <p className="text-sm text-gray-600">Venue: {details.venue}</p>
+                <div className="space-y-2">
+                  <div>
+                    <Label>Date</Label>
+                    {editable ? (
+                      <Calendar
+                        mode="single"
+                        selected={details.date}
+                        onSelect={(date) => date && handleUpdateEvent(event, "date", date)}
+                        className="rounded-md border"
+                      />
+                    ) : (
+                      <p className="text-sm text-gray-600">
+                        {details.date.toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label>Time</Label>
+                    {editable ? (
+                      <Input
+                        type="time"
+                        value={details.time}
+                        onChange={(e) => handleUpdateEvent(event, "time", e.target.value)}
+                        className="bg-white/50"
+                      />
+                    ) : (
+                      <p className="text-sm text-gray-600">{details.time}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label>Venue</Label>
+                    {editable ? (
+                      <Input
+                        type="text"
+                        value={details.venue}
+                        onChange={(e) => handleUpdateEvent(event, "venue", e.target.value)}
+                        className="bg-white/50"
+                      />
+                    ) : (
+                      <p className="text-sm text-gray-600">{details.venue}</p>
+                    )}
+                  </div>
+                </div>
               </div>
             )
           )}
