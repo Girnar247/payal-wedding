@@ -5,7 +5,7 @@ import { Label } from "./ui/label";
 import { Card } from "./ui/card";
 import { UserPlus } from "lucide-react";
 import { Calendar } from "./ui/calendar";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "./ui/checkbox";
 import { EventType, Host } from "@/types/guest";
 
@@ -104,11 +104,16 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
             value={formData.hostId}
             onValueChange={(value) => setFormData({ ...formData, hostId: value })}
           >
-            {hosts.map((host) => (
-              <option key={host.id} value={host.id}>
-                {host.name}
-              </option>
-            ))}
+            <SelectTrigger className="w-full bg-white/50">
+              <SelectValue placeholder="Select a host" />
+            </SelectTrigger>
+            <SelectContent>
+              {hosts.map((host) => (
+                <SelectItem key={host.id} value={host.id}>
+                  {host.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">

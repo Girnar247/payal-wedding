@@ -1,24 +1,32 @@
 import { useState } from "react";
 import { Host } from "@/types/guest";
 import { Card } from "./ui/card";
-import { User, Phone, Mail, Plus } from "lucide-react";
+import { User, Phone, Mail, Plus, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { useToast } from "./ui/use-toast";
 
 interface HostListProps {
   hosts: Host[];
   onAddHost?: (host: Omit<Host, "id">) => void;
+  onDeleteHost?: (id: string) => void;
   editable?: boolean;
 }
 
-export const HostList = ({ hosts, onAddHost, editable = false }: HostListProps) => {
+export const HostList = ({ 
+  hosts, 
+  onAddHost, 
+  onDeleteHost,
+  editable = false 
+}: HostListProps) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newHost, setNewHost] = useState({
     name: "",
     email: "",
     phone: "",
   });
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +34,20 @@ export const HostList = ({ hosts, onAddHost, editable = false }: HostListProps) 
       onAddHost(newHost);
       setNewHost({ name: "", email: "", phone: "" });
       setShowAddForm(false);
+      toast({
+        title: "Host Added",
+        description: `${newHost.name} has been added as a host.`,
+      });
+    }
+  };
+
+  const handleDelete = (host: Host) => {
+    if (onDeleteHost) {
+      onDeleteHost(host.id);
+      toast({
+        title: "Host Removed",
+        description: `${host.name} has been removed from the host list.`,
+      });
     }
   };
 
@@ -86,7 +108,7 @@ export const HostList = ({ hosts, onAddHost, editable = false }: HostListProps) 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {hosts.map((host) => (
           <Card key={host.id} className="p-4 bg-white/50">
-            <div className="flex items-start space-x-3">
+            <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center space-x-2">
                   <User className="h-4 w-4" />
@@ -101,6 +123,16 @@ export const HostList = ({ hosts, onAddHost, editable = false }: HostListProps) 
                   <p className="text-sm text-gray-600">{host.phone}</p>
                 </div>
               </div>
+              {editable && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDelete(host)}
+                  className="hover:bg-red-100"
+                >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </Button>
+              )}
             </div>
           </Card>
         ))}
