@@ -103,6 +103,14 @@ const Index = () => {
     pending: guests.filter((g) => g.rsvpStatus === "pending").length,
   };
 
+  // Create a default host for cases where the assigned host is not found
+  const defaultHost: Host = {
+    id: "default",
+    name: "Unassigned",
+    email: "N/A",
+    phone: "N/A",
+  };
+
   return (
     <div className="min-h-screen bg-wedding-cream p-6 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -144,7 +152,7 @@ const Index = () => {
             <GuestCard
               key={guest.id}
               guest={guest}
-              host={hosts.find((h) => h.id === guest.hostId)!}
+              host={hosts.find((h) => h.id === guest.hostId) || defaultHost}
               onEdit={() => {}}
               onDelete={handleDeleteGuest}
               onUpdateStatus={handleUpdateStatus}
