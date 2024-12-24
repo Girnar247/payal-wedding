@@ -1,24 +1,35 @@
 import { useState } from "react";
-import { User, UserCheck, UserX, Pencil, Trash2 } from "lucide-react";
+import { User, UserCheck, UserX, Pencil, Trash2, Phone, Calendar } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
+import { EventType, Host } from "@/types/guest";
 
 interface GuestCardProps {
   guest: {
     id: string;
     name: string;
     email: string;
+    phone: string;
     rsvpStatus: "pending" | "confirmed" | "declined";
-    dietaryRestrictions?: string;
-    plusOne: boolean;
+    plusCount: number;
+    hostId: string;
+    arrivalDateTime?: Date;
+    events: EventType[];
   };
+  host: Host;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
 
-export const GuestCard = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
+export const GuestCard = ({
+  guest,
+  host,
+  onEdit,
+  onDelete,
+  onUpdateStatus,
+}: GuestCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -31,6 +42,10 @@ export const GuestCard = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestCard
         <div className="space-y-2">
           <h3 className="text-xl font-playfair">{guest.name}</h3>
           <p className="text-sm text-gray-600">{guest.email}</p>
+          <p className="text-sm text-gray-600 flex items-center">
+            <Phone className="h-4 w-4 mr-2" />
+            {guest.phone}
+          </p>
           <div className="flex gap-2 mt-2">
             <Badge
               variant={
@@ -44,17 +59,30 @@ export const GuestCard = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestCard
             >
               {guest.rsvpStatus}
             </Badge>
-            {guest.plusOne && (
+            {guest.plusCount > 0 && (
               <Badge variant="outline" className="bg-wedding-rose/20">
-                +1
+                +{guest.plusCount}
               </Badge>
             )}
           </div>
-          {guest.dietaryRestrictions && (
-            <p className="text-sm text-gray-600 mt-2">
-              Dietary: {guest.dietaryRestrictions}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {guest.events.map((event) => (
+              <Badge key={event} variant="outline" className="capitalize">
+                {event}
+              </Badge>
+            ))}
+          </div>
+          {guest.arrivalDateTime && (
+            <p className="text-sm text-gray-600 flex items-center mt-2">
+              <Calendar className="h-4 w-4 mr-2" />
+              Arriving: {guest.arrivalDateTime.toLocaleDateString()}
             </p>
           )}
+          <div className="mt-2">
+            <p className="text-sm text-gray-600">
+              Host: {host.name}
+            </p>
+          </div>
         </div>
         <div className="flex flex-col gap-2">
           <Button

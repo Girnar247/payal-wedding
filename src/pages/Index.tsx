@@ -2,23 +2,62 @@ import { useState } from "react";
 import { AddGuestForm } from "@/components/AddGuestForm";
 import { GuestCard } from "@/components/GuestCard";
 import { Dashboard } from "@/components/Dashboard";
+import { EventCalendar } from "@/components/EventCalendar";
+import { HostList } from "@/components/HostList";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, MinusCircle } from "lucide-react";
-
-interface Guest {
-  id: string;
-  name: string;
-  email: string;
-  rsvpStatus: "pending" | "confirmed" | "declined";
-  dietaryRestrictions?: string;
-  plusOne: boolean;
-}
+import { Guest, Host, EventType, EventDetails } from "@/types/guest";
 
 const Index = () => {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const { toast } = useToast();
+
+  // Sample hosts data - in a real app, this would come from a database
+  const hosts: Host[] = [
+    {
+      id: "1",
+      name: "Rahul Sharma",
+      email: "rahul@example.com",
+      phone: "+91 98765 43210",
+    },
+    {
+      id: "2",
+      name: "Priya Patel",
+      email: "priya@example.com",
+      phone: "+91 98765 43211",
+    },
+  ];
+
+  // Sample event details - in a real app, this would come from a database
+  const eventDetails: Record<EventType, EventDetails> = {
+    haldi: {
+      date: new Date(2024, 5, 1),
+      time: "10:00 AM",
+      venue: "Residence Garden",
+    },
+    mehndi: {
+      date: new Date(2024, 5, 2),
+      time: "11:00 AM",
+      venue: "Banquet Hall",
+    },
+    mayra: {
+      date: new Date(2024, 5, 2),
+      time: "5:00 PM",
+      venue: "Family Temple",
+    },
+    sangeet: {
+      date: new Date(2024, 5, 3),
+      time: "7:00 PM",
+      venue: "Grand Ballroom",
+    },
+    wedding: {
+      date: new Date(2024, 5, 4),
+      time: "7:00 PM",
+      venue: "Royal Palace Gardens",
+    },
+  };
 
   const handleAddGuest = (data: Omit<Guest, "id" | "rsvpStatus">) => {
     const newGuest: Guest = {
@@ -69,11 +108,13 @@ const Index = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
-            Wedding Guest Manager
+            Indian Wedding Guest Manager
           </h1>
-          <p className="text-gray-600">Manage your special day with elegance</p>
+          <p className="text-gray-600">Manage your special celebrations with elegance</p>
         </div>
 
+        <EventCalendar events={eventDetails} />
+        <HostList hosts={hosts} />
         <Dashboard {...stats} />
 
         <div className="flex justify-center">
@@ -96,13 +137,14 @@ const Index = () => {
           </Button>
         </div>
 
-        {showAddForm && <AddGuestForm onSubmit={handleAddGuest} />}
+        {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {guests.map((guest) => (
             <GuestCard
               key={guest.id}
               guest={guest}
+              host={hosts.find((h) => h.id === guest.hostId)!}
               onEdit={() => {}}
               onDelete={handleDeleteGuest}
               onUpdateStatus={handleUpdateStatus}
