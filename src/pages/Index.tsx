@@ -10,10 +10,9 @@ interface Guest {
   id: string;
   name: string;
   email: string;
-  phone: string;
   rsvpStatus: "pending" | "confirmed" | "declined";
-  plusGuests: number;
-  events: string[];
+  dietaryRestrictions?: string;
+  plusOne: boolean;
 }
 
 const Index = () => {
@@ -59,7 +58,7 @@ const Index = () => {
   };
 
   const stats = {
-    totalGuests: guests.reduce((acc, guest) => acc + 1 + guest.plusGuests, 0),
+    totalGuests: guests.length,
     confirmed: guests.filter((g) => g.rsvpStatus === "confirmed").length,
     declined: guests.filter((g) => g.rsvpStatus === "declined").length,
     pending: guests.filter((g) => g.rsvpStatus === "pending").length,
@@ -70,7 +69,7 @@ const Index = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
-            Indian Wedding Guest Manager
+            Wedding Guest Manager
           </h1>
           <p className="text-gray-600">Manage your special day with elegance</p>
         </div>
