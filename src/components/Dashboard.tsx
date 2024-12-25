@@ -3,16 +3,24 @@ import { User, UserCheck, UserX, Users } from "lucide-react";
 
 interface DashboardProps {
   totalGuests: number;
+  totalWithPlusOnes: number;
   confirmed: number;
   declined: number;
   pending: number;
 }
 
-export const Dashboard = ({ totalGuests, confirmed, declined, pending }: DashboardProps) => {
+export const Dashboard = ({ totalGuests, totalWithPlusOnes, confirmed, declined, pending }: DashboardProps) => {
   const stats = [
     {
-      label: "Total Guests",
+      label: "Invited Guests",
       value: totalGuests,
+      icon: User,
+      color: "bg-wedding-rose/20",
+      textColor: "text-wedding-text",
+    },
+    {
+      label: "Total Guests",
+      value: totalWithPlusOnes,
       icon: Users,
       color: "bg-wedding-rose/20",
       textColor: "text-wedding-text",
@@ -41,7 +49,7 @@ export const Dashboard = ({ totalGuests, confirmed, declined, pending }: Dashboa
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 fade-in">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 fade-in">
       {stats.map((stat) => (
         <Card
           key={stat.label}

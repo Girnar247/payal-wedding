@@ -1,19 +1,21 @@
 import { useState } from "react";
-import { AddGuestForm } from "@/components/AddGuestForm";
 import { GuestCard } from "@/components/GuestCard";
+import { GuestList } from "@/components/GuestList";
 import { Dashboard } from "@/components/Dashboard";
 import { EventCalendar } from "@/components/EventCalendar";
 import { EventSummary } from "@/components/EventSummary";
 import { HostList } from "@/components/HostList";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, MinusCircle } from "lucide-react";
+import { PlusCircle, MinusCircle, LayoutGrid, List } from "lucide-react";
 import { Guest, Host, EventType, EventDetails } from "@/types/guest";
 
 const Index = () => {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEventConfig, setShowEventConfig] = useState(true);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const { toast } = useToast();
 
   const [hosts, setHosts] = useState<Host[]>([
@@ -135,6 +137,7 @@ const Index = () => {
 
   const stats = {
     totalGuests: guests.length,
+    totalWithPlusOnes: guests.reduce((acc, guest) => acc + 1 + guest.plusCount, 0),
     confirmed: guests.filter((g) => g.rsvpStatus === "confirmed").length,
     declined: guests.filter((g) => g.rsvpStatus === "declined").length,
     pending: guests.filter((g) => g.rsvpStatus === "pending").length,
@@ -157,23 +160,56 @@ const Index = () => {
           <p className="text-gray-600">Manage your special celebrations with elegance</p>
         </div>
 
-        {!showEventConfig && <EventSummary events={eventDetails} />}
+        {!showEventConfig && (
+          <>
+            <EventSummary events={eventDetails} />
+            {showCalendar && (
+              <EventCalendar
+                events={eventDetails}
+                onUpdateEvent={handleUpdateEventDetails}
+                editable={true}
+              />
+            )}
+            <div className="flex justify-end mb-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCalendar(!showCalendar)}
+                className="mr-2"
+              >
+                {showCalendar ? "Hide Calendar" : "Show Calendar"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+              >
+                {viewMode === "grid" ? (
+                  <List className="h-4 w-4 mr-2" />
+                ) : (
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                )}
+                {viewMode === "grid" ? "List View" : "Grid View"}
+              </Button>
+            </div>
+          </>
+        )}
 
         {showEventConfig ? (
           <>
-            <EventCalendar 
-              events={eventDetails} 
+            <EventCalendar
+              events={eventDetails}
               onUpdateEvent={handleUpdateEventDetails}
               editable={true}
             />
-            
-            <HostList 
-              hosts={hosts} 
+
+            <HostList
+              hosts={hosts}
               onAddHost={handleAddHost}
               onDeleteHost={handleDeleteHost}
               editable={true}
             />
-            
+
             <div className="text-center">
               <Button
                 onClick={() => setShowEventConfig(false)}
@@ -210,18 +246,27 @@ const Index = () => {
 
             {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {guests.map((guest) => (
-                <GuestCard
-                  key={guest.id}
-                  guest={guest}
-                  host={hosts.find((h) => h.id === guest.hostId) || defaultHost}
-                  onEdit={() => {}}
-                  onDelete={handleDeleteGuest}
-                  onUpdateStatus={handleUpdateStatus}
-                />
-              ))}
-            </div>
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {guests.map((guest) => (
+                  <GuestCard
+                    key={guest.id}
+                    guest={guest}
+                    host={hosts.find((h) => h.id === guest.hostId) || defaultHost}
+                    onEdit={() => {}}
+                    onDelete={handleDeleteGuest}
+                    onUpdateStatus={handleUpdateStatus}
+                  />
+                ))}
+              </div>
+            ) : (
+              <GuestList
+                guests={guests}
+                hosts={hosts}
+                defaultHost={defaultHost}
+                onUpdateStatus={handleUpdateStatus}
+              />
+            )}
 
             {guests.length === 0 && !showAddForm && (
               <div className="text-center py-12 text-gray-500">

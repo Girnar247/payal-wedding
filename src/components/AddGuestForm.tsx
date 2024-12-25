@@ -7,16 +7,18 @@ import { UserPlus } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "./ui/checkbox";
-import { EventType, Host } from "@/types/guest";
+import { EventType, GuestAttribute, Host } from "@/types/guest";
 
 interface GuestFormData {
   name: string;
-  email: string;
+  email?: string;
   phone: string;
   plusCount: number;
   hostId: string;
   arrivalDateTime?: Date;
+  departureDateTime?: Date;
   events: EventType[];
+  attribute: GuestAttribute;
 }
 
 interface AddGuestFormProps {
@@ -27,25 +29,26 @@ interface AddGuestFormProps {
 export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
   const [formData, setFormData] = useState<GuestFormData>({
     name: "",
-    email: "",
     phone: "",
     plusCount: 0,
     hostId: "",
     events: [],
+    attribute: "family",
   });
 
   const eventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
+  const guestAttributes: GuestAttribute[] = ["family", "friends", "staff", "bride", "groom"];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
     setFormData({
       name: "",
-      email: "",
       phone: "",
       plusCount: 0,
       hostId: "",
       events: [],
+      attribute: "family",
     });
   };
 
@@ -53,7 +56,7 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
     <Card className="glass-card p-6 max-w-md mx-auto fade-in">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="name">Guest Name</Label>
+          <Label htmlFor="name">Guest Name *</Label>
           <Input
             id="name"
             value={formData.name}
@@ -63,18 +66,17 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">Email Address</Label>
+          <Label htmlFor="email">Email Address (Optional)</Label>
           <Input
             id="email"
             type="email"
-            value={formData.email}
+            value={formData.email || ""}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="bg-white/50"
-            required
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="phone">Phone Number</Label>
+          <Label htmlFor="phone">Phone Number *</Label>
           <Input
             id="phone"
             type="tel"
@@ -83,6 +85,24 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
             className="bg-white/50"
             required
           />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="attribute">Guest Category *</Label>
+          <Select
+            value={formData.attribute}
+            onValueChange={(value: GuestAttribute) => setFormData({ ...formData, attribute: value })}
+          >
+            <SelectTrigger className="w-full bg-white/50">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {guestAttributes.map((attr) => (
+                <SelectItem key={attr} value={attr} className="capitalize">
+                  {attr}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-2">
           <Label htmlFor="plusCount">Additional Guests</Label>
@@ -99,7 +119,7 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="host">Assigned Host</Label>
+          <Label htmlFor="host">Assigned Host *</Label>
           <Select
             value={formData.hostId}
             onValueChange={(value) => setFormData({ ...formData, hostId: value })}
@@ -117,7 +137,7 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Events Attending</Label>
+          <Label>Events Attending *</Label>
           <div className="space-y-2">
             {eventTypes.map((event) => (
               <div key={event} className="flex items-center space-x-2">
@@ -141,12 +161,23 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
           </div>
         </div>
         <div className="space-y-2">
-          <Label>Arrival Date</Label>
+          <Label>Arrival Date (Optional)</Label>
           <Calendar
             mode="single"
             selected={formData.arrivalDateTime}
             onSelect={(date) =>
               setFormData({ ...formData, arrivalDateTime: date || undefined })
+            }
+            className="rounded-md border"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Departure Date (Optional)</Label>
+          <Calendar
+            mode="single"
+            selected={formData.departureDateTime}
+            onSelect={(date) =>
+              setFormData({ ...formData, departureDateTime: date || undefined })
             }
             className="rounded-md border"
           />
