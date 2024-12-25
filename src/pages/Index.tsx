@@ -8,6 +8,7 @@ import { PlusCircle, MinusCircle } from "lucide-react";
 import { Guest, Host, EventType, EventDetails } from "@/types/guest";
 import { GuestManagement } from "@/components/GuestManagement";
 import { EventConfiguration } from "@/components/EventConfiguration";
+import { DownloadGuestList } from "@/components/DownloadGuestList";
 
 const Index = () => {
   const [guests, setGuests] = useState<Guest[]>([]);
@@ -173,7 +174,7 @@ const Index = () => {
             <EventSummary events={eventDetails} />
             <Dashboard {...stats} />
 
-            <div className="flex justify-center">
+            <div className="flex justify-between items-center">
               <Button
                 onClick={() => setShowAddForm(!showAddForm)}
                 variant="outline"
@@ -191,6 +192,7 @@ const Index = () => {
                   </>
                 )}
               </Button>
+              <DownloadGuestList guests={guests} hosts={hosts} />
             </div>
 
             {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
