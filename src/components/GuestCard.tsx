@@ -9,7 +9,7 @@ interface GuestCardProps {
   guest: {
     id: string;
     name: string;
-    email: string;
+    email?: string; // Made optional to match Guest type
     phone: string;
     rsvpStatus: "pending" | "confirmed" | "declined";
     plusCount: number;
@@ -41,7 +41,7 @@ export const GuestCard = ({
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <h3 className="text-xl font-playfair">{guest.name}</h3>
-          <p className="text-sm text-gray-600">{guest.email}</p>
+          {guest.email && <p className="text-sm text-gray-600">{guest.email}</p>}
           <p className="text-sm text-gray-600 flex items-center">
             <Phone className="h-4 w-4 mr-2" />
             {guest.phone}
