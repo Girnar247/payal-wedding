@@ -1,21 +1,18 @@
 import { useState } from "react";
-import { GuestCard } from "@/components/GuestCard";
-import { GuestList } from "@/components/GuestList";
+import { AddGuestForm } from "@/components/AddGuestForm";
 import { Dashboard } from "@/components/Dashboard";
-import { EventCalendar } from "@/components/EventCalendar";
 import { EventSummary } from "@/components/EventSummary";
-import { HostList } from "@/components/HostList";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, MinusCircle, LayoutGrid, List } from "lucide-react";
+import { PlusCircle, MinusCircle } from "lucide-react";
 import { Guest, Host, EventType, EventDetails } from "@/types/guest";
+import { GuestManagement } from "@/components/GuestManagement";
+import { EventConfiguration } from "@/components/EventConfiguration";
 
 const Index = () => {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEventConfig, setShowEventConfig] = useState(true);
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const { toast } = useToast();
 
   const [hosts, setHosts] = useState<Host[]>([
@@ -108,7 +105,9 @@ const Index = () => {
     }));
     toast({
       title: "Event Updated",
-      description: `${eventType.charAt(0).toUpperCase() + eventType.slice(1)} details have been updated.`,
+      description: `${
+        eventType.charAt(0).toUpperCase() + eventType.slice(1)
+      } details have been updated.`,
     });
   };
 
@@ -125,9 +124,9 @@ const Index = () => {
   };
 
   const handleDeleteHost = (id: string) => {
-    const host = hosts.find(h => h.id === id);
+    const host = hosts.find((h) => h.id === id);
     if (host) {
-      setHosts(hosts.filter(h => h.id !== id));
+      setHosts(hosts.filter((h) => h.id !== id));
       toast({
         title: "Host Removed",
         description: `${host.name} has been removed from the host list.`,
@@ -160,68 +159,18 @@ const Index = () => {
           <p className="text-gray-600">Manage your special celebrations with elegance</p>
         </div>
 
-        {!showEventConfig && (
-          <>
-            <EventSummary events={eventDetails} />
-            {showCalendar && (
-              <EventCalendar
-                events={eventDetails}
-                onUpdateEvent={handleUpdateEventDetails}
-                editable={true}
-              />
-            )}
-            <div className="flex justify-end mb-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowCalendar(!showCalendar)}
-                className="mr-2"
-              >
-                {showCalendar ? "Hide Calendar" : "Show Calendar"}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-              >
-                {viewMode === "grid" ? (
-                  <List className="h-4 w-4 mr-2" />
-                ) : (
-                  <LayoutGrid className="h-4 w-4 mr-2" />
-                )}
-                {viewMode === "grid" ? "List View" : "Grid View"}
-              </Button>
-            </div>
-          </>
-        )}
-
         {showEventConfig ? (
-          <>
-            <EventCalendar
-              events={eventDetails}
-              onUpdateEvent={handleUpdateEventDetails}
-              editable={true}
-            />
-
-            <HostList
-              hosts={hosts}
-              onAddHost={handleAddHost}
-              onDeleteHost={handleDeleteHost}
-              editable={true}
-            />
-
-            <div className="text-center">
-              <Button
-                onClick={() => setShowEventConfig(false)}
-                variant="outline"
-                className="bg-white/50 hover:bg-white/80"
-              >
-                Start Adding Guests
-              </Button>
-            </div>
-          </>
+          <EventConfiguration
+            eventDetails={eventDetails}
+            hosts={hosts}
+            onUpdateEvent={handleUpdateEventDetails}
+            onAddHost={handleAddHost}
+            onDeleteHost={handleDeleteHost}
+            onComplete={() => setShowEventConfig(false)}
+          />
         ) : (
           <>
+            <EventSummary events={eventDetails} />
             <Dashboard {...stats} />
 
             <div className="flex justify-center">
@@ -246,33 +195,13 @@ const Index = () => {
 
             {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
 
-            {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {guests.map((guest) => (
-                  <GuestCard
-                    key={guest.id}
-                    guest={guest}
-                    host={hosts.find((h) => h.id === guest.hostId) || defaultHost}
-                    onEdit={() => {}}
-                    onDelete={handleDeleteGuest}
-                    onUpdateStatus={handleUpdateStatus}
-                  />
-                ))}
-              </div>
-            ) : (
-              <GuestList
-                guests={guests}
-                hosts={hosts}
-                defaultHost={defaultHost}
-                onUpdateStatus={handleUpdateStatus}
-              />
-            )}
-
-            {guests.length === 0 && !showAddForm && (
-              <div className="text-center py-12 text-gray-500">
-                <p>No guests added yet. Click the button above to add your first guest.</p>
-              </div>
-            )}
+            <GuestManagement
+              guests={guests}
+              hosts={hosts}
+              defaultHost={defaultHost}
+              onDeleteGuest={handleDeleteGuest}
+              onUpdateStatus={handleUpdateStatus}
+            />
           </>
         )}
       </div>
