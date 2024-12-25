@@ -18,7 +18,7 @@ export const GuestList = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestL
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead>Category</TableHead>
+            <TableHead>Categories</TableHead>
             <TableHead>Contact</TableHead>
             <TableHead>Host</TableHead>
             <TableHead>Additional Guests</TableHead>
@@ -33,9 +33,13 @@ export const GuestList = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestL
               <TableRow key={guest.id}>
                 <TableCell className="font-medium">{guest.name}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="capitalize">
-                    {guest.attribute}
-                  </Badge>
+                  <div className="flex flex-wrap gap-1">
+                    {guest.attributes.map((attr) => (
+                      <Badge key={attr} variant="outline" className="capitalize">
+                        {attr}
+                      </Badge>
+                    ))}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">

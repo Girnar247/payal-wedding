@@ -1,5 +1,5 @@
 export type EventType = "haldi" | "mehndi" | "mayra" | "sangeet" | "wedding";
-export type GuestAttribute = "family" | "friends" | "staff" | "bride" | "groom";
+export type GuestAttribute = "family" | "friends" | "staff";
 
 export interface EventDetails {
   date: Date;
@@ -15,10 +15,8 @@ export interface Guest {
   plusCount: number;
   rsvpStatus: "pending" | "confirmed" | "declined";
   hostId: string;
-  arrivalDateTime?: Date;
-  departureDateTime?: Date;
   events: EventType[];
-  attribute: GuestAttribute;
+  attributes: GuestAttribute[];
 }
 
 export interface Host {

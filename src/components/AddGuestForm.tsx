@@ -4,7 +4,6 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Card } from "./ui/card";
 import { UserPlus } from "lucide-react";
-import { Calendar } from "./ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "./ui/checkbox";
 import { EventType, GuestAttribute, Host } from "@/types/guest";
@@ -15,10 +14,8 @@ interface GuestFormData {
   phone: string;
   plusCount: number;
   hostId: string;
-  arrivalDateTime?: Date;
-  departureDateTime?: Date;
   events: EventType[];
-  attribute: GuestAttribute;
+  attributes: GuestAttribute[];
 }
 
 interface AddGuestFormProps {
@@ -33,11 +30,11 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
     plusCount: 0,
     hostId: "",
     events: [],
-    attribute: "family",
+    attributes: [],
   });
 
   const eventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
-  const guestAttributes: GuestAttribute[] = ["family", "friends", "staff", "bride", "groom"];
+  const guestAttributes: GuestAttribute[] = ["family", "friends", "staff"];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +45,7 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
       plusCount: 0,
       hostId: "",
       events: [],
-      attribute: "family",
+      attributes: [],
     });
   };
 
@@ -87,22 +84,28 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="attribute">Guest Category *</Label>
-          <Select
-            value={formData.attribute}
-            onValueChange={(value: GuestAttribute) => setFormData({ ...formData, attribute: value })}
-          >
-            <SelectTrigger className="w-full bg-white/50">
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              {guestAttributes.map((attr) => (
-                <SelectItem key={attr} value={attr} className="capitalize">
+          <Label>Guest Categories *</Label>
+          <div className="space-y-2">
+            {guestAttributes.map((attr) => (
+              <div key={attr} className="flex items-center space-x-2">
+                <Checkbox
+                  id={attr}
+                  checked={formData.attributes.includes(attr)}
+                  onCheckedChange={(checked) =>
+                    setFormData({
+                      ...formData,
+                      attributes: checked
+                        ? [...formData.attributes, attr]
+                        : formData.attributes.filter((a) => a !== attr),
+                    })
+                  }
+                />
+                <Label htmlFor={attr} className="capitalize">
                   {attr}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                </Label>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="space-y-2">
           <Label htmlFor="plusCount">Additional Guests</Label>
@@ -159,28 +162,6 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
               </div>
             ))}
           </div>
-        </div>
-        <div className="space-y-2">
-          <Label>Arrival Date (Optional)</Label>
-          <Calendar
-            mode="single"
-            selected={formData.arrivalDateTime}
-            onSelect={(date) =>
-              setFormData({ ...formData, arrivalDateTime: date || undefined })
-            }
-            className="rounded-md border"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Departure Date (Optional)</Label>
-          <Calendar
-            mode="single"
-            selected={formData.departureDateTime}
-            onSelect={(date) =>
-              setFormData({ ...formData, departureDateTime: date || undefined })
-            }
-            className="rounded-md border"
-          />
         </div>
         <Button type="submit" className="w-full">
           <UserPlus className="mr-2 h-4 w-4" />

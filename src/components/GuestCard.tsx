@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, UserCheck, UserX, Pencil, Trash2, Phone, Calendar } from "lucide-react";
+import { User, UserCheck, UserX, Pencil, Trash2, Phone } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
@@ -9,13 +9,13 @@ interface GuestCardProps {
   guest: {
     id: string;
     name: string;
-    email?: string; // Made optional to match Guest type
+    email?: string;
     phone: string;
     rsvpStatus: "pending" | "confirmed" | "declined";
     plusCount: number;
     hostId: string;
-    arrivalDateTime?: Date;
     events: EventType[];
+    attributes: string[];
   };
   host: Host;
   onEdit: (id: string) => void;
@@ -72,12 +72,13 @@ export const GuestCard = ({
               </Badge>
             ))}
           </div>
-          {guest.arrivalDateTime && (
-            <p className="text-sm text-gray-600 flex items-center mt-2">
-              <Calendar className="h-4 w-4 mr-2" />
-              Arriving: {guest.arrivalDateTime.toLocaleDateString()}
-            </p>
-          )}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {guest.attributes.map((attr) => (
+              <Badge key={attr} variant="secondary" className="capitalize">
+                {attr}
+              </Badge>
+            ))}
+          </div>
           <div className="mt-2">
             <p className="text-sm text-gray-600">
               Host: {host.name}
