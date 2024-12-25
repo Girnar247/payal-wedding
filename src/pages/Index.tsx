@@ -3,6 +3,7 @@ import { AddGuestForm } from "@/components/AddGuestForm";
 import { GuestCard } from "@/components/GuestCard";
 import { Dashboard } from "@/components/Dashboard";
 import { EventCalendar } from "@/components/EventCalendar";
+import { EventSummary } from "@/components/EventSummary";
 import { HostList } from "@/components/HostList";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,6 @@ const Index = () => {
   const [showEventConfig, setShowEventConfig] = useState(true);
   const { toast } = useToast();
 
-  // Sample hosts data - in a real app, this would come from a database
   const [hosts, setHosts] = useState<Host[]>([
     {
       id: "1",
@@ -31,7 +31,6 @@ const Index = () => {
     },
   ]);
 
-  // Event details state
   const [eventDetails, setEventDetails] = useState<Record<EventType, EventDetails>>({
     haldi: {
       date: new Date(2024, 5, 1),
@@ -123,6 +122,17 @@ const Index = () => {
     });
   };
 
+  const handleDeleteHost = (id: string) => {
+    const host = hosts.find(h => h.id === id);
+    if (host) {
+      setHosts(hosts.filter(h => h.id !== id));
+      toast({
+        title: "Host Removed",
+        description: `${host.name} has been removed from the host list.`,
+      });
+    }
+  };
+
   const stats = {
     totalGuests: guests.length,
     confirmed: guests.filter((g) => g.rsvpStatus === "confirmed").length,
@@ -130,7 +140,6 @@ const Index = () => {
     pending: guests.filter((g) => g.rsvpStatus === "pending").length,
   };
 
-  // Create a default host for cases where the assigned host is not found
   const defaultHost: Host = {
     id: "default",
     name: "Unassigned",
@@ -148,32 +157,37 @@ const Index = () => {
           <p className="text-gray-600">Manage your special celebrations with elegance</p>
         </div>
 
-        <EventCalendar 
-          events={eventDetails} 
-          onUpdateEvent={handleUpdateEventDetails}
-          editable={showEventConfig}
-        />
-        
-        <HostList 
-          hosts={hosts} 
-          onAddHost={handleAddHost} 
-          editable={showEventConfig}
-        />
-        
-        <Dashboard {...stats} />
+        {!showEventConfig && <EventSummary events={eventDetails} />}
 
         {showEventConfig ? (
-          <div className="text-center">
-            <Button
-              onClick={() => setShowEventConfig(false)}
-              variant="outline"
-              className="bg-white/50 hover:bg-white/80"
-            >
-              Start Adding Guests
-            </Button>
-          </div>
+          <>
+            <EventCalendar 
+              events={eventDetails} 
+              onUpdateEvent={handleUpdateEventDetails}
+              editable={true}
+            />
+            
+            <HostList 
+              hosts={hosts} 
+              onAddHost={handleAddHost}
+              onDeleteHost={handleDeleteHost}
+              editable={true}
+            />
+            
+            <div className="text-center">
+              <Button
+                onClick={() => setShowEventConfig(false)}
+                variant="outline"
+                className="bg-white/50 hover:bg-white/80"
+              >
+                Start Adding Guests
+              </Button>
+            </div>
+          </>
         ) : (
           <>
+            <Dashboard {...stats} />
+
             <div className="flex justify-center">
               <Button
                 onClick={() => setShowAddForm(!showAddForm)}
