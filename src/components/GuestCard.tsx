@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "./ui/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
-import { Mail, Send, WhatsappIcon } from "lucide-react";
+import { Mail, MessageSquare } from "lucide-react";
 
 interface GuestCardProps {
   guest: Guest;
@@ -172,7 +172,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
             onClick={handleWhatsappInvitation}
             disabled={!guest.phone}
           >
-            <WhatsappIcon className="h-4 w-4 mr-2" />
+            <MessageSquare className="h-4 w-4 mr-2" />
             WhatsApp
           </Button>
         </div>

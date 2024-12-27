@@ -2,7 +2,7 @@ import { Guest, Host } from "@/types/guest";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { UserCheck, UserX, Mail, WhatsappIcon } from "lucide-react";
+import { UserCheck, UserX, Mail, MessageSquare } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -154,7 +154,7 @@ export const GuestList = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestL
                       onClick={() => handleWhatsappInvitation(guest)}
                       disabled={!guest.phone}
                     >
-                      <WhatsappIcon className="h-4 w-4" />
+                      <MessageSquare className="h-4 w-4" />
                     </Button>
                   </div>
                 </TableCell>
