@@ -20,11 +20,9 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   const allEvents: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
   const allAttributes: GuestAttribute[] = ["family", "friends", "staff", "mohalla"];
 
-  // Reset form when dialog opens or guest changes
+  // Reset form when dialog opens with fresh guest data
   useEffect(() => {
-    if (isOpen) {
-      setEditedGuest({ ...guest });
-    }
+    setEditedGuest({ ...guest });
   }, [guest, isOpen]);
 
   const handleAllEventsChange = (checked: boolean) => {
@@ -47,10 +45,6 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
     setEditedGuest(prev => ({ ...prev, plus_count: count }));
   };
 
-  const handleDialogClose = () => {
-    onClose();
-  };
-
   const handleSubmit = () => {
     // Only send the fields that can be updated
     const updatedGuest = {
@@ -67,7 +61,7 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   const isAllEventsSelected = editedGuest.events.length === allEvents.length;
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleDialogClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Guest Details</DialogTitle>
@@ -183,7 +177,7 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
           </div>
         </div>
         <div className="flex justify-end space-x-2">
-          <Button variant="outline" onClick={handleDialogClose}>
+          <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button onClick={handleSubmit}>Save Changes</Button>
