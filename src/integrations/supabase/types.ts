@@ -9,7 +9,77 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      guests: {
+        Row: {
+          attributes: string[] | null
+          created_at: string
+          email: string | null
+          events: string[] | null
+          host_id: string | null
+          id: string
+          name: string
+          phone: string
+          plus_count: number | null
+          rsvp_status: string | null
+        }
+        Insert: {
+          attributes?: string[] | null
+          created_at?: string
+          email?: string | null
+          events?: string[] | null
+          host_id?: string | null
+          id?: string
+          name: string
+          phone: string
+          plus_count?: number | null
+          rsvp_status?: string | null
+        }
+        Update: {
+          attributes?: string[] | null
+          created_at?: string
+          email?: string | null
+          events?: string[] | null
+          host_id?: string | null
+          id?: string
+          name?: string
+          phone?: string
+          plus_count?: number | null
+          rsvp_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guests_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "hosts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hosts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
