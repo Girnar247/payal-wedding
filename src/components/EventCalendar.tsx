@@ -3,6 +3,7 @@ import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { EventDetails, EventType } from "@/types/guest";
+import { parseISO, format } from "date-fns";
 
 interface EventCalendarProps {
   events: Record<EventType, EventDetails>;
@@ -11,7 +12,9 @@ interface EventCalendarProps {
 }
 
 export const EventCalendar = ({ events, onUpdateEvent, editable = false }: EventCalendarProps) => {
-  const eventDates = Object.values(events).map((event) => event.date);
+  const eventDates = Object.values(events).map((event) => 
+    event.date instanceof Date ? event.date : parseISO(event.date as string)
+  );
 
   const handleUpdateEvent = (
     eventType: EventType,
@@ -25,6 +28,11 @@ export const EventCalendar = ({ events, onUpdateEvent, editable = false }: Event
       };
       onUpdateEvent(eventType, updatedDetails);
     }
+  };
+
+  const formatDate = (date: Date | string) => {
+    const dateObj = date instanceof Date ? date : parseISO(date as string);
+    return format(dateObj, 'MMMM d, yyyy');
   };
 
   return (
@@ -47,13 +55,13 @@ export const EventCalendar = ({ events, onUpdateEvent, editable = false }: Event
                     {editable ? (
                       <Calendar
                         mode="single"
-                        selected={details.date}
+                        selected={details.date instanceof Date ? details.date : parseISO(details.date as string)}
                         onSelect={(date) => date && handleUpdateEvent(event, "date", date)}
                         className="rounded-md border"
                       />
                     ) : (
                       <p className="text-sm text-gray-600">
-                        {details.date.toLocaleDateString()}
+                        {formatDate(details.date)}
                       </p>
                     )}
                   </div>
