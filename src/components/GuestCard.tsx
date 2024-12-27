@@ -1,6 +1,5 @@
 import { Guest, Host } from "@/types/guest";
 import { Card, CardContent, CardHeader } from "./ui/card";
-import { GuestBadges } from "./guest-card/GuestBadges";
 import { GuestEditDialog } from "./guest-card/GuestEditDialog";
 import { GuestActions } from "./guest-card/GuestActions";
 import { useState } from "react";
@@ -9,11 +8,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "./ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { GuestContactInfo } from "./guest-card/GuestContactInfo";
-import { GuestAccommodation } from "./guest-card/GuestAccommodation";
 import { GuestInvitations } from "./guest-card/GuestInvitations";
 import { Badge } from "./ui/badge";
 import { UserCheck, UserX } from "lucide-react";
 import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
 
 interface GuestCardProps {
   guest: Guest;
@@ -27,6 +26,32 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  const handleAccommodationChange = async (checked: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('guests')
+        .update({ 
+          accommodation_required: checked,
+          accommodation_count: checked ? (guest.plus_count + 1) : 0
+        })
+        .eq('id', guest.id);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
+      toast({
+        title: "Updated",
+        description: `Accommodation requirement ${checked ? 'added' : 'removed'}.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update accommodation requirement.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const statusColors = {
     confirmed: "bg-green-100 text-green-800",
@@ -60,7 +85,21 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
               onUpdateStatus={onUpdateStatus}
             />
           </div>
-          <GuestAccommodation guest={guest} />
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id={`accommodation-${guest.id}`}
+              checked={guest.accommodation_required}
+              onCheckedChange={handleAccommodationChange}
+            />
+            <label
+              htmlFor={`accommodation-${guest.id}`}
+              className="text-sm text-gray-700"
+            >
+              Accommodation Required
+            </label>
+          </div>
+
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8 border border-gray-200">
               <AvatarImage src={host.avatar_url} alt={host.name} />
@@ -92,7 +131,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
             <Button
               variant="outline"
               size="sm"
-              className="w-full hover:bg-green-50"
+              className="w-full hover:bg-green-50 border-green-600 text-green-600"
               onClick={() => onUpdateStatus(guest.id, "confirmed")}
             >
               <UserCheck className="h-4 w-4 text-green-600 mr-2" />
@@ -101,7 +140,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
             <Button
               variant="outline"
               size="sm"
-              className="w-full hover:bg-red-50"
+              className="w-full hover:bg-red-50 border-red-500 text-red-500"
               onClick={() => onUpdateStatus(guest.id, "declined")}
             >
               <UserX className="h-4 w-4 text-red-500 mr-2" />

@@ -91,36 +91,38 @@ const Index = () => {
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
               <div className="flex items-center gap-4 flex-1">
-                <div className="flex-1 max-w-md">
-                  <Input
-                    placeholder="Search guests..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="flex-1 max-w-md">
+                    <Input
+                      placeholder="Search guests..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                  <Button
+                    onClick={() => setShowAddForm(!showAddForm)}
+                    variant="outline"
+                    className="bg-white/50 hover:bg-white/80"
+                  >
+                    {showAddForm ? (
+                      <>
+                        <MinusCircle className="mr-2 h-4 w-4" />
+                        Cancel
+                      </>
+                    ) : (
+                      <>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add New Guest
+                      </>
+                    )}
+                  </Button>
                 </div>
-                <Button
-                  onClick={() => setShowAddForm(!showAddForm)}
-                  variant="outline"
-                  className="bg-white/50 hover:bg-white/80"
-                >
-                  {showAddForm ? (
-                    <>
-                      <MinusCircle className="mr-2 h-4 w-4" />
-                      Cancel
-                    </>
-                  ) : (
-                    <>
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Add New Guest
-                    </>
-                  )}
-                </Button>
               </div>
 
               <div className="flex items-center gap-4">
                 <Select value={selectedHost} onValueChange={setSelectedHost}>
                   <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Filter by..." />
+                    <SelectValue placeholder="Filter..." />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
