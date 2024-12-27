@@ -4,32 +4,33 @@ import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface GuestRSVPStatusProps {
-  guest: Guest;
+  status: "pending" | "confirmed" | "declined";
+  guestId: string;
   onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
 
-export const GuestRSVPStatus = ({ guest, onUpdateStatus }: GuestRSVPStatusProps) => {
+export const GuestRSVPStatus = ({ status, guestId, onUpdateStatus }: GuestRSVPStatusProps) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const handleStatusUpdate = async (status: "confirmed" | "declined") => {
+  const handleStatusUpdate = async (newStatus: "confirmed" | "declined") => {
     try {
       const { data, error } = await supabase
         .from('guests')
-        .update({ rsvp_status: status })
-        .eq('id', guest.id)
+        .update({ rsvp_status: newStatus })
+        .eq('id', guestId)
         .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating status:', error);
+        throw error;
+      }
 
-      onUpdateStatus(guest.id, status);
+      onUpdateStatus(guestId, newStatus);
       toast({
         title: "Status Updated",
-        description: `Guest status has been updated to ${status}.`,
+        description: `Guest status has been updated to ${newStatus}.`,
       });
-
-      // Refresh the data
-      await queryClient.invalidateQueries({ queryKey: ['guests'] });
     } catch (error) {
       console.error('Error updating status:', error);
       toast({

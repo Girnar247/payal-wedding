@@ -13,7 +13,6 @@ import { GuestEditDialog } from "./guest-card/GuestEditDialog";
 import { useToast } from "./ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { Skeleton } from "./ui/skeleton";
 
 interface GuestCardProps {
   guest: Guest;
@@ -25,7 +24,6 @@ interface GuestCardProps {
 
 export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -35,16 +33,8 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     }
   };
 
-  const handleUpdateStatus = (id: string, status: "confirmed" | "declined") => {
-    if (onUpdateStatus) {
-      onUpdateStatus(id, status);
-    }
-  };
-
   const handleSave = async (updatedGuest: Partial<Guest>) => {
     try {
-      setIsUpdating(true);
-      
       const { data, error } = await supabase
         .from('guests')
         .update(updatedGuest)
@@ -54,23 +44,13 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
       if (error) throw error;
 
-      // Close the dialog first
       setIsEditDialogOpen(false);
-
-      // Show success toast
       toast({
         title: "Success",
         description: "Guest details have been updated.",
       });
 
-      // Force a full refetch of the guests query
-      await queryClient.invalidateQueries({ queryKey: ['guests'] });
-      await queryClient.refetchQueries({ queryKey: ['guests'] });
-
-      // Add a small delay before removing loading state
-      setTimeout(() => {
-        setIsUpdating(false);
-      }, 1000);
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
     } catch (error) {
       console.error('Error updating guest:', error);
       toast({
@@ -78,43 +58,25 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
         description: "Failed to update guest details.",
         variant: "destructive",
       });
-      setIsUpdating(false);
     }
   };
-
-  if (isUpdating) {
-    return (
-      <Card className="bg-white/50">
-        <CardHeader className="pb-2">
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-4 w-2/3" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-16 w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <>
       <Card className="bg-white/50">
         <CardHeader className="pb-2">
-          <GuestHeader 
-            guest={guest} 
-            onEdit={() => setIsEditDialogOpen(true)} 
-            onDelete={handleDelete}
-            onUpdateStatus={handleUpdateStatus}
-          />
+          <GuestHeader guest={guest} onEdit={() => setIsEditDialogOpen(true)} onDelete={handleDelete} />
           <GuestContactInfo guest={guest} />
-          <GuestRSVPStatus guest={guest} onUpdateStatus={handleUpdateStatus} />
+          <GuestRSVPStatus status={guest.rsvp_status} onUpdateStatus={onUpdateStatus} guestId={guest.id} />
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <GuestBadges guest={guest} />
+            <GuestBadges 
+              rsvpStatus={guest.rsvp_status}
+              plusCount={guest.plus_count}
+              events={guest.events}
+              attributes={guest.attributes}
+            />
             <GuestEventBadges events={guest.events} />
             <GuestAccommodation guest={guest} />
             <GuestInvitations guest={guest} host={host} />

@@ -1,41 +1,44 @@
 import { Badge } from "@/components/ui/badge";
-import { Guest } from "@/types/guest";
+import { EventType, GuestAttribute } from "@/types/guest";
 
 interface GuestBadgesProps {
-  guest: Guest;
+  rsvpStatus: "pending" | "confirmed" | "declined";
+  plusCount: number;
+  events: EventType[];
+  attributes: GuestAttribute[];
 }
 
-export const GuestBadges = ({ guest }: GuestBadgesProps) => {
+export const GuestBadges = ({ rsvpStatus, plusCount, events, attributes }: GuestBadgesProps) => {
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
         <Badge
           variant={
-            guest.rsvp_status === "confirmed"
+            rsvpStatus === "confirmed"
               ? "default"
-              : guest.rsvp_status === "declined"
+              : rsvpStatus === "declined"
               ? "destructive"
               : "secondary"
           }
           className="capitalize"
         >
-          {guest.rsvp_status}
+          {rsvpStatus}
         </Badge>
-        {guest.plus_count > 0 && (
+        {plusCount > 0 && (
           <Badge variant="outline" className="bg-wedding-rose/20">
-            +{guest.plus_count}
+            +{plusCount}
           </Badge>
         )}
       </div>
       <div className="flex flex-wrap gap-2">
-        {guest.events?.map((event) => (
+        {events.map((event) => (
           <Badge key={event} variant="outline" className="capitalize">
             {event}
           </Badge>
         ))}
       </div>
       <div className="flex flex-wrap gap-2">
-        {guest.attributes?.map((attr) => (
+        {attributes.map((attr) => (
           <Badge key={attr} variant="secondary" className="capitalize">
             {attr}
           </Badge>
