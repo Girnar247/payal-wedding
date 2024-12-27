@@ -4,18 +4,26 @@ import { Dashboard } from "@/components/Dashboard";
 import { EventSummary } from "@/components/EventSummary";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, MinusCircle } from "lucide-react";
-import { EventType, EventDetails, Host } from "@/types/guest";
+import { EventType, EventDetails, Host, GuestAttribute } from "@/types/guest";
 import { GuestManagement } from "@/components/GuestManagement";
 import { EventConfiguration } from "@/components/EventConfiguration";
 import { DownloadGuestList } from "@/components/DownloadGuestList";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useEventState } from "@/hooks/useEventState";
+import { useGuestStats } from "@/hooks/useGuestStats";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+
+const defaultHost: Host = {
+  id: "",
+  name: "Unassigned",
+  email: "",
+  phone: "",
+};
 
 const Index = () => {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -35,7 +43,8 @@ const Index = () => {
     handleDeleteHost,
   } = useGuestState();
 
-  const { eventDetails, isLoading } = useEventState();
+  const { eventDetails, isLoading, addEvents: handleUpdateEventDetails } = useEventState();
+  const stats = useGuestStats(guests);
 
   const filteredGuests = guests.filter(guest => {
     const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -43,7 +52,7 @@ const Index = () => {
                          guest.phone?.includes(searchTerm);
     const matchesHost = !selectedHost || guest.host_id === selectedHost;
     const matchesEvent = !selectedEvent || guest.events.includes(selectedEvent as EventType);
-    const matchesAttribute = !selectedAttribute || guest.attributes.includes(selectedAttribute);
+    const matchesAttribute = !selectedAttribute || guest.attributes.includes(selectedAttribute as GuestAttribute);
     
     return matchesSearch && matchesHost && matchesEvent && matchesAttribute;
   });
@@ -185,7 +194,7 @@ const Index = () => {
                 <SelectContent>
                   <SelectItem value="">All Categories</SelectItem>
                   <SelectItem value="family">Family</SelectItem>
-                  <SelectItem value="friend">Friend</SelectItem>
+                  <SelectItem value="friends">Friends</SelectItem>
                   <SelectItem value="staff">Staff</SelectItem>
                 </SelectContent>
               </Select>

@@ -18,6 +18,7 @@ export interface Guest {
   events: EventType[];
   attributes: GuestAttribute[];
   created_at?: string;
+  accommodation_required: boolean;
 }
 
 export interface Host {
