@@ -32,10 +32,16 @@ const Index = () => {
     eventType: EventType,
     details: EventDetails
   ) => {
+    const initialEvents: Record<EventType, EventDetails> = {
+      haldi: details,
+      mehndi: details,
+      mayra: details,
+      sangeet: details,
+      wedding: details,
+    };
+
     if (Object.keys(eventDetails).length === 0) {
-      await addEvents({
-        [eventType]: details,
-      });
+      await addEvents(initialEvents);
     }
   };
 
@@ -70,7 +76,7 @@ const Index = () => {
 
         {Object.keys(eventDetails).length === 0 ? (
           <EventConfiguration
-            eventDetails={eventDetails}
+            eventDetails={eventDetails as Record<EventType, EventDetails>}
             hosts={hosts}
             onUpdateEvent={handleUpdateEventDetails}
             onAddHost={handleAddHost}
@@ -79,7 +85,7 @@ const Index = () => {
           />
         ) : (
           <>
-            <EventSummary events={eventDetails} />
+            <EventSummary events={eventDetails as Record<EventType, EventDetails>} />
             <Dashboard {...stats} />
 
             <div className="flex justify-between items-center">
@@ -111,26 +117,7 @@ const Index = () => {
               defaultHost={defaultHost}
               onDeleteGuest={handleDeleteGuest}
               onUpdateStatus={(id: string, status: "confirmed" | "declined") => {
-                const guest = guests.find(g => g.id === id);
-                if (guest && status === "confirmed") {
-                  const confirmCount = window.prompt(
-                    `How many plus guests are attending? (0-${guest.plus_count})`,
-                    guest.plus_count?.toString()
-                  );
-                  if (confirmCount === null) return;
-                  const count = parseInt(confirmCount);
-                  if (isNaN(count) || count < 0 || count > (guest.plus_count || 0)) {
-                    toast({
-                      title: "Invalid Input",
-                      description: `Please enter a number between 0 and ${guest.plus_count}`,
-                      variant: "destructive",
-                    });
-                    return;
-                  }
-                  handleUpdateStatus(id, status, count);
-                } else {
-                  handleUpdateStatus(id, status);
-                }
+                handleUpdateStatus(id, status);
               }}
             />
           </>
