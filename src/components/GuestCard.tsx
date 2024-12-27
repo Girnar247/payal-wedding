@@ -12,6 +12,8 @@ import { GuestContactInfo } from "./guest-card/GuestContactInfo";
 import { GuestAccommodation } from "./guest-card/GuestAccommodation";
 import { GuestInvitations } from "./guest-card/GuestInvitations";
 import { Badge } from "./ui/badge";
+import { UserCheck, UserX } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface GuestCardProps {
   guest: Guest;
@@ -39,6 +41,11 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-lg">{guest.name}</h3>
+              {guest.plus_count > 0 && (
+                <Badge variant="outline" className="bg-wedding-rose/20">
+                  +{guest.plus_count}
+                </Badge>
+              )}
               <Badge 
                 variant="secondary"
                 className={`capitalize ${statusColors[guest.rsvp_status]}`}
@@ -53,6 +60,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
               onUpdateStatus={onUpdateStatus}
             />
           </div>
+          <GuestAccommodation guest={guest} />
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8 border border-gray-200">
               <AvatarImage src={host.avatar_url} alt={host.name} />
@@ -65,17 +73,42 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <GuestContactInfo guest={guest} />
-          <GuestAccommodation guest={guest} />
+        <GuestContactInfo guest={guest} />
+        <div className="flex flex-wrap gap-2">
+          {guest.events.map((event) => (
+            <Badge key={event} variant="outline" className="capitalize">
+              {event}
+            </Badge>
+          ))}
+          {guest.attributes.map((attr) => (
+            <Badge key={attr} variant="secondary" className="capitalize">
+              {attr}
+            </Badge>
+          ))}
         </div>
-        <GuestBadges
-          rsvpStatus={guest.rsvp_status}
-          plusCount={guest.plus_count}
-          events={guest.events}
-          attributes={guest.attributes}
-        />
         <GuestInvitations guest={guest} host={host} />
+        {guest.rsvp_status === "pending" && (
+          <div className="flex gap-2 mt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full hover:bg-green-50"
+              onClick={() => onUpdateStatus(guest.id, "confirmed")}
+            >
+              <UserCheck className="h-4 w-4 text-green-600 mr-2" />
+              Confirm
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full hover:bg-red-50"
+              onClick={() => onUpdateStatus(guest.id, "declined")}
+            >
+              <UserX className="h-4 w-4 text-red-500 mr-2" />
+              Decline
+            </Button>
+          </div>
+        )}
       </CardContent>
 
       <GuestEditDialog
