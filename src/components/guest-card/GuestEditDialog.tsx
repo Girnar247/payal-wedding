@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { EventType, Guest, GuestAttribute } from "@/types/guest";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface GuestEditDialogProps {
@@ -19,6 +19,13 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   const { toast } = useToast();
   const allEvents: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
   const allAttributes: GuestAttribute[] = ["family", "friends", "staff", "mohalla"];
+
+  // Reset the form when the dialog opens with a new guest
+  useEffect(() => {
+    if (isOpen) {
+      setEditedGuest(guest);
+    }
+  }, [guest, isOpen]);
 
   const handleAllEventsChange = (checked: boolean) => {
     setEditedGuest(prev => ({
@@ -40,10 +47,15 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
     setEditedGuest(prev => ({ ...prev, plus_count: count }));
   };
 
+  const handleDialogClose = () => {
+    setEditedGuest(guest); // Reset form state
+    onClose();
+  };
+
   const isAllEventsSelected = editedGuest.events.length === allEvents.length;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleDialogClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Guest Details</DialogTitle>
@@ -159,7 +171,7 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
           </div>
         </div>
         <div className="flex justify-end space-x-2">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={handleDialogClose}>
             Cancel
           </Button>
           <Button onClick={() => onSave(editedGuest)}>Save Changes</Button>

@@ -34,7 +34,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ['guests'] });
-      setIsEditDialogOpen(false);
+      handleCloseDialog();
       toast({
         title: "Success",
         description: "Guest details updated successfully.",
@@ -46,6 +46,10 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
         variant: "destructive",
       });
     }
+  };
+
+  const handleCloseDialog = () => {
+    setIsEditDialogOpen(false);
   };
 
   return (
@@ -74,7 +78,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
         <GuestEditDialog
           guest={guest}
           isOpen={isEditDialogOpen}
-          onClose={() => setIsEditDialogOpen(false)}
+          onClose={handleCloseDialog}
           onSave={handleSave}
         />
       )}
