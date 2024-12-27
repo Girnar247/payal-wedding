@@ -9,6 +9,8 @@ import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "./ui/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Button } from "./ui/button";
+import { Mail, Send, WhatsappIcon } from "lucide-react";
 
 interface GuestCardProps {
   guest: Guest;
@@ -27,7 +29,10 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     try {
       const { error } = await supabase
         .from('guests')
-        .update({ accommodation_required: checked })
+        .update({ 
+          accommodation_required: checked,
+          accommodation_count: checked ? (guest.plus_count + 1) : 0
+        })
         .eq('id', guest.id);
 
       if (error) throw error;
@@ -46,26 +51,74 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     }
   };
 
+  const handleSendInvitation = async () => {
+    if (!guest.email) {
+      toast({
+        title: "Error",
+        description: "Guest email is required to send invitation.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke("send-invitation", {
+        body: { guestId: guest.id, hostEmail: host.email },
+      });
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
+      toast({
+        title: "Success",
+        description: "Wedding invitation has been sent!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send invitation.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleWhatsappInvitation = () => {
+    if (!guest.phone) {
+      toast({
+        title: "Error",
+        description: "Guest phone number is required to send WhatsApp invitation.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const message = encodeURIComponent("You are invited, bro");
+    const whatsappUrl = `https://wa.me/${guest.phone}?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
     <Card className="bg-white/50">
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col gap-3">
+          <div className="flex justify-between items-start">
+            <h3 className="font-semibold text-lg">{guest.name}</h3>
+            <GuestActions
+              guest={guest}
+              onEdit={() => setIsEditDialogOpen(true)}
+              onDelete={onDelete}
+              onUpdateStatus={onUpdateStatus}
+            />
+          </div>
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8 border border-gray-200">
               <AvatarImage src={host.avatar_url} alt={host.name} />
               <AvatarFallback>{host.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-semibold text-lg">{guest.name}</h3>
               <p className="text-sm text-gray-500">Host: {host.name}</p>
             </div>
           </div>
-          <GuestActions
-            guest={guest}
-            onEdit={() => setIsEditDialogOpen(true)}
-            onDelete={onDelete}
-            onUpdateStatus={onUpdateStatus}
-          />
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -102,6 +155,27 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
           events={guest.events as EventType[]}
           attributes={guest.attributes}
         />
+
+        <div className="flex gap-2 mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSendInvitation}
+            disabled={!guest.email}
+          >
+            <Mail className="h-4 w-4 mr-2" />
+            {guest.invitation_sent ? "Invitation Sent" : "Send Invitation"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleWhatsappInvitation}
+            disabled={!guest.phone}
+          >
+            <WhatsappIcon className="h-4 w-4 mr-2" />
+            WhatsApp
+          </Button>
+        </div>
       </CardContent>
 
       <GuestEditDialog

@@ -1,8 +1,11 @@
 import { Host } from "@/types/guest";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, Trash2 } from "lucide-react";
+import { Mail, Phone, Trash2, Upload } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface HostCardProps {
   host: Host;
@@ -11,6 +14,48 @@ interface HostCardProps {
 }
 
 export const HostCard = ({ host, onDelete, editable = false }: HostCardProps) => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${host.id}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('hosts')
+        .update({ avatar_url: publicUrl })
+        .eq('id', host.id);
+
+      if (updateError) throw updateError;
+
+      queryClient.invalidateQueries({ queryKey: ['hosts'] });
+      toast({
+        title: "Success",
+        description: "Avatar uploaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload avatar",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card 
       className="relative p-6 overflow-hidden"
@@ -40,16 +85,35 @@ export const HostCard = ({ host, onDelete, editable = false }: HostCardProps) =>
               </div>
             </div>
           </div>
-          {editable && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onDelete?.(host)}
-              className="hover:bg-red-100"
-            >
-              <Trash2 className="h-4 w-4 text-red-500" />
-            </Button>
-          )}
+          <div className="flex gap-2">
+            {editable && (
+              <>
+                <input
+                  type="file"
+                  id={`avatar-upload-${host.id}`}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => document.getElementById(`avatar-upload-${host.id}`)?.click()}
+                  className="hover:bg-white/20"
+                >
+                  <Upload className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onDelete?.(host)}
+                  className="hover:bg-red-100"
+                >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </Card>
