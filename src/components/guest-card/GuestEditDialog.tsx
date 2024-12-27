@@ -20,6 +20,7 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   const allEvents: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
   const allAttributes: GuestAttribute[] = ["family", "friends", "staff", "mohalla"];
 
+  // Reset form when dialog opens or guest changes
   useEffect(() => {
     if (isOpen) {
       setEditedGuest({ ...guest });
@@ -47,11 +48,11 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   };
 
   const handleDialogClose = () => {
-    setEditedGuest({ ...guest }); // Reset form
     onClose();
   };
 
   const handleSubmit = () => {
+    // Only send the fields that can be updated
     const updatedGuest = {
       name: editedGuest.name,
       email: editedGuest.email,

@@ -34,27 +34,29 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
   const handleSave = async (updatedGuest: Partial<Guest>) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('guests')
         .update(updatedGuest)
-        .eq('id', guest.id);
+        .eq('id', guest.id)
+        .select()
+        .single();
 
       if (error) throw error;
 
-      // Immediately update the cache with the new data
+      // Update the cache with the returned data
       queryClient.setQueryData(['guests'], (oldData: Guest[] | undefined) => {
         if (!oldData) return oldData;
-        return oldData.map(g => g.id === guest.id ? { ...g, ...updatedGuest } : g);
+        return oldData.map(g => g.id === guest.id ? { ...g, ...data } : g);
       });
 
-      // Then invalidate to ensure consistency
-      await queryClient.invalidateQueries({ queryKey: ['guests'] });
-      
       handleCloseDialog();
       toast({
         title: "Success",
         description: "Guest details updated successfully.",
       });
+
+      // Invalidate after the update to ensure consistency
+      await queryClient.invalidateQueries({ queryKey: ['guests'] });
     } catch (error) {
       console.error('Error updating guest:', error);
       toast({
