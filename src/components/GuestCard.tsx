@@ -25,10 +25,17 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
   const handleStatusUpdate = async (status: "confirmed" | "declined" | "pending") => {
     try {
+      // Validate status before sending to Supabase
+      if (!["confirmed", "declined", "pending"].includes(status)) {
+        throw new Error("Invalid status value");
+      }
+
       const { error } = await supabase
         .from('guests')
         .update({ rsvp_status: status })
-        .eq('id', guest.id);
+        .eq('id', guest.id)
+        .select()
+        .single();
 
       if (error) throw error;
 
