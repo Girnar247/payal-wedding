@@ -52,6 +52,13 @@ const Index = () => {
     return matchesSearch && matchesHost && matchesEvent && matchesAttribute;
   });
 
+  const handleUpdateEventDetails = (eventType: EventType, details: EventDetails) => {
+    addEvents({
+      ...eventDetails,
+      [eventType]: details
+    });
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -70,7 +77,7 @@ const Index = () => {
           <EventConfiguration
             eventDetails={eventDetails}
             hosts={hosts}
-            onUpdateEvent={addEvents}
+            onUpdateEvent={handleUpdateEventDetails}
             onAddHost={handleAddHost}
             onDeleteHost={handleDeleteHost}
             onComplete={() => {}}
