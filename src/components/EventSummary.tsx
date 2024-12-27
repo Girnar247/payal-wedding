@@ -46,7 +46,9 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
       }
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const filePath = `${eventType}/${crypto.randomUUID()}.${fileExt}`;
+      // Sanitize the event type for use in the file path by replacing spaces with underscores
+      const sanitizedEventType = eventType.replace(/\s+/g, '_');
+      const filePath = `${sanitizedEventType}/${crypto.randomUUID()}.${fileExt}`;
 
       setUploading(eventType);
 
