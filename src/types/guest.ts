@@ -1,5 +1,5 @@
 export type EventType = "haldi" | "mehndi" | "mayra" | "sangeet" | "wedding";
-export type GuestAttribute = "family" | "friends" | "staff";
+export type GuestAttribute = "family" | "friends" | "staff" | "mohalla";
 
 export interface EventDetails {
   date: Date | string;
@@ -27,6 +27,7 @@ export interface Host {
   email: string;
   phone: string;
   created_at?: string;
+  avatar_url?: string;
 }
 
 export interface GuestFormData {

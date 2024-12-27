@@ -7,6 +7,7 @@ import { UserPlus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "./ui/checkbox";
 import { EventType, GuestAttribute, Host } from "@/types/guest";
+import { toast } from "./ui/use-toast";
 
 interface GuestFormData {
   name: string;
@@ -34,10 +35,18 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
   });
 
   const eventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
-  const guestAttributes: GuestAttribute[] = ["family", "friends", "staff"];
+  const guestAttributes: GuestAttribute[] = ["family", "friends", "staff", "mohalla"];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.plusCount > 20) {
+      toast({
+        title: "Error",
+        description: "Contact admin to add more than the limit - 20 guests",
+        variant: "destructive",
+      });
+      return;
+    }
     onSubmit(formData);
     setFormData({
       name: "",
@@ -93,7 +102,7 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
         </div>
         <div className="space-y-2">
           <Label>Guest Categories *</Label>
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-4">
             {guestAttributes.map((attr) => (
               <div key={attr} className="flex items-center space-x-2">
                 <Checkbox
@@ -121,7 +130,7 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
             id="plusCount"
             type="number"
             min="0"
-            max="5"
+            max="20"
             value={formData.plusCount}
             onChange={(e) =>
               setFormData({ ...formData, plusCount: parseInt(e.target.value) })
@@ -150,7 +159,7 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
 
         <div className="space-y-2">
           <Label>Events Attending *</Label>
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-4">
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="all-events"
