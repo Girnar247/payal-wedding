@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AddGuestForm } from "@/components/AddGuestForm";
 import { Dashboard } from "@/components/Dashboard";
 import { EventSummary } from "@/components/EventSummary";
-import { EventType, GuestAttribute, Host } from "@/types/guest";
+import { EventType, GuestAttribute, Host, EventDetails } from "@/types/guest";
 import { GuestManagement } from "@/components/GuestManagement";
 import { EventConfiguration } from "@/components/EventConfiguration";
 import { useGuestState } from "@/hooks/useGuestState";

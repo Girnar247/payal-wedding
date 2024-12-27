@@ -6,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { EventCard } from "./event-summary/EventCard";
 import { MainBackgroundUpload } from "./event-summary/MainBackgroundUpload";
+import { parseISO } from "date-fns";
 
 interface EventSummaryProps {
   events: Record<EventType, EventDetails>;
