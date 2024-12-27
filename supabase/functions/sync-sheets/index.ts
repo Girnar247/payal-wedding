@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { google } from "https://deno.land/x/google_auth@v0.3.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,52 +30,22 @@ serve(async (req) => {
 
     if (guestError) throw guestError;
 
-    // Initialize Google Sheets
-    const serviceAccountCreds = JSON.parse(Deno.env.get('GOOGLE_SERVICE_ACCOUNT_KEY') ?? '');
-    const spreadsheetId = Deno.env.get('GOOGLE_SHEET_ID');
-    
-    const auth = new google.auth.GoogleAuth({
-      credentials: serviceAccountCreds,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-    });
+    // Format data for spreadsheet
+    const formattedData = guests.map(guest => ({
+      name: guest.name,
+      email: guest.email || 'N/A',
+      phone: guest.phone || 'N/A',
+      host: guest.hosts?.name || 'Unassigned',
+      rsvp_status: guest.rsvp_status,
+      plus_count: guest.plus_count,
+      events: guest.events.join(', '),
+      attributes: guest.attributes.join(', ')
+    }));
 
-    const sheets = google.sheets({ version: 'v4', auth: await auth.getClient() });
-
-    // Prepare data for Google Sheets
-    const headers = [
-      'Name',
-      'Email',
-      'Phone',
-      'Host',
-      'RSVP Status',
-      'Additional Guests',
-      'Events',
-      'Categories',
-    ];
-
-    const rows = guests.map((guest) => [
-      guest.name,
-      guest.email || 'N/A',
-      guest.phone,
-      guest.hosts?.name || 'Unassigned',
-      guest.rsvpStatus,
-      guest.plusCount.toString(),
-      guest.events.join(', '),
-      guest.attributes.join(', '),
-    ]);
-
-    // Update Google Sheet
-    await sheets.spreadsheets.values.update({
-      spreadsheetId,
-      range: 'A1:H' + (guests.length + 1),
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: [headers, ...rows],
-      },
-    });
+    console.log('Formatted guest data:', formattedData);
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ success: true, data: formattedData }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
@@ -84,12 +53,10 @@ serve(async (req) => {
     );
 
   } catch (error) {
+    console.error('Error in sync-sheets function:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
 });

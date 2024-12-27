@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { EventType, Guest } from "@/types/guest";
+import { EventType, Guest, GuestAttribute } from "@/types/guest";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -15,9 +15,10 @@ interface GuestEditDialogProps {
 }
 
 export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDialogProps) => {
-  const [editedGuest, setEditedGuest] = useState(guest);
+  const [editedGuest, setEditedGuest] = useState<Guest>(guest);
   const { toast } = useToast();
   const allEvents: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
+  const allAttributes: GuestAttribute[] = ["family", "friends", "staff", "mohalla"];
 
   const handleAllEventsChange = (checked: boolean) => {
     setEditedGuest(prev => ({
@@ -132,7 +133,7 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
           <div className="grid gap-2">
             <Label>Guest Categories</Label>
             <div className="flex flex-wrap gap-2">
-              {["family", "friends", "staff", "mohalla"].map((attr) => (
+              {allAttributes.map((attr) => (
                 <div key={attr} className="flex items-center space-x-2">
                   <Checkbox
                     id={attr}
