@@ -10,6 +10,7 @@ import { GuestHostInfo } from "./guest-card/GuestHostInfo";
 import { GuestEventBadges } from "./guest-card/GuestEventBadges";
 import { GuestContactInfo } from "./guest-card/GuestContactInfo";
 import { GuestRSVPStatus } from "./guest-card/GuestRSVPStatus";
+import { Skeleton } from "./ui/skeleton";
 
 interface GuestCardProps {
   guest: Guest;
@@ -21,6 +22,7 @@ interface GuestCardProps {
 
 export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -34,6 +36,8 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
   const handleSave = async (updatedGuest: Partial<Guest>) => {
     try {
+      setIsUpdating(true);
+      
       // First, make the Supabase update request
       const { data, error } = await supabase
         .from('guests')
@@ -59,6 +63,11 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
       // Finally, invalidate the query to ensure data consistency
       await queryClient.invalidateQueries({ queryKey: ['guests'] });
+      
+      // Add a small delay before removing loading state to ensure smooth transition
+      setTimeout(() => {
+        setIsUpdating(false);
+      }, 1000);
     } catch (error) {
       console.error('Error updating guest:', error);
       toast({
@@ -66,8 +75,26 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
         description: "Failed to update guest details.",
         variant: "destructive",
       });
+      setIsUpdating(false);
     }
   };
+
+  if (isUpdating) {
+    return (
+      <Card className="bg-white/50">
+        <CardHeader className="pb-2">
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-16 w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <>
