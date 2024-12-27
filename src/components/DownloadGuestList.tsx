@@ -29,7 +29,7 @@ export const DownloadGuestList = ({ guests, hosts }: DownloadGuestListProps) => 
         guest.attributes.join(", "),
         guest.plus_count,
         host,
-        guest.events.join(", "),
+        `"${guest.events.join(", ")}"`,
         guest.rsvp_status,
       ];
     });

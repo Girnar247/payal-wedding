@@ -1,34 +1,69 @@
 import { EventType, EventDetails } from "@/types/guest";
-import { useLocalStorage } from "./useLocalStorage";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/components/ui/use-toast";
 
 export const useEventState = () => {
-  const [eventDetails, setEventDetails] = useLocalStorage<Record<EventType, EventDetails>>("eventDetails", {
-    haldi: {
-      date: new Date(2024, 5, 1),
-      time: "10:00 AM",
-      venue: "Residence Garden",
-    },
-    mehndi: {
-      date: new Date(2024, 5, 2),
-      time: "11:00 AM",
-      venue: "Banquet Hall",
-    },
-    mayra: {
-      date: new Date(2024, 5, 2),
-      time: "5:00 PM",
-      venue: "Family Temple",
-    },
-    sangeet: {
-      date: new Date(2024, 5, 3),
-      time: "7:00 PM",
-      venue: "Grand Ballroom",
-    },
-    wedding: {
-      date: new Date(2024, 5, 4),
-      time: "7:00 PM",
-      venue: "Royal Palace Gardens",
-    },
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: eventDetails = {}, isLoading } = useQuery({
+    queryKey: ['events'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      const formattedEvents = data.reduce((acc: Record<EventType, EventDetails>, event) => {
+        acc[event.type as EventType] = {
+          date: event.date,
+          time: event.time,
+          venue: event.venue,
+        };
+        return acc;
+      }, {} as Record<EventType, EventDetails>);
+
+      return formattedEvents;
+    }
   });
 
-  return { eventDetails, setEventDetails };
+  const addEventMutation = useMutation({
+    mutationFn: async (events: Record<EventType, EventDetails>) => {
+      const eventsToInsert = Object.entries(events).map(([type, details]) => ({
+        type,
+        date: details.date,
+        time: details.time,
+        venue: details.venue,
+      }));
+
+      const { error } = await supabase
+        .from('events')
+        .insert(eventsToInsert);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      toast({
+        title: "Events Added",
+        description: "Event details have been successfully saved.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to add events: " + error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  return {
+    eventDetails,
+    isLoading,
+    addEvents: (events: Record<EventType, EventDetails>) => addEventMutation.mutate(events),
+  };
 };

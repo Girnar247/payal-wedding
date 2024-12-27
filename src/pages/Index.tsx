@@ -10,10 +10,11 @@ import { EventConfiguration } from "@/components/EventConfiguration";
 import { DownloadGuestList } from "@/components/DownloadGuestList";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useEventState } from "@/hooks/useEventState";
+import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showEventConfig, setShowEventConfig] = useState(true);
+  const { toast } = useToast();
   
   const {
     guests,
@@ -25,22 +26,23 @@ const Index = () => {
     handleDeleteHost,
   } = useGuestState();
 
-  const { eventDetails, setEventDetails } = useEventState();
+  const { eventDetails, isLoading, addEvents } = useEventState();
 
-  const handleUpdateEventDetails = (
+  const handleUpdateEventDetails = async (
     eventType: EventType,
     details: EventDetails
   ) => {
-    setEventDetails((prev) => ({
-      ...prev,
-      [eventType]: details,
-    }));
+    if (Object.keys(eventDetails).length === 0) {
+      await addEvents({
+        [eventType]: details,
+      });
+    }
   };
 
   const stats = {
     totalGuests: guests.length,
-    totalWithPlusOnes: guests.reduce((acc, guest) => acc + 1 + guest.plus_count, 0),
-    confirmed: guests.filter((g) => g.rsvp_status === "confirmed").length,
+    totalWithPlusOnes: guests.reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
+    confirmed: guests.filter((g) => g.rsvp_status === "confirmed").reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
     declined: guests.filter((g) => g.rsvp_status === "declined").length,
     pending: guests.filter((g) => g.rsvp_status === "pending").length,
   };
@@ -52,6 +54,10 @@ const Index = () => {
     phone: "N/A",
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-wedding-cream p-6 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -62,14 +68,14 @@ const Index = () => {
           <p className="text-gray-600">Manage your special celebrations with elegance</p>
         </div>
 
-        {showEventConfig ? (
+        {Object.keys(eventDetails).length === 0 ? (
           <EventConfiguration
             eventDetails={eventDetails}
             hosts={hosts}
             onUpdateEvent={handleUpdateEventDetails}
             onAddHost={handleAddHost}
             onDeleteHost={handleDeleteHost}
-            onComplete={() => setShowEventConfig(false)}
+            onComplete={() => {}}
           />
         ) : (
           <>
@@ -104,7 +110,28 @@ const Index = () => {
               hosts={hosts}
               defaultHost={defaultHost}
               onDeleteGuest={handleDeleteGuest}
-              onUpdateStatus={handleUpdateStatus}
+              onUpdateStatus={(id: string, status: "confirmed" | "declined") => {
+                const guest = guests.find(g => g.id === id);
+                if (guest && status === "confirmed") {
+                  const confirmCount = window.prompt(
+                    `How many plus guests are attending? (0-${guest.plus_count})`,
+                    guest.plus_count?.toString()
+                  );
+                  if (confirmCount === null) return;
+                  const count = parseInt(confirmCount);
+                  if (isNaN(count) || count < 0 || count > (guest.plus_count || 0)) {
+                    toast({
+                      title: "Invalid Input",
+                      description: `Please enter a number between 0 and ${guest.plus_count}`,
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+                  handleUpdateStatus(id, status, count);
+                } else {
+                  handleUpdateStatus(id, status);
+                }
+              }}
             />
           </>
         )}

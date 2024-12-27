@@ -1,12 +1,36 @@
 import { EventType, EventDetails } from "@/types/guest";
 import { Card } from "./ui/card";
 import { format, parseISO } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 interface EventSummaryProps {
   events: Record<EventType, EventDetails>;
 }
 
 export const EventSummary = ({ events }: EventSummaryProps) => {
+  const { data: guestCounts = {} } = useQuery({
+    queryKey: ['eventGuestCounts'],
+    queryFn: async () => {
+      const { data: guests, error } = await supabase
+        .from('guests')
+        .select('events, plus_count, rsvp_status');
+
+      if (error) throw error;
+
+      const counts: Record<string, number> = {};
+      guests.forEach((guest) => {
+        if (guest.rsvp_status === 'confirmed') {
+          guest.events.forEach((event: string) => {
+            counts[event] = (counts[event] || 0) + 1 + (guest.plus_count || 0);
+          });
+        }
+      });
+
+      return counts;
+    }
+  });
+
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-playfair mb-4 text-center">Event Schedule</h2>
@@ -29,6 +53,9 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
                 </p>
                 <p className="text-gray-600">{details.time}</p>
                 <p className="text-gray-600">{details.venue}</p>
+                <p className="text-gray-600 font-semibold mt-2">
+                  Confirmed Guests: {guestCounts[eventType] || 0}
+                </p>
               </div>
             </Card>
           ))}
