@@ -89,7 +89,7 @@ export const DownloadGuestList = ({ guests, hosts }: DownloadGuestListProps) => 
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="bg-white/50 hover:bg-white/80">
           <Download className="mr-2 h-4 w-4" />
-          Download Guest List
+          Download
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>

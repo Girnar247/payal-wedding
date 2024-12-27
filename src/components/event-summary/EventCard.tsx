@@ -15,11 +15,9 @@ interface EventCardProps {
 export const EventCard = ({ eventType, details, guestCount, onBackgroundUpload, uploading }: EventCardProps) => {
   return (
     <Card 
-      className="p-4 relative overflow-hidden min-h-[200px] group"
+      className="p-4 relative overflow-hidden min-h-[200px] group bg-cover bg-center"
       style={{
         backgroundImage: details.background_url ? `url(${details.background_url})` : 'none',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
       }}
     >
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />

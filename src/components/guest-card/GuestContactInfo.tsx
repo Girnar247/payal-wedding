@@ -1,5 +1,5 @@
 import { Guest } from "@/types/guest";
-import { Phone } from "lucide-react";
+import { Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface GuestContactInfoProps {
@@ -11,25 +11,37 @@ export const GuestContactInfo = ({ guest }: GuestContactInfoProps) => {
     window.location.href = `tel:${phoneNumber}`;
   };
 
+  const handleEmail = (email: string) => {
+    window.location.href = `mailto:${email}`;
+  };
+
   return (
     <div className="space-y-2">
-      {guest.email && (
-        <p className="text-sm">
-          <span className="text-gray-500">Email:</span> {guest.email}
-        </p>
-      )}
       {guest.phone && (
         <div className="flex items-center gap-2">
-          <p className="text-sm">
-            <span className="text-gray-500">Phone:</span> {guest.phone}
-          </p>
+          <Phone className="h-4 w-4 text-gray-500" />
+          <span className="text-sm">{guest.phone}</span>
           <Button
             variant="ghost"
             size="sm"
             className="h-6 hover:bg-green-50"
             onClick={() => handleCall(guest.phone!)}
           >
-            <Phone className="h-4 w-4 text-green-600" />
+            Call
+          </Button>
+        </div>
+      )}
+      {guest.email && (
+        <div className="flex items-center gap-2">
+          <Mail className="h-4 w-4 text-gray-500" />
+          <span className="text-sm">{guest.email}</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 hover:bg-blue-50"
+            onClick={() => handleEmail(guest.email!)}
+          >
+            Email
           </Button>
         </div>
       )}

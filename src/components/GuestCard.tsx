@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { GuestHeader } from "./guest-card/GuestHeader";
 import { GuestHostInfo } from "./guest-card/GuestHostInfo";
 import { GuestEventBadges } from "./guest-card/GuestEventBadges";
-import { GuestContactButtons } from "./guest-card/GuestContactButtons";
+import { GuestContactInfo } from "./guest-card/GuestContactInfo";
 
 interface GuestCardProps {
   guest: Guest;
@@ -59,11 +59,11 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
               onUpdateStatus={handleStatusUpdate}
             />
             <GuestHostInfo host={host} />
+            <GuestContactInfo guest={guest} />
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <GuestEventBadges events={guest.events} />
-          <GuestContactButtons guest={guest} />
         </CardContent>
       </Card>
 
