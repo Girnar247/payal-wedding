@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { EventType, Guest, GuestAttribute } from "@/types/guest";
 import { useState, useEffect } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface GuestEditDialogProps {
   guest: Guest;
@@ -22,7 +22,7 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
 
   useEffect(() => {
     if (isOpen) {
-      setEditedGuest(guest);
+      setEditedGuest({ ...guest });
     }
   }, [guest, isOpen]);
 
@@ -51,7 +51,15 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   };
 
   const handleSubmit = () => {
-    onSave(editedGuest);
+    const updatedGuest = {
+      name: editedGuest.name,
+      email: editedGuest.email,
+      phone: editedGuest.phone,
+      plus_count: editedGuest.plus_count,
+      events: editedGuest.events,
+      attributes: editedGuest.attributes,
+    };
+    onSave(updatedGuest);
   };
 
   const isAllEventsSelected = editedGuest.events.length === allEvents.length;

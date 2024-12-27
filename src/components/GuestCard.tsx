@@ -41,13 +41,14 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
       if (error) throw error;
 
-      queryClient.invalidateQueries({ queryKey: ['guests'] });
+      await queryClient.invalidateQueries({ queryKey: ['guests'] });
       handleCloseDialog();
       toast({
         title: "Success",
         description: "Guest details updated successfully.",
       });
     } catch (error) {
+      console.error('Error updating guest:', error);
       toast({
         title: "Error",
         description: "Failed to update guest details.",
