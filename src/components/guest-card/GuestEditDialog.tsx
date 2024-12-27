@@ -21,7 +21,7 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   const allAttributes: GuestAttribute[] = ["family", "friends", "staff", "mohalla"];
 
   useEffect(() => {
-    if (isOpen && guest) {
+    if (isOpen) {
       setEditedGuest(guest);
     }
   }, [guest, isOpen]);
