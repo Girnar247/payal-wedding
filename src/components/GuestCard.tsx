@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Pencil, Trash2, Phone } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Host } from "@/types/guest";
+import { Host, EventType, GuestAttribute } from "@/types/guest";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "./ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -40,7 +40,14 @@ export const GuestCard = ({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const handleEditSubmit = async (updatedGuest: Partial<typeof guest>) => {
+  // Cast the string arrays to their proper types
+  const typedGuest = {
+    ...guest,
+    events: guest.events as EventType[],
+    attributes: guest.attributes as GuestAttribute[],
+  };
+
+  const handleEditSubmit = async (updatedGuest: Partial<typeof typedGuest>) => {
     try {
       const { error } = await supabase
         .from('guests')
@@ -90,8 +97,8 @@ export const GuestCard = ({
             <GuestBadges
               rsvpStatus={guest.rsvp_status}
               plusCount={guest.plus_count}
-              events={guest.events}
-              attributes={guest.attributes}
+              events={typedGuest.events}
+              attributes={typedGuest.attributes}
             />
             <div className="mt-2">
               <p className="text-sm text-gray-600">Host: {host.name}</p>
@@ -124,7 +131,7 @@ export const GuestCard = ({
       </Card>
 
       <GuestEditDialog
-        guest={guest}
+        guest={typedGuest}
         isOpen={isEditing}
         onClose={() => setIsEditing(false)}
         onSave={handleEditSubmit}
