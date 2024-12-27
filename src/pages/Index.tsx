@@ -27,9 +27,9 @@ const defaultHost: Host = {
 const Index = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedHost, setSelectedHost] = useState<string>("");
-  const [selectedEvent, setSelectedEvent] = useState<string>("all");
-  const [selectedAttribute, setSelectedAttribute] = useState<string>("all");
+  const [selectedHost, setSelectedHost] = useState<string>("all-hosts");
+  const [selectedEvent, setSelectedEvent] = useState<string>("all-events");
+  const [selectedAttribute, setSelectedAttribute] = useState<string>("all-categories");
   
   const {
     guests,
@@ -48,9 +48,9 @@ const Index = () => {
     const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          guest.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          guest.phone?.includes(searchTerm);
-    const matchesHost = !selectedHost || guest.host_id === selectedHost;
-    const matchesEvent = selectedEvent === "all" || guest.events.includes(selectedEvent as EventType);
-    const matchesAttribute = selectedAttribute === "all" || guest.attributes.includes(selectedAttribute as GuestAttribute);
+    const matchesHost = selectedHost === "all-hosts" || guest.host_id === selectedHost;
+    const matchesEvent = selectedEvent === "all-events" || guest.events.includes(selectedEvent as EventType);
+    const matchesAttribute = selectedAttribute === "all-categories" || guest.attributes.includes(selectedAttribute as GuestAttribute);
     
     return matchesSearch && matchesHost && matchesEvent && matchesAttribute;
   });
@@ -105,7 +105,7 @@ const Index = () => {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Host</SelectLabel>
-                      <SelectItem value="">All Hosts</SelectItem>
+                      <SelectItem value="all-hosts">All Hosts</SelectItem>
                       {hosts.map((host) => (
                         <SelectItem key={host.id} value={host.id}>
                           {host.name}
@@ -114,7 +114,7 @@ const Index = () => {
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Event</SelectLabel>
-                      <SelectItem value="all">All Events</SelectItem>
+                      <SelectItem value="all-events">All Events</SelectItem>
                       {Object.keys(eventDetails).map((event) => (
                         <SelectItem key={event} value={event}>
                           {event.charAt(0).toUpperCase() + event.slice(1)}
@@ -123,7 +123,7 @@ const Index = () => {
                     </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Category</SelectLabel>
-                      <SelectItem value="all">All Categories</SelectItem>
+                      <SelectItem value="all-categories">All Categories</SelectItem>
                       <SelectItem value="family">Family</SelectItem>
                       <SelectItem value="friends">Friends</SelectItem>
                       <SelectItem value="staff">Staff</SelectItem>
