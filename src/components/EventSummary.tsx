@@ -21,8 +21,9 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
       const counts: Record<string, number> = {};
       guests.forEach((guest) => {
         if (guest.rsvp_status === 'confirmed') {
+          const totalGuests = 1 + (guest.plus_count || 0);
           guest.events.forEach((event: string) => {
-            counts[event] = (counts[event] || 0) + 1 + (guest.plus_count || 0);
+            counts[event] = (counts[event] || 0) + totalGuests;
           });
         }
       });
