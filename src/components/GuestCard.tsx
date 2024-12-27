@@ -8,6 +8,7 @@ import { Checkbox } from "./ui/checkbox";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "./ui/use-toast";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 interface GuestCardProps {
   guest: Guest;
@@ -49,9 +50,15 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     <Card className="bg-white/50">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-semibold text-lg">{guest.name}</h3>
-            <p className="text-sm text-gray-500">Host: {host.name}</p>
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8 border border-gray-200">
+              <AvatarImage src={host.avatar_url} alt={host.name} />
+              <AvatarFallback>{host.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="font-semibold text-lg">{guest.name}</h3>
+              <p className="text-sm text-gray-500">Host: {host.name}</p>
+            </div>
           </div>
           <GuestActions
             guest={guest}

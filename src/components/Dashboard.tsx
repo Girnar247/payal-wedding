@@ -1,5 +1,5 @@
 import { Card } from "./ui/card";
-import { User, UserCheck, UserX, Users } from "lucide-react";
+import { User, UserCheck, UserX, Users, Home } from "lucide-react";
 
 interface DashboardProps {
   totalGuests: number;
@@ -7,9 +7,17 @@ interface DashboardProps {
   confirmed: number;
   declined: number;
   pending: number;
+  accommodationRequired: number;
 }
 
-export const Dashboard = ({ totalGuests, totalWithPlusOnes, confirmed, declined, pending }: DashboardProps) => {
+export const Dashboard = ({ 
+  totalGuests, 
+  totalWithPlusOnes, 
+  confirmed, 
+  declined, 
+  pending,
+  accommodationRequired 
+}: DashboardProps) => {
   const stats = [
     {
       label: "Invited Guests",
@@ -46,10 +54,17 @@ export const Dashboard = ({ totalGuests, totalWithPlusOnes, confirmed, declined,
       color: "bg-yellow-100",
       textColor: "text-yellow-700",
     },
+    {
+      label: "Need Accommodation",
+      value: accommodationRequired,
+      icon: Home,
+      color: "bg-blue-100",
+      textColor: "text-blue-700",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 fade-in">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 fade-in">
       {stats.map((stat) => (
         <Card
           key={stat.label}

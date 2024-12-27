@@ -6,6 +6,9 @@ export const useGuestStats = (guests: Guest[]) => {
   const confirmed = guests.filter((guest) => guest.rsvp_status === "confirmed").length;
   const declined = guests.filter((guest) => guest.rsvp_status === "declined").length;
   const pending = guests.filter((guest) => guest.rsvp_status === "pending").length;
+  const accommodationRequired = guests.filter(
+    (guest) => guest.rsvp_status === "confirmed" && guest.accommodation_required
+  ).length;
 
   return {
     totalGuests,
@@ -13,5 +16,6 @@ export const useGuestStats = (guests: Guest[]) => {
     confirmed,
     declined,
     pending,
+    accommodationRequired,
   };
 };
