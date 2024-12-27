@@ -5,14 +5,14 @@ import { useQueryClient } from "@tanstack/react-query";
 
 interface GuestRSVPStatusProps {
   guest: Guest;
-  onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
+  onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
 
 export const GuestRSVPStatus = ({ guest, onUpdateStatus }: GuestRSVPStatusProps) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const handleStatusUpdate = async (status: "confirmed" | "declined" | "pending") => {
+  const handleStatusUpdate = async (status: "confirmed" | "declined") => {
     try {
       const { data, error } = await supabase
         .from('guests')
@@ -20,16 +20,16 @@ export const GuestRSVPStatus = ({ guest, onUpdateStatus }: GuestRSVPStatusProps)
         .eq('id', guest.id)
         .select();
 
-      if (error) {
-        console.error('Error updating status:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       onUpdateStatus(guest.id, status);
       toast({
         title: "Status Updated",
         description: `Guest status has been updated to ${status}.`,
       });
+
+      // Refresh the data
+      await queryClient.invalidateQueries({ queryKey: ['guests'] });
     } catch (error) {
       console.error('Error updating status:', error);
       toast({

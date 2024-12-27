@@ -35,6 +35,12 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     }
   };
 
+  const handleUpdateStatus = (id: string, status: "confirmed" | "declined") => {
+    if (onUpdateStatus) {
+      onUpdateStatus(id, status);
+    }
+  };
+
   const handleSave = async (updatedGuest: Partial<Guest>) => {
     try {
       setIsUpdating(true);
@@ -97,9 +103,14 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     <>
       <Card className="bg-white/50">
         <CardHeader className="pb-2">
-          <GuestHeader guest={guest} onEdit={() => setIsEditDialogOpen(true)} onDelete={handleDelete} />
+          <GuestHeader 
+            guest={guest} 
+            onEdit={() => setIsEditDialogOpen(true)} 
+            onDelete={handleDelete}
+            onUpdateStatus={handleUpdateStatus}
+          />
           <GuestContactInfo guest={guest} />
-          <GuestRSVPStatus status={guest.rsvp_status} onUpdateStatus={onUpdateStatus} guestId={guest.id} />
+          <GuestRSVPStatus guest={guest} onUpdateStatus={handleUpdateStatus} />
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
