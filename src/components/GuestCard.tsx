@@ -24,6 +24,30 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  const handleSave = async (updatedGuest: Partial<Guest>) => {
+    try {
+      const { error } = await supabase
+        .from('guests')
+        .update(updatedGuest)
+        .eq('id', guest.id);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
+      setIsEditDialogOpen(false);
+      toast({
+        title: "Success",
+        description: "Guest details updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update guest details.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <Card className="bg-white/50">
@@ -46,34 +70,14 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
       <GuestRSVPStatus guest={guest} onUpdateStatus={onUpdateStatus} />
 
-      <GuestEditDialog
-        guest={guest}
-        isOpen={isEditDialogOpen}
-        onClose={() => setIsEditDialogOpen(false)}
-        onSave={async (updatedGuest) => {
-          try {
-            const { error } = await supabase
-              .from('guests')
-              .update(updatedGuest)
-              .eq('id', guest.id);
-
-            if (error) throw error;
-
-            queryClient.invalidateQueries({ queryKey: ['guests'] });
-            setIsEditDialogOpen(false);
-            toast({
-              title: "Success",
-              description: "Guest details updated successfully.",
-            });
-          } catch (error) {
-            toast({
-              title: "Error",
-              description: "Failed to update guest details.",
-              variant: "destructive",
-            });
-          }
-        }}
-      />
+      {isEditDialogOpen && (
+        <GuestEditDialog
+          guest={guest}
+          isOpen={isEditDialogOpen}
+          onClose={() => setIsEditDialogOpen(false)}
+          onSave={handleSave}
+        />
+      )}
     </>
   );
 };
