@@ -25,12 +25,16 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
   const handleStatusUpdate = async (status: "confirmed" | "declined" | "pending") => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('guests')
         .update({ rsvp_status: status })
-        .eq('id', guest.id);
+        .eq('id', guest.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating status:', error);
+        throw error;
+      }
 
       onUpdateStatus(guest.id, status);
       toast({
