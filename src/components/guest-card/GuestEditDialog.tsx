@@ -20,9 +20,8 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   const allEvents: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
   const allAttributes: GuestAttribute[] = ["family", "friends", "staff", "mohalla"];
 
-  // Reset the form when the dialog opens with a new guest
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && guest) {
       setEditedGuest(guest);
     }
   }, [guest, isOpen]);
@@ -48,8 +47,11 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   };
 
   const handleDialogClose = () => {
-    setEditedGuest(guest); // Reset form state
     onClose();
+  };
+
+  const handleSubmit = () => {
+    onSave(editedGuest);
   };
 
   const isAllEventsSelected = editedGuest.events.length === allEvents.length;
@@ -174,7 +176,7 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
           <Button variant="outline" onClick={handleDialogClose}>
             Cancel
           </Button>
-          <Button onClick={() => onSave(editedGuest)}>Save Changes</Button>
+          <Button onClick={handleSubmit}>Save Changes</Button>
         </div>
       </DialogContent>
     </Dialog>

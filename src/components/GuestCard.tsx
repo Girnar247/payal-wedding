@@ -21,8 +21,19 @@ interface GuestCardProps {
 
 export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  const handleOpenEditDialog = () => {
+    setEditingGuest(guest);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsEditDialogOpen(false);
+    setEditingGuest(null);
+  };
 
   const handleSave = async (updatedGuest: Partial<Guest>) => {
     try {
@@ -48,10 +59,6 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     }
   };
 
-  const handleCloseDialog = () => {
-    setIsEditDialogOpen(false);
-  };
-
   return (
     <>
       <Card className="bg-white/50">
@@ -59,7 +66,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
           <div className="flex flex-col gap-3">
             <GuestHeader
               guest={guest}
-              onEdit={() => setIsEditDialogOpen(true)}
+              onEdit={handleOpenEditDialog}
               onDelete={onDelete}
               onUpdateStatus={onUpdateStatus}
             />
@@ -74,9 +81,9 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
       <GuestRSVPStatus guest={guest} onUpdateStatus={onUpdateStatus} />
 
-      {isEditDialogOpen && (
+      {isEditDialogOpen && editingGuest && (
         <GuestEditDialog
-          guest={guest}
+          guest={editingGuest}
           isOpen={isEditDialogOpen}
           onClose={handleCloseDialog}
           onSave={handleSave}
