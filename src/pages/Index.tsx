@@ -11,6 +11,7 @@ import { DownloadGuestList } from "@/components/DownloadGuestList";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useEventState } from "@/hooks/useEventState";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase";
 
 const Index = () => {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -64,6 +65,75 @@ const Index = () => {
     return <div>Loading...</div>;
   }
 
+  const handleUpdateStatus = async (id: string, status: "confirmed" | "declined") => {
+    const guest = guests.find(g => g.id === id);
+    if (guest && status === "confirmed") {
+      const confirmCount = window.prompt(
+        `How many plus guests are attending? (0-${guest.plus_count})`,
+        guest.plus_count?.toString()
+      );
+      if (confirmCount === null) return;
+      const count = parseInt(confirmCount);
+      if (isNaN(count) || count < 0 || count > (guest.plus_count || 0)) {
+        toast({
+          title: "Invalid Input",
+          description: `Please enter a number between 0 and ${guest.plus_count}`,
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      try {
+        const { error } = await supabase
+          .from('guests')
+          .update({ 
+            rsvp_status: status,
+            plus_count: count 
+          })
+          .eq('id', id);
+
+        if (error) throw error;
+        
+        queryClient.invalidateQueries({ queryKey: ['guests'] });
+        queryClient.invalidateQueries({ queryKey: ['eventGuestCounts'] });
+        
+        toast({
+          title: "Status Updated",
+          description: "Guest's RSVP status has been updated.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update guest status.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      try {
+        const { error } = await supabase
+          .from('guests')
+          .update({ rsvp_status: status })
+          .eq('id', id);
+
+        if (error) throw error;
+        
+        queryClient.invalidateQueries({ queryKey: ['guests'] });
+        queryClient.invalidateQueries({ queryKey: ['eventGuestCounts'] });
+        
+        toast({
+          title: "Status Updated",
+          description: "Guest's RSVP status has been updated.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update guest status.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-wedding-cream p-6 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -116,9 +186,7 @@ const Index = () => {
               hosts={hosts}
               defaultHost={defaultHost}
               onDeleteGuest={handleDeleteGuest}
-              onUpdateStatus={(id: string, status: "confirmed" | "declined") => {
-                handleUpdateStatus(id, status);
-              }}
+              onUpdateStatus={handleUpdateStatus}
             />
           </>
         )}

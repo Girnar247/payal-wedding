@@ -44,7 +44,7 @@ export const GuestList = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestL
                 <TableCell>
                   <div className="space-y-1">
                     {guest.email && <div className="text-sm">{guest.email}</div>}
-                    <div className="text-sm">{guest.phone}</div>
+                    {guest.phone && <div className="text-sm">{guest.phone}</div>}
                   </div>
                 </TableCell>
                 <TableCell>{host.name}</TableCell>

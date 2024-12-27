@@ -11,7 +11,7 @@ import { EventType, GuestAttribute, Host } from "@/types/guest";
 interface GuestFormData {
   name: string;
   email?: string;
-  phone: string;
+  phone?: string;
   plusCount: number;
   hostId: string;
   events: EventType[];
@@ -73,14 +73,13 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="phone">Phone Number *</Label>
+          <Label htmlFor="phone">Phone Number (Optional)</Label>
           <Input
             id="phone"
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             className="bg-white/50"
-            required
           />
         </div>
         <div className="space-y-2">
