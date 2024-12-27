@@ -12,17 +12,18 @@ import { useGuestState } from "@/hooks/useGuestState";
 import { useEventState } from "@/hooks/useEventState";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Index = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const {
     guests,
     hosts,
     handleAddGuest,
     handleDeleteGuest,
-    handleUpdateStatus,
     handleAddHost,
     handleDeleteHost,
   } = useGuestState();
@@ -45,25 +46,6 @@ const Index = () => {
       await addEvents(initialEvents);
     }
   };
-
-  const stats = {
-    totalGuests: guests.length,
-    totalWithPlusOnes: guests.reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
-    confirmed: guests.filter((g) => g.rsvp_status === "confirmed").reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
-    declined: guests.filter((g) => g.rsvp_status === "declined").length,
-    pending: guests.filter((g) => g.rsvp_status === "pending").length,
-  };
-
-  const defaultHost: Host = {
-    id: "default",
-    name: "Unassigned",
-    email: "N/A",
-    phone: "N/A",
-  };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   const handleUpdateStatus = async (id: string, status: "confirmed" | "declined") => {
     const guest = guests.find(g => g.id === id);
@@ -133,6 +115,25 @@ const Index = () => {
       }
     }
   };
+
+  const stats = {
+    totalGuests: guests.length,
+    totalWithPlusOnes: guests.reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
+    confirmed: guests.filter((g) => g.rsvp_status === "confirmed").reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
+    declined: guests.filter((g) => g.rsvp_status === "declined").length,
+    pending: guests.filter((g) => g.rsvp_status === "pending").length,
+  };
+
+  const defaultHost: Host = {
+    id: "default",
+    name: "Unassigned",
+    email: "N/A",
+    phone: "N/A",
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-wedding-cream p-6 md:p-8">
