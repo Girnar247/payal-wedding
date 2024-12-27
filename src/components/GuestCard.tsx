@@ -23,8 +23,28 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const handleStatusUpdate = (status: "confirmed" | "declined" | "pending") => {
-    onUpdateStatus(guest.id, status);
+  const handleStatusUpdate = async (status: "confirmed" | "declined" | "pending") => {
+    try {
+      const { error } = await supabase
+        .from('guests')
+        .update({ rsvp_status: status })
+        .eq('id', guest.id);
+
+      if (error) throw error;
+
+      onUpdateStatus(guest.id, status);
+      toast({
+        title: "Status Updated",
+        description: `Guest status has been updated to ${status}.`,
+      });
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update guest status.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
