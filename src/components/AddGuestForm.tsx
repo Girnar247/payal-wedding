@@ -49,6 +49,15 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
     });
   };
 
+  const handleAllEventsChange = (checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      events: checked ? eventTypes : [],
+    }));
+  };
+
+  const isAllEventsSelected = formData.events.length === eventTypes.length;
+
   return (
     <Card className="glass-card p-6 max-w-md mx-auto fade-in">
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -138,9 +147,18 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
             </SelectContent>
           </Select>
         </div>
+
         <div className="space-y-2">
           <Label>Events Attending *</Label>
           <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="all-events"
+                checked={isAllEventsSelected}
+                onCheckedChange={handleAllEventsChange}
+              />
+              <Label htmlFor="all-events">All Events</Label>
+            </div>
             {eventTypes.map((event) => (
               <div key={event} className="flex items-center space-x-2">
                 <Checkbox
