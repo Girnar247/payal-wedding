@@ -65,9 +65,18 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     <>
       <Card className="bg-white/50">
         <CardHeader className="pb-2">
-          <GuestHeader guest={guest} onEdit={() => setIsEditDialogOpen(true)} onDelete={handleDelete} />
+          <GuestHeader 
+            guest={guest} 
+            onEdit={() => setIsEditDialogOpen(true)} 
+            onDelete={handleDelete}
+            onUpdateStatus={onUpdateStatus}
+          />
           <GuestContactInfo guest={guest} />
-          <GuestRSVPStatus status={guest.rsvp_status} onUpdateStatus={onUpdateStatus} guestId={guest.id} />
+          <GuestRSVPStatus 
+            status={guest.rsvp_status} 
+            onUpdateStatus={onUpdateStatus} 
+            guestId={guest.id} 
+          />
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
