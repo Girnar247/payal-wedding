@@ -1,141 +1,130 @@
-import { useState } from "react";
-import { Pencil, Trash2, Phone } from "lucide-react";
-import { Button } from "./ui/button";
-import { Card } from "./ui/card";
-import { Host, EventType, GuestAttribute } from "@/types/guest";
-import { supabase } from "@/lib/supabase";
-import { useToast } from "./ui/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { Guest, Host } from "@/types/guest";
+import { Card, CardContent, CardHeader } from "./ui/card";
 import { GuestBadges } from "./guest-card/GuestBadges";
 import { GuestEditDialog } from "./guest-card/GuestEditDialog";
 import { GuestActions } from "./guest-card/GuestActions";
+import { useState } from "react";
+import { Checkbox } from "./ui/checkbox";
+import { supabase } from "@/lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "./ui/use-toast";
 
 interface GuestCardProps {
-  guest: {
-    id: string;
-    name: string;
-    email?: string;
-    phone: string;
-    rsvp_status: "pending" | "confirmed" | "declined";
-    plus_count: number;
-    host_id: string;
-    events: string[];
-    attributes: string[];
-  };
+  guest: Guest;
   host: Host;
-  onEdit: (id: string) => void;
+  onEdit?: () => void;
   onDelete: (id: string) => void;
   onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
 
-export const GuestCard = ({
-  guest,
-  host,
-  onEdit,
-  onDelete,
-  onUpdateStatus,
-}: GuestCardProps) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const { toast } = useToast();
+export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  // Cast the string arrays to their proper types
-  const typedGuest = {
-    ...guest,
-    events: guest.events as EventType[],
-    attributes: guest.attributes as GuestAttribute[],
-  };
-
-  const handleEditSubmit = async (updatedGuest: Partial<typeof typedGuest>) => {
+  const handleAccommodationChange = async (checked: boolean) => {
     try {
       const { error } = await supabase
         .from('guests')
-        .update({
-          name: updatedGuest.name,
-          email: updatedGuest.email,
-          phone: updatedGuest.phone,
-          plus_count: updatedGuest.plus_count,
-          events: updatedGuest.events,
-        })
+        .update({ accommodation_required: checked })
         .eq('id', guest.id);
 
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ['guests'] });
-      queryClient.invalidateQueries({ queryKey: ['eventGuestCounts'] });
-      
       toast({
-        title: "Guest Updated",
-        description: "Guest details have been successfully updated.",
+        title: "Updated",
+        description: `Accommodation requirement ${checked ? 'added' : 'removed'}.`,
       });
-      setIsEditing(false);
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to update guest details.",
+        description: "Failed to update accommodation requirement.",
         variant: "destructive",
       });
     }
   };
 
   return (
-    <>
-      <Card
-        className="glass-card p-6 transition-all duration-300 hover:shadow-xl relative overflow-hidden"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
-            <h3 className="text-xl font-playfair">{guest.name}</h3>
-            {guest.email && <p className="text-sm text-gray-600">{guest.email}</p>}
-            <p className="text-sm text-gray-600 flex items-center">
-              <Phone className="h-4 w-4 mr-2" />
-              {guest.phone}
-            </p>
-            <GuestBadges
-              rsvpStatus={guest.rsvp_status}
-              plusCount={guest.plus_count}
-              events={typedGuest.events}
-              attributes={typedGuest.attributes}
-            />
-            <div className="mt-2">
-              <p className="text-sm text-gray-600">Host: {host.name}</p>
-            </div>
+    <Card className="bg-white/50">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="font-semibold text-lg">{guest.name}</h3>
+            <p className="text-sm text-gray-500">Host: {host.name}</p>
           </div>
-          <div className="flex flex-col gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsEditing(true)}
-              className="transition-all duration-300 hover:bg-wedding-rose/20"
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onDelete(guest.id)}
-              className="transition-all duration-300 hover:bg-red-100"
-            >
-              <Trash2 className="h-4 w-4 text-red-500" />
-            </Button>
-          </div>
+          <GuestActions
+            guest={guest}
+            onEdit={() => setIsEditDialogOpen(true)}
+            onDelete={onDelete}
+            onUpdateStatus={onUpdateStatus}
+          />
         </div>
-        <GuestActions
-          isHovered={isHovered}
-          onConfirm={() => onUpdateStatus(guest.id, "confirmed")}
-          onDecline={() => onUpdateStatus(guest.id, "declined")}
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          {guest.email && (
+            <p className="text-sm">
+              <span className="text-gray-500">Email:</span> {guest.email}
+            </p>
+          )}
+          {guest.phone && (
+            <p className="text-sm">
+              <span className="text-gray-500">Phone:</span> {guest.phone}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id={`accommodation-${guest.id}`}
+            checked={guest.accommodation_required}
+            onCheckedChange={handleAccommodationChange}
+          />
+          <label
+            htmlFor={`accommodation-${guest.id}`}
+            className="text-sm text-gray-700"
+          >
+            Accommodation Required
+          </label>
+        </div>
+
+        <GuestBadges
+          rsvpStatus={guest.rsvp_status}
+          plusCount={guest.plus_count}
+          events={guest.events as EventType[]}
+          attributes={guest.attributes}
         />
-      </Card>
+      </CardContent>
 
       <GuestEditDialog
-        guest={typedGuest}
-        isOpen={isEditing}
-        onClose={() => setIsEditing(false)}
-        onSave={handleEditSubmit}
+        guest={guest}
+        isOpen={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        onSave={async (updatedGuest) => {
+          try {
+            const { error } = await supabase
+              .from('guests')
+              .update(updatedGuest)
+              .eq('id', guest.id);
+
+            if (error) throw error;
+
+            queryClient.invalidateQueries({ queryKey: ['guests'] });
+            setIsEditDialogOpen(false);
+            toast({
+              title: "Success",
+              description: "Guest details updated successfully.",
+            });
+          } catch (error) {
+            toast({
+              title: "Error",
+              description: "Failed to update guest details.",
+              variant: "destructive",
+            });
+          }
+        }}
       />
-    </>
+    </Card>
   );
 };

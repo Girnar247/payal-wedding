@@ -13,9 +13,16 @@ import { useEventState } from "@/hooks/useEventState";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 const Index = () => {
   const [showAddForm, setShowAddForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedHost, setSelectedHost] = useState<string>("");
+  const [selectedEvent, setSelectedEvent] = useState<string>("");
+  const [selectedAttribute, setSelectedAttribute] = useState<string>("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -28,24 +35,18 @@ const Index = () => {
     handleDeleteHost,
   } = useGuestState();
 
-  const { eventDetails, isLoading, addEvents } = useEventState();
+  const { eventDetails, isLoading } = useEventState();
 
-  const handleUpdateEventDetails = async (
-    eventType: EventType,
-    details: EventDetails
-  ) => {
-    const initialEvents: Record<EventType, EventDetails> = {
-      haldi: details,
-      mehndi: details,
-      mayra: details,
-      sangeet: details,
-      wedding: details,
-    };
-
-    if (Object.keys(eventDetails).length === 0) {
-      await addEvents(initialEvents);
-    }
-  };
+  const filteredGuests = guests.filter(guest => {
+    const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         guest.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         guest.phone?.includes(searchTerm);
+    const matchesHost = !selectedHost || guest.host_id === selectedHost;
+    const matchesEvent = !selectedEvent || guest.events.includes(selectedEvent as EventType);
+    const matchesAttribute = !selectedAttribute || guest.attributes.includes(selectedAttribute);
+    
+    return matchesSearch && matchesHost && matchesEvent && matchesAttribute;
+  });
 
   const handleUpdateStatus = async (id: string, status: "confirmed" | "declined") => {
     const guest = guests.find(g => g.id === id);
@@ -116,21 +117,6 @@ const Index = () => {
     }
   };
 
-  const stats = {
-    totalGuests: guests.length,
-    totalWithPlusOnes: guests.reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
-    confirmed: guests.filter((g) => g.rsvp_status === "confirmed").reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
-    declined: guests.filter((g) => g.rsvp_status === "declined").length,
-    pending: guests.filter((g) => g.rsvp_status === "pending").length,
-  };
-
-  const defaultHost: Host = {
-    id: "default",
-    name: "Unassigned",
-    email: "N/A",
-    phone: "N/A",
-  };
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -140,7 +126,7 @@ const Index = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
-            Indian Wedding Guest Manager
+            Payal's Wedding - Guest List
           </h1>
           <p className="text-gray-600">Manage your special celebrations with elegance</p>
         </div>
@@ -158,6 +144,52 @@ const Index = () => {
           <>
             <EventSummary events={eventDetails as Record<EventType, EventDetails>} />
             <Dashboard {...stats} />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {hosts.map((host) => (
+                <Badge
+                  key={host.id}
+                  variant={selectedHost === host.id ? "default" : "outline"}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedHost(selectedHost === host.id ? "" : host.id)}
+                >
+                  {host.name}
+                </Badge>
+              ))}
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <Input
+                placeholder="Search guests..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="md:w-1/3"
+              />
+              <Select value={selectedEvent} onValueChange={setSelectedEvent}>
+                <SelectTrigger className="md:w-1/3">
+                  <SelectValue placeholder="Filter by event" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All Events</SelectItem>
+                  {Object.keys(eventDetails).map((event) => (
+                    <SelectItem key={event} value={event}>
+                      {event.charAt(0).toUpperCase() + event.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedAttribute} onValueChange={setSelectedAttribute}>
+                <SelectTrigger className="md:w-1/3">
+                  <SelectValue placeholder="Filter by category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="family">Family</SelectItem>
+                  <SelectItem value="friend">Friend</SelectItem>
+                  <SelectItem value="staff">Staff</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             <div className="flex justify-between items-center">
               <Button
@@ -177,13 +209,13 @@ const Index = () => {
                   </>
                 )}
               </Button>
-              <DownloadGuestList guests={guests} hosts={hosts} />
+              <DownloadGuestList guests={filteredGuests} hosts={hosts} />
             </div>
 
             {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
 
             <GuestManagement
-              guests={guests}
+              guests={filteredGuests}
               hosts={hosts}
               defaultHost={defaultHost}
               onDeleteGuest={handleDeleteGuest}

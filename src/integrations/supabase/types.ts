@@ -38,6 +38,7 @@ export type Database = {
       }
       guests: {
         Row: {
+          accommodation_required: boolean | null
           attributes: string[] | null
           created_at: string
           email: string | null
@@ -45,11 +46,12 @@ export type Database = {
           host_id: string | null
           id: string
           name: string
-          phone: string
+          phone: string | null
           plus_count: number | null
           rsvp_status: string | null
         }
         Insert: {
+          accommodation_required?: boolean | null
           attributes?: string[] | null
           created_at?: string
           email?: string | null
@@ -57,11 +59,12 @@ export type Database = {
           host_id?: string | null
           id?: string
           name: string
-          phone: string
+          phone?: string | null
           plus_count?: number | null
           rsvp_status?: string | null
         }
         Update: {
+          accommodation_required?: boolean | null
           attributes?: string[] | null
           created_at?: string
           email?: string | null
@@ -69,7 +72,7 @@ export type Database = {
           host_id?: string | null
           id?: string
           name?: string
-          phone?: string
+          phone?: string | null
           plus_count?: number | null
           rsvp_status?: string | null
         }
