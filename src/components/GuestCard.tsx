@@ -1,4 +1,4 @@
-import { Guest, Host } from "@/types/guest";
+import { Guest, Host, EventType } from "@/types/guest";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { GuestBadges } from "./guest-card/GuestBadges";
 import { GuestEditDialog } from "./guest-card/GuestEditDialog";
