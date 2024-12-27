@@ -47,7 +47,7 @@ export const GuestManagement = ({
             <GuestCard
               key={guest.id}
               guest={guest}
-              host={hosts.find((h) => h.id === guest.hostId) || defaultHost}
+              host={hosts.find((h) => h.id === guest.host_id) || defaultHost}
               onEdit={() => {}}
               onDelete={onDeleteGuest}
               onUpdateStatus={onUpdateStatus}

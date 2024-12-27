@@ -2,7 +2,7 @@ export type EventType = "haldi" | "mehndi" | "mayra" | "sangeet" | "wedding";
 export type GuestAttribute = "family" | "friends" | "staff";
 
 export interface EventDetails {
-  date: Date;
+  date: Date | string;
   time: string;
   venue: string;
 }
@@ -28,7 +28,6 @@ export interface Host {
   created_at?: string;
 }
 
-// Frontend form data interface (camelCase)
 export interface GuestFormData {
   name: string;
   email?: string;

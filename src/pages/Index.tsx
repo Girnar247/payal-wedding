@@ -39,10 +39,10 @@ const Index = () => {
 
   const stats = {
     totalGuests: guests.length,
-    totalWithPlusOnes: guests.reduce((acc, guest) => acc + 1 + guest.plusCount, 0),
-    confirmed: guests.filter((g) => g.rsvpStatus === "confirmed").length,
-    declined: guests.filter((g) => g.rsvpStatus === "declined").length,
-    pending: guests.filter((g) => g.rsvpStatus === "pending").length,
+    totalWithPlusOnes: guests.reduce((acc, guest) => acc + 1 + guest.plus_count, 0),
+    confirmed: guests.filter((g) => g.rsvp_status === "confirmed").length,
+    declined: guests.filter((g) => g.rsvp_status === "declined").length,
+    pending: guests.filter((g) => g.rsvp_status === "pending").length,
   };
 
   const defaultHost: Host = {
