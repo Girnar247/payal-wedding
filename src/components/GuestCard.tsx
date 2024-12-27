@@ -1,23 +1,26 @@
+import { useState } from "react";
 import { Guest, Host } from "@/types/guest";
 import { Card, CardContent, CardHeader } from "./ui/card";
-import { GuestEditDialog } from "./guest-card/GuestEditDialog";
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
 import { GuestHeader } from "./guest-card/GuestHeader";
-import { GuestHostInfo } from "./guest-card/GuestHostInfo";
+import { GuestActions } from "./guest-card/GuestActions";
+import { GuestBadges } from "./guest-card/GuestBadges";
+import { GuestAccommodation } from "./guest-card/GuestAccommodation";
+import { GuestInvitations } from "./guest-card/GuestInvitations";
 import { GuestEventBadges } from "./guest-card/GuestEventBadges";
 import { GuestContactInfo } from "./guest-card/GuestContactInfo";
 import { GuestRSVPStatus } from "./guest-card/GuestRSVPStatus";
+import { GuestEditDialog } from "./guest-card/GuestEditDialog";
+import { useToast } from "./ui/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 import { Skeleton } from "./ui/skeleton";
 
 interface GuestCardProps {
   guest: Guest;
   host: Host;
   onEdit?: () => void;
-  onDelete: (id: string) => void;
-  onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
+  onDelete?: (id: string) => void;
+  onUpdateStatus?: (id: string, status: "confirmed" | "declined") => void;
 }
 
 export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
@@ -26,19 +29,16 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const handleOpenEditDialog = () => {
-    setIsEditDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsEditDialogOpen(false);
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(guest.id);
+    }
   };
 
   const handleSave = async (updatedGuest: Partial<Guest>) => {
     try {
       setIsUpdating(true);
       
-      // First, make the Supabase update request
       const { data, error } = await supabase
         .from('guests')
         .update(updatedGuest)
@@ -48,23 +48,20 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
       if (error) throw error;
 
-      // After successful update, update the cache with the complete returned data
-      queryClient.setQueryData(['guests'], (oldData: Guest[] | undefined) => {
-        if (!oldData) return oldData;
-        return oldData.map(g => g.id === guest.id ? { ...g, ...data } : g);
-      });
+      // Close the dialog first
+      setIsEditDialogOpen(false);
 
-      // Close dialog and show success message
-      handleCloseDialog();
+      // Show success toast
       toast({
         title: "Success",
-        description: "Guest details updated successfully.",
+        description: "Guest details have been updated.",
       });
 
-      // Finally, invalidate the query to ensure data consistency
+      // Force a full refetch of the guests query
       await queryClient.invalidateQueries({ queryKey: ['guests'] });
-      
-      // Add a small delay before removing loading state to ensure smooth transition
+      await queryClient.refetchQueries({ queryKey: ['guests'] });
+
+      // Add a small delay before removing loading state
       setTimeout(() => {
         setIsUpdating(false);
       }, 1000);
@@ -100,32 +97,26 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     <>
       <Card className="bg-white/50">
         <CardHeader className="pb-2">
-          <div className="flex flex-col gap-3">
-            <GuestHeader
-              guest={guest}
-              onEdit={handleOpenEditDialog}
-              onDelete={onDelete}
-              onUpdateStatus={onUpdateStatus}
-            />
-            <GuestHostInfo host={host} />
-            <GuestContactInfo guest={guest} />
-          </div>
+          <GuestHeader guest={guest} onEdit={() => setIsEditDialogOpen(true)} onDelete={handleDelete} />
+          <GuestContactInfo guest={guest} />
+          <GuestRSVPStatus status={guest.rsvp_status} onUpdateStatus={onUpdateStatus} guestId={guest.id} />
         </CardHeader>
-        <CardContent className="space-y-4">
-          <GuestEventBadges events={guest.events} />
+        <CardContent>
+          <div className="space-y-4">
+            <GuestBadges guest={guest} />
+            <GuestEventBadges events={guest.events} />
+            <GuestAccommodation guest={guest} />
+            <GuestInvitations guest={guest} host={host} />
+          </div>
         </CardContent>
       </Card>
 
-      <GuestRSVPStatus guest={guest} onUpdateStatus={onUpdateStatus} />
-
-      {isEditDialogOpen && (
-        <GuestEditDialog
-          guest={guest}
-          isOpen={isEditDialogOpen}
-          onClose={handleCloseDialog}
-          onSave={handleSave}
-        />
-      )}
+      <GuestEditDialog
+        guest={guest}
+        isOpen={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        onSave={handleSave}
+      />
     </>
   );
 };
