@@ -86,10 +86,10 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
         .from('event-backgrounds')
         .getPublicUrl(filePath);
 
+      // Update all events with the new main background URL
       const { error: updateError } = await supabase
         .from('events')
-        .update({ main_background_url: publicUrl.publicUrl })
-        .neq('id', '');
+        .update({ main_background_url: publicUrl.publicUrl });
 
       if (updateError) {
         throw updateError;
