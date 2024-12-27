@@ -7,16 +7,31 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+  
+  if (!RESEND_API_KEY) {
+    console.error('RESEND_API_KEY is not set');
+    return new Response(
+      JSON.stringify({ error: 'Email service configuration is missing' }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
+  }
+
   try {
     const { hostId } = await req.json();
+    console.log('Processing request for hostId:', hostId);
 
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
     // Fetch host details
@@ -26,7 +41,15 @@ serve(async (req) => {
       .eq('id', hostId)
       .single();
 
-    if (hostError) throw hostError;
+    if (hostError) {
+      console.error('Error fetching host:', hostError);
+      throw new Error('Failed to fetch host details');
+    }
+
+    if (!hostData || !hostData.email) {
+      console.error('No host found or missing email:', hostData);
+      throw new Error('Host not found or missing email');
+    }
 
     // Fetch guests for this host
     const { data: guests, error: guestError } = await supabaseClient
@@ -34,7 +57,10 @@ serve(async (req) => {
       .select('*')
       .eq('host_id', hostId);
 
-    if (guestError) throw guestError;
+    if (guestError) {
+      console.error('Error fetching guests:', guestError);
+      throw new Error('Failed to fetch guest list');
+    }
 
     // Format guest list for email
     const guestList = guests.map(guest => `
@@ -47,12 +73,14 @@ serve(async (req) => {
       RSVP Status: ${guest.rsvp_status}
     `).join('\n\n');
 
+    console.log('Sending email to:', hostData.email);
+
     // Send email using Resend
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
         from: 'Payal Wedding <onboarding@resend.dev>',
@@ -65,20 +93,33 @@ serve(async (req) => {
       }),
     });
 
+    const responseData = await res.json();
+    console.log('Resend API response:', responseData);
+
     if (!res.ok) {
-      throw new Error('Failed to send email');
+      console.error('Resend API error:', responseData);
+      throw new Error(`Failed to send email: ${JSON.stringify(responseData)}`);
     }
 
     return new Response(
-      JSON.stringify({ success: true }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ success: true, data: responseData }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
+      }
     );
 
   } catch (error) {
     console.error('Error in email-guest-list function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      JSON.stringify({ 
+        error: error.message,
+        details: error instanceof Error ? error.stack : undefined
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500
+      }
     );
   }
 });
