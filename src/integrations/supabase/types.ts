@@ -88,6 +88,7 @@ export type Database = {
       }
       hosts: {
         Row: {
+          avatar_url: string | null
           created_at: string
           email: string
           id: string
@@ -95,6 +96,7 @@ export type Database = {
           phone: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
           email: string
           id?: string
@@ -102,6 +104,7 @@ export type Database = {
           phone: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
           email?: string
           id?: string

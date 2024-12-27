@@ -51,6 +51,7 @@ export const GuestFilters = ({
           <SelectItem value="family">Family</SelectItem>
           <SelectItem value="friends">Friends</SelectItem>
           <SelectItem value="staff">Staff</SelectItem>
+          <SelectItem value="mohalla">Mohalla</SelectItem>
         </SelectContent>
       </Select>
     </div>
