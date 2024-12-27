@@ -12,11 +12,12 @@ export interface Guest {
   name: string;
   email?: string;
   phone: string;
-  plusCount: number;
-  rsvpStatus: "pending" | "confirmed" | "declined";
-  hostId: string;
+  plus_count: number;
+  rsvp_status: "pending" | "confirmed" | "declined";
+  host_id: string;
   events: EventType[];
   attributes: GuestAttribute[];
+  created_at?: string;
 }
 
 export interface Host {
@@ -24,4 +25,5 @@ export interface Host {
   name: string;
   email: string;
   phone: string;
+  created_at?: string;
 }

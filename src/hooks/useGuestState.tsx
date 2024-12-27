@@ -1,97 +1,185 @@
 import { Guest, Host } from "@/types/guest";
-import { useLocalStorage } from "./useLocalStorage";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useGuestState = () => {
   const { toast } = useToast();
-  const [guests, setGuests] = useLocalStorage<Guest[]>("guests", []);
-  const [hosts, setHosts] = useLocalStorage<Host[]>("hosts", [
-    {
-      id: "1",
-      name: "Rahul Sharma",
-      email: "rahul@example.com",
-      phone: "+91 98765 43210",
-    },
-    {
-      id: "2",
-      name: "Priya Patel",
-      email: "priya@example.com",
-      phone: "+91 98765 43211",
-    },
-  ]);
+  const queryClient = useQueryClient();
 
-  const handleAddGuest = (data: Omit<Guest, "id" | "rsvpStatus">) => {
-    const newGuest: Guest = {
-      ...data,
-      id: Math.random().toString(36).substr(2, 9),
-      rsvpStatus: "pending",
-    };
-    setGuests([...guests, newGuest]);
-    toast({
-      title: "Guest Added",
-      description: `${data.name} has been added to the guest list.`,
-    });
-    return newGuest;
-  };
+  // Fetch guests
+  const { data: guests = [] } = useQuery({
+    queryKey: ['guests'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('guests')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-  const handleDeleteGuest = (id: string) => {
-    const guest = guests.find((g) => g.id === id);
-    setGuests(guests.filter((g) => g.id !== id));
-    if (guest) {
+      if (error) throw error;
+      return data as Guest[];
+    }
+  });
+
+  // Fetch hosts
+  const { data: hosts = [] } = useQuery({
+    queryKey: ['hosts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('hosts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as Host[];
+    }
+  });
+
+  // Add guest mutation
+  const addGuestMutation = useMutation({
+    mutationFn: async (data: Omit<Guest, "id" | "rsvpStatus">) => {
+      const { error } = await supabase
+        .from('guests')
+        .insert([{
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          plus_count: data.plusCount,
+          host_id: data.hostId,
+          events: data.events,
+          attributes: data.attributes,
+          rsvp_status: 'pending'
+        }]);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
       toast({
-        title: "Guest Removed",
-        description: `${guest.name} has been removed from the guest list.`,
+        title: "Guest Added",
+        description: "The guest has been successfully added.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to add guest: " + error.message,
         variant: "destructive",
       });
     }
-  };
+  });
 
-  const handleUpdateStatus = (id: string, status: "confirmed" | "declined") => {
-    setGuests(
-      guests.map((guest) =>
-        guest.id === id ? { ...guest, rsvpStatus: status } : guest
-      )
-    );
-    const guest = guests.find((g) => g.id === id);
-    if (guest) {
+  // Delete guest mutation
+  const deleteGuestMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('guests')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
       toast({
-        title: `RSVP ${status.charAt(0).toUpperCase() + status.slice(1)}`,
-        description: `${guest.name}'s RSVP status has been updated to ${status}.`,
+        title: "Guest Deleted",
+        description: "The guest has been removed from the list.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete guest: " + error.message,
+        variant: "destructive",
       });
     }
-  };
+  });
 
-  const handleAddHost = (host: Omit<Host, "id">) => {
-    const newHost: Host = {
-      ...host,
-      id: Math.random().toString(36).substr(2, 9),
-    };
-    setHosts([...hosts, newHost]);
-    toast({
-      title: "Host Added",
-      description: `${host.name} has been added as an event host.`,
-    });
-    return newHost;
-  };
+  // Update guest status mutation
+  const updateGuestStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: "confirmed" | "declined" }) => {
+      const { error } = await supabase
+        .from('guests')
+        .update({ rsvp_status: status })
+        .eq('id', id);
 
-  const handleDeleteHost = (id: string) => {
-    const host = hosts.find((h) => h.id === id);
-    if (host) {
-      setHosts(hosts.filter((h) => h.id !== id));
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
       toast({
-        title: "Host Removed",
-        description: `${host.name} has been removed from the host list.`,
+        title: "Status Updated",
+        description: "The guest's RSVP status has been updated.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update status: " + error.message,
+        variant: "destructive",
       });
     }
-  };
+  });
+
+  // Add host mutation
+  const addHostMutation = useMutation({
+    mutationFn: async (host: Omit<Host, "id">) => {
+      const { error } = await supabase
+        .from('hosts')
+        .insert([host]);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hosts'] });
+      toast({
+        title: "Host Added",
+        description: "The host has been successfully added.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to add host: " + error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Delete host mutation
+  const deleteHostMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('hosts')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hosts'] });
+      toast({
+        title: "Host Deleted",
+        description: "The host has been removed from the list.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete host: " + error.message,
+        variant: "destructive",
+      });
+    }
+  });
 
   return {
     guests,
     hosts,
-    handleAddGuest,
-    handleDeleteGuest,
-    handleUpdateStatus,
-    handleAddHost,
-    handleDeleteHost,
+    handleAddGuest: (data: Omit<Guest, "id" | "rsvpStatus">) => addGuestMutation.mutate(data),
+    handleDeleteGuest: (id: string) => deleteGuestMutation.mutate(id),
+    handleUpdateStatus: (id: string, status: "confirmed" | "declined") => 
+      updateGuestStatusMutation.mutate({ id, status }),
+    handleAddHost: (host: Omit<Host, "id">) => addHostMutation.mutate(host),
+    handleDeleteHost: (id: string) => deleteHostMutation.mutate(id),
   };
 };

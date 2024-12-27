@@ -11,9 +11,9 @@ interface GuestCardProps {
     name: string;
     email?: string;
     phone: string;
-    rsvpStatus: "pending" | "confirmed" | "declined";
-    plusCount: number;
-    hostId: string;
+    rsvp_status: "pending" | "confirmed" | "declined";
+    plus_count: number;
+    host_id: string;
     events: EventType[];
     attributes: string[];
   };
@@ -49,19 +49,19 @@ export const GuestCard = ({
           <div className="flex gap-2 mt-2">
             <Badge
               variant={
-                guest.rsvpStatus === "confirmed"
+                guest.rsvp_status === "confirmed"
                   ? "default"
-                  : guest.rsvpStatus === "declined"
+                  : guest.rsvp_status === "declined"
                   ? "destructive"
                   : "secondary"
               }
               className="capitalize"
             >
-              {guest.rsvpStatus}
+              {guest.rsvp_status}
             </Badge>
-            {guest.plusCount > 0 && (
+            {guest.plus_count > 0 && (
               <Badge variant="outline" className="bg-wedding-rose/20">
-                +{guest.plusCount}
+                +{guest.plus_count}
               </Badge>
             )}
           </div>
