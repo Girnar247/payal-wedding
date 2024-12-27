@@ -86,13 +86,17 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
         .from('event-backgrounds')
         .getPublicUrl(filePath);
 
-      // Update all events with the new main background URL
-      const { error: updateError } = await supabase
-        .from('events')
-        .update({ main_background_url: publicUrl.publicUrl });
+      // Update each event type individually with the new main background URL
+      const eventTypes = Object.keys(events);
+      for (const eventType of eventTypes) {
+        const { error: updateError } = await supabase
+          .from('events')
+          .update({ main_background_url: publicUrl.publicUrl })
+          .eq('type', eventType);
 
-      if (updateError) {
-        throw updateError;
+        if (updateError) {
+          throw updateError;
+        }
       }
 
       toast({
