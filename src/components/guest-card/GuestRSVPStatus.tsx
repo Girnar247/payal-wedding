@@ -4,21 +4,20 @@ import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface GuestRSVPStatusProps {
-  status: "pending" | "confirmed" | "declined";
-  guestId: string;
-  onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
+  guest: Guest;
+  onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
 }
 
-export const GuestRSVPStatus = ({ status, guestId, onUpdateStatus }: GuestRSVPStatusProps) => {
+export const GuestRSVPStatus = ({ guest, onUpdateStatus }: GuestRSVPStatusProps) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const handleStatusUpdate = async (newStatus: "confirmed" | "declined") => {
+  const handleStatusUpdate = async (status: "confirmed" | "declined" | "pending") => {
     try {
       const { data, error } = await supabase
         .from('guests')
-        .update({ rsvp_status: newStatus })
-        .eq('id', guestId)
+        .update({ rsvp_status: status })
+        .eq('id', guest.id)
         .select();
 
       if (error) {
@@ -26,10 +25,10 @@ export const GuestRSVPStatus = ({ status, guestId, onUpdateStatus }: GuestRSVPSt
         throw error;
       }
 
-      onUpdateStatus(guestId, newStatus);
+      onUpdateStatus(guest.id, status);
       toast({
         title: "Status Updated",
-        description: `Guest status has been updated to ${newStatus}.`,
+        description: `Guest status has been updated to ${status}.`,
       });
     } catch (error) {
       console.error('Error updating status:', error);

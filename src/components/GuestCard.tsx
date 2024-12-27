@@ -1,25 +1,22 @@
-import { useState } from "react";
 import { Guest, Host } from "@/types/guest";
 import { Card, CardContent, CardHeader } from "./ui/card";
+import { GuestEditDialog } from "./guest-card/GuestEditDialog";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 import { GuestHeader } from "./guest-card/GuestHeader";
-import { GuestActions } from "./guest-card/GuestActions";
-import { GuestBadges } from "./guest-card/GuestBadges";
-import { GuestAccommodation } from "./guest-card/GuestAccommodation";
-import { GuestInvitations } from "./guest-card/GuestInvitations";
+import { GuestHostInfo } from "./guest-card/GuestHostInfo";
 import { GuestEventBadges } from "./guest-card/GuestEventBadges";
 import { GuestContactInfo } from "./guest-card/GuestContactInfo";
 import { GuestRSVPStatus } from "./guest-card/GuestRSVPStatus";
-import { GuestEditDialog } from "./guest-card/GuestEditDialog";
-import { useToast } from "./ui/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
 
 interface GuestCardProps {
   guest: Guest;
   host: Host;
   onEdit?: () => void;
-  onDelete?: (id: string) => void;
-  onUpdateStatus?: (id: string, status: "confirmed" | "declined") => void;
+  onDelete: (id: string) => void;
+  onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
 }
 
 export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
@@ -27,14 +24,17 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const handleDelete = () => {
-    if (onDelete) {
-      onDelete(guest.id);
-    }
+  const handleOpenEditDialog = () => {
+    setIsEditDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsEditDialogOpen(false);
   };
 
   const handleSave = async (updatedGuest: Partial<Guest>) => {
     try {
+      // First, make the Supabase update request
       const { data, error } = await supabase
         .from('guests')
         .update(updatedGuest)
@@ -44,13 +44,21 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
       if (error) throw error;
 
-      setIsEditDialogOpen(false);
-      toast({
-        title: "Success",
-        description: "Guest details have been updated.",
+      // After successful update, update the cache with the complete returned data
+      queryClient.setQueryData(['guests'], (oldData: Guest[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(g => g.id === guest.id ? { ...g, ...data } : g);
       });
 
-      queryClient.invalidateQueries({ queryKey: ['guests'] });
+      // Close dialog and show success message
+      handleCloseDialog();
+      toast({
+        title: "Success",
+        description: "Guest details updated successfully.",
+      });
+
+      // Finally, invalidate the query to ensure data consistency
+      await queryClient.invalidateQueries({ queryKey: ['guests'] });
     } catch (error) {
       console.error('Error updating guest:', error);
       toast({
@@ -65,40 +73,32 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     <>
       <Card className="bg-white/50">
         <CardHeader className="pb-2">
-          <GuestHeader 
-            guest={guest} 
-            onEdit={() => setIsEditDialogOpen(true)} 
-            onDelete={handleDelete}
-            onUpdateStatus={onUpdateStatus}
-          />
-          <GuestContactInfo guest={guest} />
-          <GuestRSVPStatus 
-            status={guest.rsvp_status} 
-            onUpdateStatus={onUpdateStatus} 
-            guestId={guest.id} 
-          />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <GuestBadges 
-              rsvpStatus={guest.rsvp_status}
-              plusCount={guest.plus_count}
-              events={guest.events}
-              attributes={guest.attributes}
+          <div className="flex flex-col gap-3">
+            <GuestHeader
+              guest={guest}
+              onEdit={handleOpenEditDialog}
+              onDelete={onDelete}
+              onUpdateStatus={onUpdateStatus}
             />
-            <GuestEventBadges events={guest.events} />
-            <GuestAccommodation guest={guest} />
-            <GuestInvitations guest={guest} host={host} />
+            <GuestHostInfo host={host} />
+            <GuestContactInfo guest={guest} />
           </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <GuestEventBadges events={guest.events} />
         </CardContent>
       </Card>
 
-      <GuestEditDialog
-        guest={guest}
-        isOpen={isEditDialogOpen}
-        onClose={() => setIsEditDialogOpen(false)}
-        onSave={handleSave}
-      />
+      <GuestRSVPStatus guest={guest} onUpdateStatus={onUpdateStatus} />
+
+      {isEditDialogOpen && (
+        <GuestEditDialog
+          guest={guest}
+          isOpen={isEditDialogOpen}
+          onClose={handleCloseDialog}
+          onSave={handleSave}
+        />
+      )}
     </>
   );
 };
