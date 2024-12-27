@@ -34,7 +34,7 @@ export const GuestFilters = ({
           <SelectValue placeholder="Filter by event" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Events</SelectItem>
+          <SelectItem value="all-events">All Events</SelectItem>
           {Object.keys(eventDetails).map((event) => (
             <SelectItem key={event} value={event}>
               {event.charAt(0).toUpperCase() + event.slice(1)}
@@ -47,7 +47,7 @@ export const GuestFilters = ({
           <SelectValue placeholder="Filter by category" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Categories</SelectItem>
+          <SelectItem value="all-categories">All Categories</SelectItem>
           <SelectItem value="family">Family</SelectItem>
           <SelectItem value="friends">Friends</SelectItem>
           <SelectItem value="staff">Staff</SelectItem>

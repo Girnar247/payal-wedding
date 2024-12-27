@@ -5,6 +5,7 @@ export interface EventDetails {
   date: Date | string;
   time: string;
   venue: string;
+  background_url?: string;
 }
 
 export interface Guest {
