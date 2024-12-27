@@ -4,7 +4,7 @@ import { Dashboard } from "@/components/Dashboard";
 import { EventSummary } from "@/components/EventSummary";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, MinusCircle } from "lucide-react";
-import { EventType, EventDetails, Host } from "@/types/guest";
+import { EventType, EventDetails, Host, GuestAttribute } from "@/types/guest";
 import { GuestManagement } from "@/components/GuestManagement";
 import { EventConfiguration } from "@/components/EventConfiguration";
 import { DownloadGuestList } from "@/components/DownloadGuestList";
@@ -34,6 +34,8 @@ const Index = () => {
     handleAddGuest,
     handleDeleteGuest,
     handleUpdateStatus,
+    handleAddHost,
+    handleDeleteHost,
   } = useGuestState();
 
   const { eventDetails, isLoading, addEvents } = useEventState();
