@@ -9,6 +9,7 @@ import { GuestHeader } from "./guest-card/GuestHeader";
 import { GuestHostInfo } from "./guest-card/GuestHostInfo";
 import { GuestEventBadges } from "./guest-card/GuestEventBadges";
 import { GuestContactInfo } from "./guest-card/GuestContactInfo";
+import { GuestRSVPStatus } from "./guest-card/GuestRSVPStatus";
 
 interface GuestCardProps {
   guest: Guest;
@@ -23,34 +24,6 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const handleStatusUpdate = async (status: "confirmed" | "declined" | "pending") => {
-    try {
-      const { data, error } = await supabase
-        .from('guests')
-        .update({ rsvp_status: status })
-        .eq('id', guest.id)
-        .select();
-
-      if (error) {
-        console.error('Error updating status:', error);
-        throw error;
-      }
-
-      onUpdateStatus(guest.id, status);
-      toast({
-        title: "Status Updated",
-        description: `Guest status has been updated to ${status}.`,
-      });
-    } catch (error) {
-      console.error('Error updating status:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update guest status.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <>
       <Card className="bg-white/50">
@@ -60,7 +33,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
               guest={guest}
               onEdit={() => setIsEditDialogOpen(true)}
               onDelete={onDelete}
-              onUpdateStatus={handleStatusUpdate}
+              onUpdateStatus={onUpdateStatus}
             />
             <GuestHostInfo host={host} />
             <GuestContactInfo guest={guest} />
@@ -70,6 +43,8 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
           <GuestEventBadges events={guest.events} />
         </CardContent>
       </Card>
+
+      <GuestRSVPStatus guest={guest} onUpdateStatus={onUpdateStatus} />
 
       <GuestEditDialog
         guest={guest}
