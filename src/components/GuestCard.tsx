@@ -41,7 +41,15 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
       if (error) throw error;
 
+      // Immediately update the cache with the new data
+      queryClient.setQueryData(['guests'], (oldData: Guest[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(g => g.id === guest.id ? { ...g, ...updatedGuest } : g);
+      });
+
+      // Then invalidate to ensure consistency
       await queryClient.invalidateQueries({ queryKey: ['guests'] });
+      
       handleCloseDialog();
       toast({
         title: "Success",

@@ -47,6 +47,7 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   };
 
   const handleDialogClose = () => {
+    setEditedGuest({ ...guest }); // Reset form
     onClose();
   };
 
