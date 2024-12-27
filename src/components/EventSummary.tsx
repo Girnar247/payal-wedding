@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Upload } from "lucide-react";
 import { Button } from "./ui/button";
-import { toast } from "./ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 interface EventSummaryProps {
   events: Record<EventType, EventDetails>;
@@ -46,13 +46,11 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
       }
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      // Sanitize the event type for use in the file path by replacing spaces with underscores
       const sanitizedEventType = eventType.replace(/\s+/g, '_');
       const filePath = `${sanitizedEventType}/${crypto.randomUUID()}.${fileExt}`;
 
       setUploading(eventType);
 
-      // Upload image to storage
       const { error: uploadError } = await supabase.storage
         .from('event-backgrounds')
         .upload(filePath, file);
@@ -61,12 +59,10 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
         throw uploadError;
       }
 
-      // Get public URL
       const { data: publicUrl } = supabase.storage
         .from('event-backgrounds')
         .getPublicUrl(filePath);
 
-      // Update event record with new background URL
       const { error: updateError } = await supabase
         .from('events')
         .update({ background_url: publicUrl.publicUrl })
@@ -92,20 +88,82 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
     }
   };
 
+  const handleMainBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!event.target.files || event.target.files.length === 0) {
+        return;
+      }
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const filePath = `main-background/${crypto.randomUUID()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('event-backgrounds')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: publicUrl } = supabase.storage
+        .from('event-backgrounds')
+        .getPublicUrl(filePath);
+
+      // Update all events with the new main background
+      const { error: updateError } = await supabase
+        .from('events')
+        .update({ main_background_url: publicUrl.publicUrl })
+        .neq('id', ''); // This will update all rows
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      toast({
+        title: "Main Background Updated",
+        description: "The main background has been successfully updated.",
+      });
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload main background image: " + error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="mb-8">
-      <Button
-        variant="ghost"
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="w-full flex items-center justify-between p-4 bg-white/50 hover:bg-white/80 rounded-lg shadow-sm transition-all duration-300 mb-4"
-      >
-        <h2 className="text-2xl font-playfair">Event Schedule</h2>
-        {isCollapsed ? (
-          <ChevronDown className="h-6 w-6 transition-transform duration-200" />
-        ) : (
-          <ChevronUp className="h-6 w-6 transition-transform duration-200" />
-        )}
-      </Button>
+      <div className="flex justify-between items-center mb-4">
+        <Button
+          variant="ghost"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="flex items-center justify-between p-4 bg-white/50 hover:bg-white/80 rounded-lg shadow-sm transition-all duration-300"
+        >
+          <h2 className="text-2xl font-playfair">Event Schedule</h2>
+          {isCollapsed ? (
+            <ChevronDown className="h-6 w-6 transition-transform duration-200" />
+          ) : (
+            <ChevronUp className="h-6 w-6 transition-transform duration-200" />
+          )}
+        </Button>
+        <div className="relative">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleMainBackgroundUpload}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
+          <Button
+            variant="outline"
+            className="bg-white/50 hover:bg-white/80"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Update Main Background
+          </Button>
+        </div>
+      </div>
       
       {!isCollapsed && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">

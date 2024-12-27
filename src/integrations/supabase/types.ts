@@ -15,6 +15,7 @@ export type Database = {
           created_at: string
           date: string
           id: string
+          main_background_url: string | null
           time: string
           type: string
           venue: string
@@ -24,6 +25,7 @@ export type Database = {
           created_at?: string
           date: string
           id?: string
+          main_background_url?: string | null
           time: string
           type: string
           venue: string
@@ -33,6 +35,7 @@ export type Database = {
           created_at?: string
           date?: string
           id?: string
+          main_background_url?: string | null
           time?: string
           type?: string
           venue?: string
