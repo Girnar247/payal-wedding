@@ -27,3 +27,14 @@ export interface Host {
   phone: string;
   created_at?: string;
 }
+
+// Frontend form data interface (camelCase)
+export interface GuestFormData {
+  name: string;
+  email?: string;
+  phone: string;
+  plusCount: number;
+  hostId: string;
+  events: EventType[];
+  attributes: GuestAttribute[];
+}

@@ -1,4 +1,4 @@
-import { Guest, Host } from "@/types/guest";
+import { Guest, Host, GuestFormData } from "@/types/guest";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,7 +7,6 @@ export const useGuestState = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch guests
   const { data: guests = [] } = useQuery({
     queryKey: ['guests'],
     queryFn: async () => {
@@ -21,7 +20,6 @@ export const useGuestState = () => {
     }
   });
 
-  // Fetch hosts
   const { data: hosts = [] } = useQuery({
     queryKey: ['hosts'],
     queryFn: async () => {
@@ -35,19 +33,18 @@ export const useGuestState = () => {
     }
   });
 
-  // Add guest mutation
   const addGuestMutation = useMutation({
-    mutationFn: async (data: Omit<Guest, "id" | "rsvpStatus">) => {
+    mutationFn: async (formData: GuestFormData) => {
       const { error } = await supabase
         .from('guests')
         .insert([{
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          plus_count: data.plusCount,
-          host_id: data.hostId,
-          events: data.events,
-          attributes: data.attributes,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          plus_count: formData.plusCount,
+          host_id: formData.hostId,
+          events: formData.events,
+          attributes: formData.attributes,
           rsvp_status: 'pending'
         }]);
 
@@ -69,7 +66,6 @@ export const useGuestState = () => {
     }
   });
 
-  // Delete guest mutation
   const deleteGuestMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -175,7 +171,7 @@ export const useGuestState = () => {
   return {
     guests,
     hosts,
-    handleAddGuest: (data: Omit<Guest, "id" | "rsvpStatus">) => addGuestMutation.mutate(data),
+    handleAddGuest: (data: GuestFormData) => addGuestMutation.mutate(data),
     handleDeleteGuest: (id: string) => deleteGuestMutation.mutate(id),
     handleUpdateStatus: (id: string, status: "confirmed" | "declined") => 
       updateGuestStatusMutation.mutate({ id, status }),

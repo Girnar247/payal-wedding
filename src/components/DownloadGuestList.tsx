@@ -21,16 +21,16 @@ export const DownloadGuestList = ({ guests, hosts }: DownloadGuestListProps) => 
     ];
 
     const rows = guests.map((guest) => {
-      const host = hosts.find((h) => h.id === guest.hostId)?.name || "Unassigned";
+      const host = hosts.find((h) => h.id === guest.host_id)?.name || "Unassigned";
       return [
         guest.name,
         guest.email || "",
         guest.phone,
         guest.attributes.join(", "),
-        guest.plusCount,
+        guest.plus_count,
         host,
         guest.events.join(", "),
-        guest.rsvpStatus,
+        guest.rsvp_status,
       ];
     });
 

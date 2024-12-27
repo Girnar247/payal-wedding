@@ -28,7 +28,7 @@ export const GuestList = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestL
         </TableHeader>
         <TableBody>
           {guests.map((guest) => {
-            const host = hosts.find((h) => h.id === guest.hostId) || defaultHost;
+            const host = hosts.find((h) => h.id === guest.host_id) || defaultHost;
             return (
               <TableRow key={guest.id}>
                 <TableCell className="font-medium">{guest.name}</TableCell>
@@ -48,19 +48,19 @@ export const GuestList = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestL
                   </div>
                 </TableCell>
                 <TableCell>{host.name}</TableCell>
-                <TableCell>{guest.plusCount > 0 ? `+${guest.plusCount}` : "-"}</TableCell>
+                <TableCell>{guest.plus_count > 0 ? `+${guest.plus_count}` : "-"}</TableCell>
                 <TableCell>
                   <Badge
                     variant={
-                      guest.rsvpStatus === "confirmed"
+                      guest.rsvp_status === "confirmed"
                         ? "default"
-                        : guest.rsvpStatus === "declined"
+                        : guest.rsvp_status === "declined"
                         ? "destructive"
                         : "secondary"
                     }
                     className="capitalize"
                   >
-                    {guest.rsvpStatus}
+                    {guest.rsvp_status}
                   </Badge>
                 </TableCell>
                 <TableCell>
