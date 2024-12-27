@@ -2,18 +2,14 @@ import { useState } from "react";
 import { AddGuestForm } from "@/components/AddGuestForm";
 import { Dashboard } from "@/components/Dashboard";
 import { EventSummary } from "@/components/EventSummary";
-import { Button } from "@/components/ui/button";
-import { PlusCircle, MinusCircle, Download, LayoutGrid, List } from "lucide-react";
-import { EventType, EventDetails, Host, GuestAttribute } from "@/types/guest";
+import { EventType, GuestAttribute, Host } from "@/types/guest";
 import { GuestManagement } from "@/components/GuestManagement";
 import { EventConfiguration } from "@/components/EventConfiguration";
-import { DownloadGuestList } from "@/components/DownloadGuestList";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useEventState } from "@/hooks/useEventState";
 import { useGuestStats } from "@/hooks/useGuestStats";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { InvitationTemplateDialog } from "@/components/InvitationTemplateDialog";
+import { SearchAndFilters } from "@/components/filters/SearchAndFilters";
+import { GuestActions } from "@/components/actions/GuestActions";
 
 const defaultHost: Host = {
   id: "",
@@ -99,92 +95,27 @@ const Index = () => {
             <Dashboard {...stats} />
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-              <div className="w-full md:w-auto flex flex-col md:flex-row gap-4">
-                <Input
-                  placeholder="Search guests..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full md:w-64"
-                />
-                <div className="flex gap-2">
-                  <Select value={selectedHost} onValueChange={setSelectedHost}>
-                    <SelectTrigger className="w-full md:w-48 bg-white">
-                      <SelectValue placeholder="Filter by Host" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all-hosts">All Hosts</SelectItem>
-                      {hosts.map((host) => (
-                        <SelectItem key={host.id} value={host.id}>
-                          {host.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <SearchAndFilters
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                selectedHost={selectedHost}
+                onHostSelect={setSelectedHost}
+                selectedEvent={selectedEvent}
+                onEventSelect={setSelectedEvent}
+                selectedAttribute={selectedAttribute}
+                onAttributeSelect={setSelectedAttribute}
+                hosts={hosts}
+                eventDetails={eventDetails}
+              />
 
-                  <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-                    <SelectTrigger className="w-full md:w-48 bg-white">
-                      <SelectValue placeholder="Filter by Event" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all-events">All Events</SelectItem>
-                      {Object.keys(eventDetails).map((event) => (
-                        <SelectItem key={event} value={event}>
-                          {event.charAt(0).toUpperCase() + event.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={selectedAttribute} onValueChange={setSelectedAttribute}>
-                    <SelectTrigger className="w-full md:w-48 bg-white">
-                      <SelectValue placeholder="Filter by Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all-categories">All Categories</SelectItem>
-                      <SelectItem value="family">Family</SelectItem>
-                      <SelectItem value="friends">Friends</SelectItem>
-                      <SelectItem value="staff">Staff</SelectItem>
-                      <SelectItem value="mohalla">Mohalla</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="flex gap-2 w-full md:w-auto">
-                <Button
-                  onClick={() => setShowAddForm(!showAddForm)}
-                  variant="outline"
-                  className="w-full md:w-auto bg-white/50 hover:bg-white/80"
-                >
-                  {showAddForm ? (
-                    <>
-                      <MinusCircle className="mr-2 h-4 w-4" />
-                      Cancel
-                    </>
-                  ) : (
-                    <>
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Add New Guest
-                    </>
-                  )}
-                </Button>
-
-                <div className="flex items-center gap-2">
-                  <DownloadGuestList guests={filteredGuests} hosts={hosts} />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                    className="bg-white/50 hover:bg-white/80"
-                  >
-                    {viewMode === "grid" ? (
-                      <List className="h-4 w-4" />
-                    ) : (
-                      <LayoutGrid className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
+              <GuestActions
+                showAddForm={showAddForm}
+                setShowAddForm={setShowAddForm}
+                filteredGuests={filteredGuests}
+                hosts={hosts}
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+              />
             </div>
 
             {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
