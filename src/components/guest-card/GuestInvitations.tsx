@@ -55,7 +55,7 @@ export const GuestInvitations = ({ guest, host }: GuestInvitationsProps) => {
       return;
     }
 
-    const message = encodeURIComponent("You are invited, bro");
+    const message = encodeURIComponent("You are invited to our wedding celebration!");
     const whatsappUrl = `https://wa.me/${guest.phone}?text=${message}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -67,8 +67,9 @@ export const GuestInvitations = ({ guest, host }: GuestInvitationsProps) => {
         size="sm"
         onClick={handleSendInvitation}
         disabled={!guest.email}
+        className="flex items-center gap-2"
       >
-        <Mail className="h-4 w-4 mr-2" />
+        <Mail className="h-4 w-4" />
         {guest.invitation_sent ? "Invitation Sent" : "Send Invitation"}
       </Button>
       <Button
@@ -76,8 +77,9 @@ export const GuestInvitations = ({ guest, host }: GuestInvitationsProps) => {
         size="sm"
         onClick={handleWhatsappInvitation}
         disabled={!guest.phone}
+        className="flex items-center gap-2"
       >
-        <MessageSquare className="h-4 w-4 mr-2" />
+        <MessageSquare className="h-4 w-4" />
         WhatsApp
       </Button>
     </div>

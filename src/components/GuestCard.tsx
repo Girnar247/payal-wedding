@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabase";
 import { GuestContactInfo } from "./guest-card/GuestContactInfo";
 import { GuestAccommodation } from "./guest-card/GuestAccommodation";
 import { GuestInvitations } from "./guest-card/GuestInvitations";
+import { Badge } from "./ui/badge";
 
 interface GuestCardProps {
   guest: Guest;
@@ -25,12 +26,26 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  const statusColors = {
+    confirmed: "bg-green-100 text-green-800",
+    declined: "bg-red-100 text-red-800",
+    pending: "bg-yellow-100 text-yellow-800",
+  };
+
   return (
     <Card className="bg-white/50">
       <CardHeader className="pb-2">
         <div className="flex flex-col gap-3">
           <div className="flex justify-between items-start">
-            <h3 className="font-semibold text-lg">{guest.name}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-lg">{guest.name}</h3>
+              <Badge 
+                variant="secondary"
+                className={`capitalize ${statusColors[guest.rsvp_status]}`}
+              >
+                {guest.rsvp_status}
+              </Badge>
+            </div>
             <GuestActions
               guest={guest}
               onEdit={() => setIsEditDialogOpen(true)}
@@ -50,8 +65,10 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <GuestContactInfo guest={guest} />
-        <GuestAccommodation guest={guest} />
+        <div className="grid grid-cols-2 gap-4">
+          <GuestContactInfo guest={guest} />
+          <GuestAccommodation guest={guest} />
+        </div>
         <GuestBadges
           rsvpStatus={guest.rsvp_status}
           plusCount={guest.plus_count}

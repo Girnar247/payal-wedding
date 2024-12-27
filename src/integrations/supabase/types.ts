@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       events: {
         Row: {
+          background_url: string | null
           created_at: string
           date: string
           id: string
@@ -19,6 +20,7 @@ export type Database = {
           venue: string
         }
         Insert: {
+          background_url?: string | null
           created_at?: string
           date: string
           id?: string
@@ -27,6 +29,7 @@ export type Database = {
           venue: string
         }
         Update: {
+          background_url?: string | null
           created_at?: string
           date?: string
           id?: string
@@ -116,6 +119,33 @@ export type Database = {
           id?: string
           name?: string
           phone?: string
+        }
+        Relationships: []
+      }
+      invitation_templates: {
+        Row: {
+          created_at: string
+          email_content: string | null
+          id: string
+          name: string
+          subject: string | null
+          whatsapp_content: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_content?: string | null
+          id?: string
+          name: string
+          subject?: string | null
+          whatsapp_content?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_content?: string | null
+          id?: string
+          name?: string
+          subject?: string | null
+          whatsapp_content?: string | null
         }
         Relationships: []
       }

@@ -42,10 +42,14 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
       <Button
         variant="ghost"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="w-full flex items-center justify-between mb-4"
+        className="w-full flex items-center justify-between p-4 bg-white/50 hover:bg-white/80 rounded-lg shadow-sm transition-all duration-300 mb-4"
       >
         <h2 className="text-2xl font-playfair">Event Schedule</h2>
-        {isCollapsed ? <ChevronDown className="h-6 w-6" /> : <ChevronUp className="h-6 w-6" />}
+        {isCollapsed ? (
+          <ChevronDown className="h-6 w-6 transition-transform duration-200" />
+        ) : (
+          <ChevronUp className="h-6 w-6 transition-transform duration-200" />
+        )}
       </Button>
       
       {!isCollapsed && (
@@ -57,20 +61,31 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
               return dateA.getTime() - dateB.getTime();
             })
             .map(([eventType, details]) => (
-              <Card key={eventType} className="p-4 bg-white/50">
-                <h3 className="font-playfair capitalize text-lg mb-2">{eventType}</h3>
-                <div className="space-y-1 text-sm">
-                  <p className="text-gray-600">
-                    {format(
-                      details.date instanceof Date ? details.date : parseISO(details.date as string),
-                      'EEEE, MMMM d, yyyy'
-                    )}
-                  </p>
-                  <p className="text-gray-600">{details.time}</p>
-                  <p className="text-gray-600">{details.venue}</p>
-                  <p className="text-gray-600 font-semibold mt-2">
-                    Confirmed Guests: {guestCounts[eventType] || 0}
-                  </p>
+              <Card 
+                key={eventType} 
+                className="p-4 relative overflow-hidden min-h-[200px] group"
+                style={{
+                  backgroundImage: details.background_url ? `url(${details.background_url})` : 'none',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              >
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+                <div className="relative z-10 text-white">
+                  <h3 className="font-playfair capitalize text-lg mb-2">{eventType}</h3>
+                  <div className="space-y-1 text-sm">
+                    <p className="text-white/90">
+                      {format(
+                        details.date instanceof Date ? details.date : parseISO(details.date as string),
+                        'EEEE, MMMM d, yyyy'
+                      )}
+                    </p>
+                    <p className="text-white/90">{details.time}</p>
+                    <p className="text-white/90">{details.venue}</p>
+                    <p className="text-white font-semibold mt-2">
+                      Confirmed Guests: {guestCounts[eventType] || 0}
+                    </p>
+                  </div>
                 </div>
               </Card>
             ))}

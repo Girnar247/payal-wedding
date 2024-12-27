@@ -13,6 +13,9 @@ import { useEventState } from "@/hooks/useEventState";
 import { useGuestStats } from "@/hooks/useGuestStats";
 import { GuestFilters } from "@/components/filters/GuestFilters";
 import { HostFilters } from "@/components/filters/HostFilters";
+import { InvitationTemplateDialog } from "@/components/InvitationTemplateDialog";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const defaultHost: Host = {
   id: "",
@@ -87,41 +90,70 @@ const Index = () => {
             <EventSummary events={eventDetails} />
             <Dashboard {...stats} />
 
-            <HostFilters
-              hosts={hosts}
-              selectedHost={selectedHost}
-              onHostSelect={setSelectedHost}
-            />
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+              <div className="flex items-center gap-4">
+                <Input
+                  placeholder="Search guests..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full md:w-64"
+                />
+                <Select value={selectedHost} onValueChange={setSelectedHost}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Filter by..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Host</SelectLabel>
+                      <SelectItem value="">All Hosts</SelectItem>
+                      {hosts.map((host) => (
+                        <SelectItem key={host.id} value={host.id}>
+                          {host.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectGroup>
+                      <SelectLabel>Event</SelectLabel>
+                      <SelectItem value="all">All Events</SelectItem>
+                      {Object.keys(eventDetails).map((event) => (
+                        <SelectItem key={event} value={event}>
+                          {event.charAt(0).toUpperCase() + event.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectGroup>
+                      <SelectLabel>Category</SelectLabel>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      <SelectItem value="family">Family</SelectItem>
+                      <SelectItem value="friends">Friends</SelectItem>
+                      <SelectItem value="staff">Staff</SelectItem>
+                      <SelectItem value="mohalla">Mohalla</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <GuestFilters
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              selectedEvent={selectedEvent}
-              onEventChange={setSelectedEvent}
-              selectedAttribute={selectedAttribute}
-              onAttributeChange={setSelectedAttribute}
-              eventDetails={eventDetails}
-            />
-
-            <div className="flex justify-between items-center">
-              <Button
-                onClick={() => setShowAddForm(!showAddForm)}
-                variant="outline"
-                className="bg-white/50 hover:bg-white/80"
-              >
-                {showAddForm ? (
-                  <>
-                    <MinusCircle className="mr-2 h-4 w-4" />
-                    Cancel Adding Guest
-                  </>
-                ) : (
-                  <>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add New Guest
-                  </>
-                )}
-              </Button>
-              <DownloadGuestList guests={filteredGuests} hosts={hosts} />
+              <div className="flex items-center gap-4">
+                <Button
+                  onClick={() => setShowAddForm(!showAddForm)}
+                  variant="outline"
+                  className="bg-white/50 hover:bg-white/80"
+                >
+                  {showAddForm ? (
+                    <>
+                      <MinusCircle className="mr-2 h-4 w-4" />
+                      Cancel Adding Guest
+                    </>
+                  ) : (
+                    <>
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Add New Guest
+                    </>
+                  )}
+                </Button>
+                <InvitationTemplateDialog />
+                <DownloadGuestList guests={filteredGuests} hosts={hosts} />
+              </div>
             </div>
 
             {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
