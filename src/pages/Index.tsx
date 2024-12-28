@@ -10,6 +10,8 @@ import { useEventState } from "@/hooks/useEventState";
 import { useGuestStats } from "@/hooks/useGuestStats";
 import { SearchAndFilters } from "@/components/filters/SearchAndFilters";
 import { GuestActions } from "@/components/actions/GuestActions";
+import { AdminProvider } from "@/contexts/AdminContext";
+import { AdminButton } from "@/components/AdminButton";
 
 const defaultHost: Host = {
   id: "",
@@ -62,75 +64,86 @@ const Index = () => {
   }
 
   return (
-    <div 
-      className="min-h-screen bg-wedding-cream p-6 md:p-8"
-      style={{
-        backgroundImage: eventDetails?.wedding?.main_background_url ? 
-          `url(${eventDetails.wedding.main_background_url})` : 'none',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
-    >
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
-            Payal's Wedding - Guest List
-          </h1>
-          <p className="text-gray-600">Manage your special celebrations with elegance</p>
-        </div>
-
-        {Object.keys(eventDetails).length === 0 ? (
-          <EventConfiguration
-            eventDetails={eventDetails}
-            hosts={hosts}
-            onUpdateEvent={handleUpdateEventDetails}
-            onAddHost={handleAddHost}
-            onDeleteHost={handleDeleteHost}
-            onComplete={() => {}}
-          />
-        ) : (
-          <>
-            <EventSummary events={eventDetails} />
-            <Dashboard {...stats} />
-
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-              <SearchAndFilters
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                selectedHost={selectedHost}
-                onHostSelect={setSelectedHost}
-                selectedEvent={selectedEvent}
-                onEventSelect={setSelectedEvent}
-                selectedAttribute={selectedAttribute}
-                onAttributeSelect={setSelectedAttribute}
-                hosts={hosts}
-                eventDetails={eventDetails}
-              />
-
-              <GuestActions
-                showAddForm={showAddForm}
-                setShowAddForm={setShowAddForm}
-                filteredGuests={filteredGuests}
-                hosts={hosts}
-                viewMode={viewMode}
-                setViewMode={setViewMode}
-              />
+    <AdminProvider>
+      <div 
+        className="min-h-screen bg-wedding-cream p-6 md:p-8"
+        style={{
+          backgroundImage: eventDetails?.wedding?.main_background_url ? 
+            `url(${eventDetails.wedding.main_background_url})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="flex justify-between items-center">
+            <div className="text-center space-y-2">
+              <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
+                Payal's Wedding - Guest List
+              </h1>
+              <p className="text-gray-600">Manage your special celebrations with elegance</p>
             </div>
+            <AdminButton />
+          </div>
 
-            {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
-
-            <GuestManagement
-              guests={filteredGuests}
+          {Object.keys(eventDetails).length === 0 ? (
+            <EventConfiguration
+              eventDetails={eventDetails}
               hosts={hosts}
-              defaultHost={defaultHost}
-              onDeleteGuest={handleDeleteGuest}
-              onUpdateStatus={handleUpdateStatus}
+              onUpdateEvent={handleUpdateEventDetails}
+              onAddHost={handleAddHost}
+              onDeleteHost={handleDeleteHost}
+              onComplete={() => {}}
             />
-          </>
-        )}
+          ) : (
+            <>
+              <EventSummary events={eventDetails} />
+              <Dashboard {...stats} />
+
+              <div className="space-y-4">
+                <SearchAndFilters
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  selectedHost={selectedHost}
+                  onHostSelect={setSelectedHost}
+                  selectedEvent={selectedEvent}
+                  onEventSelect={setSelectedEvent}
+                  selectedAttribute={selectedAttribute}
+                  onAttributeSelect={setSelectedAttribute}
+                  hosts={hosts}
+                  eventDetails={eventDetails}
+                />
+
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-gray-600">
+                    {filteredGuests.length} result{filteredGuests.length !== 1 ? 's' : ''}
+                  </p>
+
+                  <GuestActions
+                    showAddForm={showAddForm}
+                    setShowAddForm={setShowAddForm}
+                    filteredGuests={filteredGuests}
+                    hosts={hosts}
+                    viewMode={viewMode}
+                    setViewMode={setViewMode}
+                  />
+                </div>
+              </div>
+
+              {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
+
+              <GuestManagement
+                guests={filteredGuests}
+                hosts={hosts}
+                defaultHost={defaultHost}
+                onDeleteGuest={handleDeleteGuest}
+                onUpdateStatus={handleUpdateStatus}
+              />
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </AdminProvider>
   );
 };
 

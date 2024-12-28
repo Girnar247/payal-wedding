@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { EventCard } from "./event-summary/EventCard";
 import { MainBackgroundUpload } from "./event-summary/MainBackgroundUpload";
 import { parseISO } from "date-fns";
+import { useAdmin } from "@/contexts/AdminContext";
 
 interface EventSummaryProps {
   events: Record<EventType, EventDetails>;
@@ -15,6 +16,7 @@ interface EventSummaryProps {
 export const EventSummary = ({ events }: EventSummaryProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
+  const { isAdmin } = useAdmin();
 
   const handleBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
     try {
@@ -128,7 +130,7 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
             <ChevronUp className="h-6 w-6 transition-transform duration-200" />
           )}
         </Button>
-        <MainBackgroundUpload onUpload={handleMainBackgroundUpload} />
+        {isAdmin && <MainBackgroundUpload onUpload={handleMainBackgroundUpload} />}
       </div>
       
       {!isCollapsed && (

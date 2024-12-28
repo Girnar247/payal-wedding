@@ -100,26 +100,32 @@ export type Database = {
       }
       hosts: {
         Row: {
+          admin_password: string | null
           avatar_url: string | null
           created_at: string
           email: string
           id: string
+          is_admin: boolean | null
           name: string
           phone: string
         }
         Insert: {
+          admin_password?: string | null
           avatar_url?: string | null
           created_at?: string
           email: string
           id?: string
+          is_admin?: boolean | null
           name: string
           phone: string
         }
         Update: {
+          admin_password?: string | null
           avatar_url?: string | null
           created_at?: string
           email?: string
           id?: string
+          is_admin?: boolean | null
           name?: string
           phone?: string
         }
