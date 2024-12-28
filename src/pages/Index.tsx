@@ -15,8 +15,9 @@ import { AdminButton } from "@/components/AdminButton";
 import { Button } from "@/components/ui/button";
 import { ClipboardList, Heart, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { EventType, GuestAttribute, Host, EventDetails } from "@/types/guest";
 
-const defaultHost = {
+const defaultHost: Host = {
   id: "",
   name: "Unassigned",
   email: "",
@@ -71,8 +72,8 @@ const Index = () => {
                          guest.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          guest.phone?.includes(searchTerm);
     const matchesHost = selectedHost === "all-hosts" || guest.host_id === selectedHost;
-    const matchesEvent = selectedEvent === "all-events" || guest.events.includes(selectedEvent);
-    const matchesAttribute = selectedAttribute === "all-categories" || guest.attributes.includes(selectedAttribute);
+    const matchesEvent = selectedEvent === "all-events" || guest.events.includes(selectedEvent as EventType);
+    const matchesAttribute = selectedAttribute === "all-categories" || guest.attributes.includes(selectedAttribute as GuestAttribute);
     
     return matchesSearch && matchesHost && matchesEvent && matchesAttribute;
   });
