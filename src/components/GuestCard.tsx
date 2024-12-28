@@ -24,43 +24,22 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const handleOpenEditDialog = () => {
-    setIsEditDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsEditDialogOpen(false);
-  };
-
   const handleSave = async (updatedGuest: Partial<Guest>) => {
     try {
-      // First, make the Supabase update request
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('guests')
         .update(updatedGuest)
-        .eq('id', guest.id)
-        .select()
-        .single();
+        .eq('id', guest.id);
 
       if (error) throw error;
 
-      // After successful update, update the cache with the complete returned data
-      queryClient.setQueryData(['guests'], (oldData: Guest[] | undefined) => {
-        if (!oldData) return oldData;
-        return oldData.map(g => g.id === guest.id ? { ...g, ...data } : g);
-      });
-
-      // Close dialog and show success message
-      handleCloseDialog();
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
+      setIsEditDialogOpen(false);
       toast({
         title: "Success",
         description: "Guest details updated successfully.",
       });
-
-      // Finally, invalidate the query to ensure data consistency
-      await queryClient.invalidateQueries({ queryKey: ['guests'] });
     } catch (error) {
-      console.error('Error updating guest:', error);
       toast({
         title: "Error",
         description: "Failed to update guest details.",
@@ -76,7 +55,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
           <div className="flex flex-col gap-3">
             <GuestHeader
               guest={guest}
-              onEdit={handleOpenEditDialog}
+              onEdit={() => setIsEditDialogOpen(true)}
               onDelete={onDelete}
               onUpdateStatus={onUpdateStatus}
             />
@@ -95,7 +74,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
         <GuestEditDialog
           guest={guest}
           isOpen={isEditDialogOpen}
-          onClose={handleCloseDialog}
+          onClose={() => setIsEditDialogOpen(false)}
           onSave={handleSave}
         />
       )}
