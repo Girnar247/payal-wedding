@@ -14,7 +14,8 @@ import { GuestActions } from "@/components/actions/GuestActions";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { AdminButton } from "@/components/AdminButton";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, Heart } from "lucide-react";
+import { ClipboardList, Heart, RefreshCw } from "lucide-react";
+import { toast } from "./ui/use-toast";
 
 const defaultHost: Host = {
   id: "",
@@ -30,6 +31,7 @@ const Index = () => {
   const [selectedEvent, setSelectedEvent] = useState<string>("all-events");
   const [selectedAttribute, setSelectedAttribute] = useState<string>("all-categories");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const {
     guests,
@@ -39,10 +41,30 @@ const Index = () => {
     handleUpdateStatus,
     handleAddHost,
     handleDeleteHost,
+    refreshData
   } = useGuestState();
 
   const { eventDetails, isLoading, addEvents } = useEventState();
   const stats = useGuestStats(guests);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshData();
+      toast({
+        title: "Refreshed",
+        description: "The guest list has been refreshed.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh the data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const filteredGuests = guests.filter(guest => {
     const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -69,7 +91,6 @@ const Index = () => {
   return (
     <AdminProvider>
       <div className="min-h-screen">
-        {/* Header section with background image */}
         <div 
           className="bg-cover bg-center bg-no-repeat py-8 relative"
           style={{
@@ -77,10 +98,8 @@ const Index = () => {
               `url(${eventDetails.wedding.main_background_url})` : 'none',
           }}
         >
-          {/* Add a semi-transparent overlay */}
           <div className="absolute inset-0 bg-white/40" />
           
-          {/* Content */}
           <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
             <div className="flex justify-between items-center">
               <div className="text-center space-y-2">
@@ -90,14 +109,23 @@ const Index = () => {
                 <p className="text-gray-600">Manage your special celebrations with elegance</p>
               </div>
               <div className="flex items-center gap-4">
+                <Button 
+                  variant="outline" 
+                  className="bg-white/50 hover:bg-white/80"
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
                 <Link to="/wedding-summary">
-                  <Button variant="outline" className="bg-white/50">
+                  <Button variant="outline" className="bg-white/50 hover:bg-white/80">
                     <Heart className="h-4 w-4 mr-2" />
                     Wedding Summary
                   </Button>
                 </Link>
                 <Link to="/tasks">
-                  <Button variant="outline" className="bg-white/50">
+                  <Button variant="outline" className="bg-white/50 hover:bg-white/80">
                     <ClipboardList className="h-4 w-4 mr-2" />
                     Tasks
                   </Button>
@@ -108,7 +136,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Content section with color theme */}
         <div className="bg-wedding-cream">
           <div className="max-w-7xl mx-auto px-6 md:px-8 py-8 space-y-8">
             {Object.keys(eventDetails).length === 0 ? (
