@@ -54,10 +54,12 @@ export const useTaskMutations = () => {
 
   const addTaskMutation = useMutation({
     mutationFn: async (data: TaskFormValues) => {
-      const { error } = await supabase.from("tasks").insert([{
+      const taskData = {
         ...data,
-        event_type: data.event_types[0] || null, // Set the first event type as the legacy event_type
-      }]);
+        event_type: data.event_types[0] || null,
+        title: data.title, // Ensure title is included
+      };
+      const { error } = await supabase.from("tasks").insert([taskData]);
       if (error) throw error;
     },
     onSuccess: () => {

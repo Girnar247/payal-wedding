@@ -30,6 +30,20 @@ export const useEventState = () => {
         return acc;
       }, {} as Record<EventType, EventDetails>);
 
+      // Initialize all event types with default values if they don't exist
+      const allEventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
+      allEventTypes.forEach(eventType => {
+        if (!formattedEvents[eventType]) {
+          formattedEvents[eventType] = {
+            date: new Date().toISOString(),
+            time: "",
+            venue: "",
+            background_url: null,
+            main_background_url: null,
+          };
+        }
+      });
+
       console.log('Formatted events:', formattedEvents);
       return formattedEvents;
     }
@@ -39,7 +53,7 @@ export const useEventState = () => {
     mutationFn: async (events: Record<EventType, EventDetails>) => {
       const eventsToInsert = Object.entries(events).map(([type, details]) => ({
         type,
-        date: details.date,
+        date: typeof details.date === 'string' ? details.date : details.date.toISOString(),
         time: details.time,
         venue: details.venue,
         background_url: details.background_url,
@@ -69,7 +83,7 @@ export const useEventState = () => {
   });
 
   return {
-    eventDetails,
+    eventDetails: eventDetails as Record<EventType, EventDetails>,
     isLoading,
     addEvents: (events: Record<EventType, EventDetails>) => addEventMutation.mutate(events),
   };
