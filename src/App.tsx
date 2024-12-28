@@ -7,16 +7,13 @@ import { Skeleton } from "./components/ui/skeleton";
 // Lazy load route components with prefetch
 const Index = lazy(() => {
   // Prefetch other routes after main route loads
-  const prefetchOtherRoutes = () => {
-    const routes = [
-      import("./pages/Tasks"),
-      import("./pages/MayraEvent"),
-    ];
-    Promise.all(routes);
-  };
+  const routes = [
+    import("./pages/Tasks"),
+    import("./pages/MayraEvent"),
+  ];
+  Promise.all(routes);
   
   return import("./pages/Index").then(module => {
-    prefetchOtherRoutes();
     return module;
   });
 });
