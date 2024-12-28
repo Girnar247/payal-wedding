@@ -32,9 +32,10 @@ export const EventCard = ({
   }, 0) || 0;
 
   const backgroundStyle = details.background_url ? {
-    backgroundImage: `url('${details.background_url}')`,
+    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), url('${details.background_url}')`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
+    opacity: '0.8',
   } : {
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
   };
