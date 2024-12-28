@@ -1,13 +1,18 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Host } from "@/types/guest";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TaskFiltersProps {
-  hosts: Host[];
+  hosts: any[];
   selectedHost: string;
-  onHostSelect: (value: string) => void;
+  onHostSelect: (hostId: string) => void;
   eventTypes: string[];
   selectedEvent: string;
-  onEventSelect: (value: string) => void;
+  onEventSelect: (event: string) => void;
 }
 
 export const TaskFilters = ({
@@ -19,34 +24,38 @@ export const TaskFilters = ({
   onEventSelect,
 }: TaskFiltersProps) => {
   return (
-    <div className="flex flex-wrap gap-4 mb-6">
-      <Select value={selectedHost} onValueChange={onHostSelect}>
-        <SelectTrigger className="w-[200px] bg-white">
-          <SelectValue placeholder="Filter by Host" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Hosts</SelectItem>
-          {hosts.map((host) => (
-            <SelectItem key={host.id} value={host.id}>
-              {host.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="flex flex-wrap gap-4">
+      <div className="w-full md:w-64">
+        <Select value={selectedHost} onValueChange={onHostSelect}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by host" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Hosts</SelectItem>
+            {hosts.map((host) => (
+              <SelectItem key={host.id} value={host.id}>
+                {host.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-      <Select value={selectedEvent} onValueChange={onEventSelect}>
-        <SelectTrigger className="w-[200px] bg-white">
-          <SelectValue placeholder="Filter by Event" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Events</SelectItem>
-          {eventTypes.map((event) => (
-            <SelectItem key={event} value={event}>
-              {event}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="w-full md:w-64">
+        <Select value={selectedEvent} onValueChange={onEventSelect}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by event" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Events</SelectItem>
+            {eventTypes.map((event) => (
+              <SelectItem key={event} value={event}>
+                {event.charAt(0).toUpperCase() + event.slice(1)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 };

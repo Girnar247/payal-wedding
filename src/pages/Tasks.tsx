@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Home, Plus } from "lucide-react";
@@ -8,15 +8,15 @@ import { supabase } from "@/lib/supabase";
 import { TaskForm } from "@/components/tasks/TaskForm";
 import TaskBoard from "@/components/tasks/TaskBoard";
 import { TaskFilters } from "@/components/tasks/TaskFilters";
-import { useToast } from "@/components/ui/use-toast";
+import { useTaskMutations } from "@/components/tasks/mutations/useTaskMutations";
 
 const Tasks = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
   const [selectedHost, setSelectedHost] = useState("");
   const [selectedEvent, setSelectedEvent] = useState("");
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+
+  const { deleteTaskMutation, updateTaskMutation, addTaskMutation } = useTaskMutations();
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ["tasks"],
@@ -28,89 +28,6 @@ const Tasks = () => {
 
       if (error) throw error;
       return data;
-    },
-  });
-
-  const { data: hosts = [] } = useQuery({
-    queryKey: ["hosts"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("hosts")
-        .select("*")
-        .order("name");
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  // Get unique event types from all tasks
-  const eventTypes = Array.from(
-    new Set(tasks.flatMap((task) => task.event_types || []))
-  ).filter(Boolean);
-
-  const deleteTaskMutation = useMutation({
-    mutationFn: async (taskId: string) => {
-      const { error } = await supabase.from("tasks").delete().eq("id", taskId);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast({
-        title: "Task deleted",
-        description: "The task has been successfully deleted.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: `Failed to delete task: ${error.message}`,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const updateTaskMutation = useMutation({
-    mutationFn: async ({ id, ...data }: any) => {
-      const { error } = await supabase
-        .from("tasks")
-        .update(data)
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast({
-        title: "Task updated",
-        description: "The task has been successfully updated.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: `Failed to update task: ${error.message}`,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const addTaskMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const { error } = await supabase.from("tasks").insert([data]);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast({
-        title: "Task added",
-        description: "The task has been successfully added.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: `Failed to add task: ${error.message}`,
-        variant: "destructive",
-      });
     },
   });
 
@@ -165,10 +82,12 @@ const Tasks = () => {
         </div>
 
         <TaskFilters
-          hosts={hosts}
+          hosts={[]}
           selectedHost={selectedHost}
           onHostSelect={setSelectedHost}
-          eventTypes={eventTypes}
+          eventTypes={Array.from(
+            new Set(tasks.flatMap((task) => task.event_types || []))
+          )}
           selectedEvent={selectedEvent}
           onEventSelect={setSelectedEvent}
         />
