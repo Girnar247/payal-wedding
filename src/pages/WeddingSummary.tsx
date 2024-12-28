@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Calendar, Heart, MapPin, ArrowLeft } from "lucide-react";
 import { useEventState } from "@/hooks/useEventState";
 import { format, parseISO } from "date-fns";
+import { EventType, EventDetails } from "@/types/guest";
 
 const WeddingSummary = () => {
   const { eventDetails } = useEventState();
@@ -48,7 +49,7 @@ const WeddingSummary = () => {
 
             {/* Event Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-              {Object.entries(eventDetails || {}).map(([type, details]) => (
+              {eventDetails && Object.entries(eventDetails as Record<EventType, EventDetails>).map(([type, details]) => (
                 <Card 
                   key={type}
                   className="p-6 bg-white/80 hover:bg-white transition-colors space-y-4"
