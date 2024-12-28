@@ -31,9 +31,9 @@ export const useGuestState = () => {
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
-    retry: 1, // Only retry once on failure
-    refetchOnWindowFocus: false, // Disable automatic refetching on window focus
-    initialData: [], // Provide initial data to prevent undefined states
+    retry: 1,
+    refetchOnWindowFocus: false,
+    initialData: [],
   });
 
   const { data: hosts = [], isLoading: hostsLoading } = useQuery({
@@ -58,8 +58,8 @@ export const useGuestState = () => {
       console.log('Fetched hosts:', data);
       return data as Host[];
     },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
     retry: 1,
     refetchOnWindowFocus: false,
     initialData: [],
@@ -68,23 +68,29 @@ export const useGuestState = () => {
   const addGuestMutation = useMutation({
     mutationFn: async (formData: GuestFormData) => {
       console.log('Adding guest:', formData);
-      const { error } = await supabase
+      const guestData = {
+        name: formData.name,
+        email: formData.email || null,
+        phone: formData.phone,
+        plus_count: formData.plusCount,
+        host_id: formData.hostId || null, // Ensure null instead of empty string
+        events: formData.events,
+        attributes: formData.attributes,
+        rsvp_status: 'pending'
+      };
+
+      const { data, error } = await supabase
         .from('guests')
-        .insert([{
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          plus_count: formData.plusCount,
-          host_id: formData.hostId,
-          events: formData.events,
-          attributes: formData.attributes,
-          rsvp_status: 'pending'
-        }]);
+        .insert([guestData])
+        .select()
+        .single();
 
       if (error) {
         console.error('Error adding guest:', error);
         throw error;
       }
+
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['guests'] });
@@ -105,16 +111,12 @@ export const useGuestState = () => {
 
   const deleteGuestMutation = useMutation({
     mutationFn: async (id: string) => {
-      console.log('Deleting guest:', id);
       const { error } = await supabase
         .from('guests')
         .delete()
         .eq('id', id);
 
-      if (error) {
-        console.error('Error deleting guest:', error);
-        throw error;
-      }
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['guests'] });
@@ -124,7 +126,6 @@ export const useGuestState = () => {
       });
     },
     onError: (error: Error) => {
-      console.error('Error in deleteGuestMutation:', error);
       toast({
         title: "Error",
         description: "Failed to delete guest: " + error.message,
@@ -135,16 +136,12 @@ export const useGuestState = () => {
 
   const updateGuestStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "confirmed" | "declined" }) => {
-      console.log('Updating guest status:', { id, status });
       const { error } = await supabase
         .from('guests')
         .update({ rsvp_status: status })
         .eq('id', id);
 
-      if (error) {
-        console.error('Error updating guest status:', error);
-        throw error;
-      }
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['guests'] });
@@ -154,7 +151,6 @@ export const useGuestState = () => {
       });
     },
     onError: (error: Error) => {
-      console.error('Error in updateGuestStatusMutation:', error);
       toast({
         title: "Error",
         description: "Failed to update status: " + error.message,
@@ -163,7 +159,6 @@ export const useGuestState = () => {
     }
   });
 
-  // Add new mutations for host management
   const addHostMutation = useMutation({
     mutationFn: async (host: Omit<Host, "id">) => {
       console.log('Adding host:', host);
