@@ -8,6 +8,7 @@ import { EventCard } from "./event-summary/EventCard";
 import { MainBackgroundUpload } from "./event-summary/MainBackgroundUpload";
 import { parseISO } from "date-fns";
 import { useAdmin } from "@/contexts/AdminContext";
+import { useGuestState } from "@/hooks/useGuestState";
 
 interface EventSummaryProps {
   events: Record<EventType, EventDetails>;
@@ -17,6 +18,7 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
   const { isAdmin } = useAdmin();
+  const { guests } = useGuestState();
 
   const handleBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
     try {
@@ -146,7 +148,7 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
                 key={eventType}
                 eventType={eventType}
                 details={details}
-                guestCount={0}
+                guests={guests}
                 onBackgroundUpload={handleBackgroundUpload}
                 uploading={uploading}
               />

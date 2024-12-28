@@ -22,12 +22,12 @@ export const EventCard = ({
 }: EventCardProps) => {
   const { isAdmin } = useAdmin();
   
-  const confirmedGuestCount = guests.reduce((acc, guest) => {
+  const confirmedGuestCount = guests?.reduce((acc, guest) => {
     if (guest.rsvp_status === "confirmed" && guest.events.includes(eventType)) {
       return acc + 1 + (guest.plus_count || 0);
     }
     return acc;
-  }, 0);
+  }, 0) || 0;
 
   return (
     <Card 
