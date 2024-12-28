@@ -25,7 +25,7 @@ export const TaskFilters = ({
           <SelectValue placeholder="Filter by Host" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Hosts</SelectItem>
+          <SelectItem value="all">All Hosts</SelectItem>
           {hosts.map((host) => (
             <SelectItem key={host.id} value={host.id}>
               {host.name}
@@ -39,7 +39,7 @@ export const TaskFilters = ({
           <SelectValue placeholder="Filter by Event" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Events</SelectItem>
+          <SelectItem value="all">All Events</SelectItem>
           {eventTypes.map((event) => (
             <SelectItem key={event} value={event}>
               {event}
