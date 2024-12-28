@@ -15,12 +15,26 @@ export const VenueDetails = ({ venueDetails }: VenueDetailsProps) => {
   return (
     <Card className="p-6 bg-white/80 hover:bg-white transition-colors">
       <div className="space-y-6">
-        <div className="flex items-center justify-center">
-          <MapPin className="h-6 w-6 text-wedding-accent" />
+        {/* Venue Header */}
+        <div className="space-y-2 text-center mb-6">
+          <div className="flex items-center justify-center gap-2">
+            <MapPin className="h-6 w-6 text-wedding-accent" />
+            <h3 className="text-xl font-playfair">Main Venue: {venueDetails.name}</h3>
+          </div>
+          <p className="text-wedding-text/80">{venueDetails.address}</p>
+          <a 
+            href={venueDetails.mapsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-wedding-accent hover:text-wedding-text transition-colors"
+          >
+            <ExternalLink className="h-4 w-4 mr-1" />
+            View on Google Maps
+          </a>
         </div>
-        <h3 className="text-xl font-playfair text-center">Main Venue</h3>
         
-        <div className="grid md:grid-cols-2 gap-4">
+        {/* Images Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <img 
               src={venueDetails.aerialImage} 
@@ -47,20 +61,6 @@ export const VenueDetails = ({ venueDetails }: VenueDetailsProps) => {
               </p>
             </a>
           </div>
-        </div>
-
-        <div className="space-y-2 text-center">
-          <p className="font-medium text-lg">{venueDetails.name}</p>
-          <p className="text-wedding-text/80">{venueDetails.address}</p>
-          <a 
-            href={venueDetails.mapsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-wedding-accent hover:text-wedding-text transition-colors"
-          >
-            <ExternalLink className="h-4 w-4 mr-1" />
-            View on Google Maps
-          </a>
         </div>
       </div>
     </Card>
