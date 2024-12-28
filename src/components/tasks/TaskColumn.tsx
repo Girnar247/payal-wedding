@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Draggable } from "@hello-pangea/dnd";
+import { Draggable, Droppable } from "@hello-pangea/dnd";
 import TaskCard from "./TaskCard";
 import { Task } from "@/types/task";
 
@@ -22,23 +22,34 @@ const TaskColumn = ({ title, tasks, status, onEditTask, onDeleteTask }: TaskColu
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 pt-2">
-        {filteredTasks.map((task, index) => (
-          <Draggable key={task.id} draggableId={task.id} index={index}>
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
-              >
-                <TaskCard
-                  task={task}
-                  onEdit={onEditTask}
-                  onDelete={onDeleteTask}
-                />
-              </div>
-            )}
-          </Draggable>
-        ))}
+        <Droppable droppableId={status}>
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="space-y-4"
+            >
+              {filteredTasks.map((task, index) => (
+                <Draggable key={task.id} draggableId={task.id} index={index}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <TaskCard
+                        task={task}
+                        onEdit={onEditTask}
+                        onDelete={onDeleteTask}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
       </CardContent>
     </Card>
   );

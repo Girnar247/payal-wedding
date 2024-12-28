@@ -1,5 +1,6 @@
 import { Task } from "@/types/task";
 import TaskColumn from "./TaskColumn";
+import { DragDropContext } from "@hello-pangea/dnd";
 
 interface TaskBoardProps {
   tasks: Task[];
@@ -29,38 +30,36 @@ const TaskBoard = ({
 
   const filteredTasks = filterTasks(tasks);
 
-  const pendingTasks = filteredTasks.filter((task) => task.status === "pending");
-  const inProgressTasks = filteredTasks.filter(
-    (task) => task.status === "in-progress"
-  );
-  const completedTasks = filteredTasks.filter(
-    (task) => task.status === "completed"
-  );
+  const handleDragEnd = () => {
+    // We'll implement drag and drop functionality later
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <TaskColumn
-        title="To Do"
-        tasks={pendingTasks}
-        status="pending"
-        onEditTask={onEditTask}
-        onDeleteTask={onDeleteTask}
-      />
-      <TaskColumn
-        title="In Progress"
-        tasks={inProgressTasks}
-        status="in-progress"
-        onEditTask={onEditTask}
-        onDeleteTask={onDeleteTask}
-      />
-      <TaskColumn
-        title="Completed"
-        tasks={completedTasks}
-        status="completed"
-        onEditTask={onEditTask}
-        onDeleteTask={onDeleteTask}
-      />
-    </div>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <TaskColumn
+          title="To Do"
+          tasks={filteredTasks.filter((task) => task.status === "pending")}
+          status="pending"
+          onEditTask={onEditTask}
+          onDeleteTask={onDeleteTask}
+        />
+        <TaskColumn
+          title="In Progress"
+          tasks={filteredTasks.filter((task) => task.status === "in-progress")}
+          status="in-progress"
+          onEditTask={onEditTask}
+          onDeleteTask={onDeleteTask}
+        />
+        <TaskColumn
+          title="Completed"
+          tasks={filteredTasks.filter((task) => task.status === "completed")}
+          status="completed"
+          onEditTask={onEditTask}
+          onDeleteTask={onDeleteTask}
+        />
+      </div>
+    </DragDropContext>
   );
 };
 

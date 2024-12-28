@@ -3,19 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { TaskHeader } from "./card/TaskHeader";
 import { TaskDetails } from "./card/TaskDetails";
+import { Task } from "@/types/task";
 
 interface TaskCardProps {
-  task: {
-    id: string;
-    title: string;
-    description: string | null;
-    status: string;
-    priority: string;
-    event_types: string[];
-    due_date: string | null;
-    assigned_to: string | null;
-  };
-  onEdit: (task: any) => void;
+  task: Task;
+  onEdit: (task: Task) => void;
   onDelete: (taskId: string) => void;
 }
 
@@ -48,7 +40,7 @@ const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
       <CardContent className="p-4 pt-2">
         <TaskDetails
           description={task.description}
-          events={task.event_types}
+          events={task.event_types || []}
           dueDate={task.due_date}
           assignedHostName={assignedHost?.name}
         />
