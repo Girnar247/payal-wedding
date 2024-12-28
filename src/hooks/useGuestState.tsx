@@ -1,15 +1,17 @@
 import { Guest, Host, GuestFormData } from "@/types/guest";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useGuestState = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: guests = [] } = useQuery({
+  // Optimized query with better caching and stale time
+  const { data: guests = [], isLoading: guestsLoading } = useQuery({
     queryKey: ['guests'],
     queryFn: async () => {
+      console.log('Fetching guests...');
       const { data, error } = await supabase
         .from('guests')
         .select('*')
@@ -17,12 +19,19 @@ export const useGuestState = () => {
 
       if (error) throw error;
       return data as Guest[];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
+    retry: 1, // Only retry once on failure
+    refetchOnWindowFocus: false, // Disable automatic refetching on window focus
+    initialData: [], // Provide initial data to prevent undefined states
   });
 
-  const { data: hosts = [] } = useQuery({
+  // Optimized hosts query with better caching
+  const { data: hosts = [], isLoading: hostsLoading } = useQuery({
     queryKey: ['hosts'],
     queryFn: async () => {
+      console.log('Fetching hosts...');
       const { data, error } = await supabase
         .from('hosts')
         .select('*')
@@ -30,7 +39,12 @@ export const useGuestState = () => {
 
       if (error) throw error;
       return data as Host[];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
+    retry: 1,
+    refetchOnWindowFocus: false,
+    initialData: [],
   });
 
   const addGuestMutation = useMutation({
@@ -91,7 +105,6 @@ export const useGuestState = () => {
     }
   });
 
-  // Update guest status mutation
   const updateGuestStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "confirmed" | "declined" }) => {
       const { error } = await supabase
@@ -117,7 +130,6 @@ export const useGuestState = () => {
     }
   });
 
-  // Add host mutation
   const addHostMutation = useMutation({
     mutationFn: async (host: Omit<Host, "id">) => {
       const { error } = await supabase
@@ -142,7 +154,6 @@ export const useGuestState = () => {
     }
   });
 
-  // Delete host mutation
   const deleteHostMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -171,6 +182,8 @@ export const useGuestState = () => {
   return {
     guests,
     hosts,
+    guestsLoading,
+    hostsLoading,
     handleAddGuest: (data: GuestFormData) => addGuestMutation.mutate(data),
     handleDeleteGuest: (id: string) => deleteGuestMutation.mutate(id),
     handleUpdateStatus: (id: string, status: "confirmed" | "declined") => 

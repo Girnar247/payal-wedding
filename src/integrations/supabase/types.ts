@@ -100,26 +100,32 @@ export type Database = {
       }
       hosts: {
         Row: {
+          admin_password: string | null
           avatar_url: string | null
           created_at: string
           email: string
           id: string
+          is_admin: boolean | null
           name: string
           phone: string
         }
         Insert: {
+          admin_password?: string | null
           avatar_url?: string | null
           created_at?: string
           email: string
           id?: string
+          is_admin?: boolean | null
           name: string
           phone: string
         }
         Update: {
+          admin_password?: string | null
           avatar_url?: string | null
           created_at?: string
           email?: string
           id?: string
+          is_admin?: boolean | null
           name?: string
           phone?: string
         }
@@ -151,6 +157,93 @@ export type Database = {
           whatsapp_content?: string | null
         }
         Relationships: []
+      }
+      mayra_guests: {
+        Row: {
+          created_at: string
+          gift: string | null
+          id: string
+          name: string
+          relation: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          gift?: string | null
+          id?: string
+          name: string
+          relation?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          gift?: string | null
+          id?: string
+          name?: string
+          relation?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          event_type: string | null
+          event_types: string[] | null
+          id: string
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          event_type?: string | null
+          event_types?: string[] | null
+          id?: string
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          event_type?: string | null
+          event_types?: string[] | null
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "hosts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "hosts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

@@ -1,8 +1,9 @@
-import { EventCalendar } from "@/components/EventCalendar";
-import { EventSummary } from "@/components/EventSummary";
-import { HostList } from "@/components/HostList";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { EventCalendar } from "./EventCalendar";
+import { HostList } from "./HostList";
 import { EventType, EventDetails, Host } from "@/types/guest";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
 
 interface EventConfigurationProps {
   eventDetails: Record<EventType, EventDetails>;
@@ -22,11 +23,12 @@ export const EventConfiguration = ({
   onComplete,
 }: EventConfigurationProps) => {
   return (
-    <div className="space-y-8">
+    <Card className="p-6 space-y-8 glass-card">
+      <h2 className="text-2xl font-playfair">Event Configuration</h2>
+      
       <EventCalendar
         events={eventDetails}
         onUpdateEvent={onUpdateEvent}
-        editable={true}
       />
 
       <HostList
@@ -36,15 +38,11 @@ export const EventConfiguration = ({
         editable={true}
       />
 
-      <div className="text-center">
-        <Button
-          onClick={onComplete}
-          variant="outline"
-          className="bg-white/50 hover:bg-white/80"
-        >
-          Start Adding Guests
+      <div className="flex justify-end">
+        <Button onClick={onComplete} className="bg-wedding-rose hover:bg-wedding-rose/90">
+          Complete Setup
         </Button>
       </div>
-    </div>
+    </Card>
   );
 };

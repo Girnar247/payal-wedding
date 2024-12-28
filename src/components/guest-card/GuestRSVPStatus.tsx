@@ -1,6 +1,6 @@
 import { Guest } from "@/types/guest";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface GuestRSVPStatusProps {

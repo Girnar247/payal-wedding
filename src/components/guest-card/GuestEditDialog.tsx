@@ -4,8 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { EventType, Guest, GuestAttribute } from "@/types/guest";
-import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface GuestEditDialogProps {
   guest: Guest;
@@ -19,6 +19,11 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
   const { toast } = useToast();
   const allEvents: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
   const allAttributes: GuestAttribute[] = ["family", "friends", "staff", "mohalla"];
+
+  // Reset form when dialog opens with fresh guest data
+  useEffect(() => {
+    setEditedGuest({ ...guest });
+  }, [guest, isOpen]);
 
   const handleAllEventsChange = (checked: boolean) => {
     setEditedGuest(prev => ({
@@ -38,6 +43,19 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
       return;
     }
     setEditedGuest(prev => ({ ...prev, plus_count: count }));
+  };
+
+  const handleSubmit = () => {
+    // Only send the fields that can be updated
+    const updatedGuest = {
+      name: editedGuest.name,
+      email: editedGuest.email,
+      phone: editedGuest.phone,
+      plus_count: editedGuest.plus_count,
+      events: editedGuest.events,
+      attributes: editedGuest.attributes,
+    };
+    onSave(updatedGuest);
   };
 
   const isAllEventsSelected = editedGuest.events.length === allEvents.length;
@@ -162,7 +180,7 @@ export const GuestEditDialog = ({ guest, isOpen, onClose, onSave }: GuestEditDia
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={() => onSave(editedGuest)}>Save Changes</Button>
+          <Button onClick={handleSubmit}>Save Changes</Button>
         </div>
       </DialogContent>
     </Dialog>

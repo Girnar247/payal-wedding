@@ -1,15 +1,16 @@
 import { Guest, Host } from "@/types/guest";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { GuestEditDialog } from "./guest-card/GuestEditDialog";
-import { useState } from "react";
+import { useState, memo, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { GuestHeader } from "./guest-card/GuestHeader";
 import { GuestHostInfo } from "./guest-card/GuestHostInfo";
 import { GuestEventBadges } from "./guest-card/GuestEventBadges";
 import { GuestContactInfo } from "./guest-card/GuestContactInfo";
 import { GuestRSVPStatus } from "./guest-card/GuestRSVPStatus";
+import { GuestAccommodation } from "./guest-card/GuestAccommodation";
 
 interface GuestCardProps {
   guest: Guest;
@@ -19,34 +20,51 @@ interface GuestCardProps {
   onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
 }
 
-export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
+const GuestCardComponent = ({ guest, host, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const handleSave = async (updatedGuest: Partial<Guest>) => {
+  const handleOpenEditDialog = useCallback(() => {
+    setIsEditDialogOpen(true);
+  }, []);
+
+  const handleCloseDialog = useCallback(() => {
+    setIsEditDialogOpen(false);
+  }, []);
+
+  const handleSave = useCallback(async (updatedGuest: Partial<Guest>) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('guests')
         .update(updatedGuest)
-        .eq('id', guest.id);
+        .eq('id', guest.id)
+        .select()
+        .single();
 
       if (error) throw error;
 
-      queryClient.invalidateQueries({ queryKey: ['guests'] });
-      setIsEditDialogOpen(false);
+      queryClient.setQueryData(['guests'], (oldData: Guest[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(g => g.id === guest.id ? { ...g, ...data } : g);
+      });
+
+      handleCloseDialog();
       toast({
         title: "Success",
         description: "Guest details updated successfully.",
       });
+
+      await queryClient.invalidateQueries({ queryKey: ['guests'] });
     } catch (error) {
+      console.error('Error updating guest:', error);
       toast({
         title: "Error",
         description: "Failed to update guest details.",
         variant: "destructive",
       });
     }
-  };
+  }, [guest.id, queryClient, toast, handleCloseDialog]);
 
   return (
     <>
@@ -55,7 +73,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
           <div className="flex flex-col gap-3">
             <GuestHeader
               guest={guest}
-              onEdit={() => setIsEditDialogOpen(true)}
+              onEdit={handleOpenEditDialog}
               onDelete={onDelete}
               onUpdateStatus={onUpdateStatus}
             />
@@ -65,6 +83,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
         </CardHeader>
         <CardContent className="space-y-4">
           <GuestEventBadges events={guest.events} />
+          <GuestAccommodation guest={guest} />
         </CardContent>
       </Card>
 
@@ -74,10 +93,12 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
         <GuestEditDialog
           guest={guest}
           isOpen={isEditDialogOpen}
-          onClose={() => setIsEditDialogOpen(false)}
+          onClose={handleCloseDialog}
           onSave={handleSave}
         />
       )}
     </>
   );
 };
+
+export default memo(GuestCardComponent);

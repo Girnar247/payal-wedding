@@ -1,6 +1,6 @@
 import { EventType, EventDetails } from "@/types/guest";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
 export const useEventState = () => {
@@ -10,6 +10,7 @@ export const useEventState = () => {
   const { data: eventDetails = {}, isLoading } = useQuery({
     queryKey: ['events'],
     queryFn: async () => {
+      console.log('Fetching events...');
       const { data, error } = await supabase
         .from('events')
         .select('*')
@@ -22,21 +23,41 @@ export const useEventState = () => {
           date: event.date,
           time: event.time,
           venue: event.venue,
+          background_url: event.background_url,
+          main_background_url: event.main_background_url,
         };
         return acc;
       }, {} as Record<EventType, EventDetails>);
 
+      const allEventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
+      allEventTypes.forEach(eventType => {
+        if (!formattedEvents[eventType]) {
+          formattedEvents[eventType] = {
+            date: new Date().toISOString(),
+            time: "",
+            venue: "",
+            background_url: null,
+            main_background_url: null,
+          };
+        }
+      });
+
       return formattedEvents;
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
+    retry: 1,
   });
 
   const addEventMutation = useMutation({
     mutationFn: async (events: Record<EventType, EventDetails>) => {
       const eventsToInsert = Object.entries(events).map(([type, details]) => ({
         type,
-        date: details.date,
+        date: typeof details.date === 'string' ? details.date : details.date.toISOString(),
         time: details.time,
         venue: details.venue,
+        background_url: details.background_url,
+        main_background_url: details.main_background_url,
       }));
 
       const { error } = await supabase
@@ -62,7 +83,7 @@ export const useEventState = () => {
   });
 
   return {
-    eventDetails,
+    eventDetails: eventDetails as Record<EventType, EventDetails>,
     isLoading,
     addEvents: (events: Record<EventType, EventDetails>) => addEventMutation.mutate(events),
   };

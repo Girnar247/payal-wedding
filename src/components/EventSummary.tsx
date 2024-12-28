@@ -1,27 +1,56 @@
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { EventType, EventDetails } from "@/types/guest";
-import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Upload } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
-import { EventCard } from "./event-summary/EventCard";
-import { MainBackgroundUpload } from "./event-summary/MainBackgroundUpload";
+import { supabase } from "@/integrations/supabase/client";
 import { parseISO } from "date-fns";
+import { useAdmin } from "@/contexts/AdminContext";
+import { useGuestState } from "@/hooks/useGuestState";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { EventHeader } from "./event-summary/EventHeader";
+import { EventGrid } from "./event-summary/EventGrid";
 
 interface EventSummaryProps {
   events: Record<EventType, EventDetails>;
 }
 
-export const EventSummary = ({ events }: EventSummaryProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+const EventSummaryComponent = ({ events }: EventSummaryProps) => {
+  const isMobile = useIsMobile();
+  const [isCollapsed, setIsCollapsed] = useState(isMobile);
   const [uploading, setUploading] = useState<string | null>(null);
+  const { isAdmin } = useAdmin();
+  const { guests } = useGuestState();
 
-  const handleBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
+  useEffect(() => {
+    setIsCollapsed(isMobile);
+  }, [isMobile]);
+
+  const toggleCollapse = useCallback(() => {
+    setIsCollapsed(prev => !prev);
+  }, []);
+
+  const sortedEvents = useMemo(() => {
+    return Object.entries(events).sort((a, b) => {
+      const dateA = a[1].date instanceof Date ? a[1].date : parseISO(a[1].date as string);
+      const dateB = b[1].date instanceof Date ? b[1].date : parseISO(b[1].date as string);
+      return dateA.getTime() - dateB.getTime();
+    });
+  }, [events]);
+
+  const handleBackgroundUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
+    if (!event.target.files?.length) return;
+    
+    const file = event.target.files[0];
+    if (file.size > 500 * 1024) {
+      toast({
+        title: "Error",
+        description: "File size should be less than 500KB",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      if (!event.target.files || event.target.files.length === 0) {
-        return;
-      }
-      const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
       const sanitizedEventType = eventType.replace(/\s+/g, '_');
       const filePath = `${sanitizedEventType}/${crypto.randomUUID()}.${fileExt}`;
@@ -30,11 +59,12 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
 
       const { error: uploadError } = await supabase.storage
         .from('event-backgrounds')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       const { data: publicUrl } = supabase.storage
         .from('event-backgrounds')
@@ -45,112 +75,42 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
         .update({ background_url: publicUrl.publicUrl })
         .eq('type', eventType);
 
-      if (updateError) {
-        throw updateError;
-      }
+      if (updateError) throw updateError;
 
       toast({
-        title: "Background Updated",
-        description: "The event background has been successfully updated.",
+        title: "Success",
+        description: "Background updated successfully.",
       });
-
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to upload background image: " + error.message,
+        description: "Failed to upload background image",
         variant: "destructive",
       });
     } finally {
       setUploading(null);
     }
-  };
-
-  const handleMainBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      if (!event.target.files || event.target.files.length === 0) {
-        return;
-      }
-      const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const filePath = `main-background/${crypto.randomUUID()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('event-backgrounds')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      const { data: publicUrl } = supabase.storage
-        .from('event-backgrounds')
-        .getPublicUrl(filePath);
-
-      // Update each event type individually with the new main background URL
-      const eventTypes = Object.keys(events);
-      for (const eventType of eventTypes) {
-        const { error: updateError } = await supabase
-          .from('events')
-          .update({ main_background_url: publicUrl.publicUrl })
-          .eq('type', eventType);
-
-        if (updateError) {
-          throw updateError;
-        }
-      }
-
-      toast({
-        title: "Main Background Updated",
-        description: "The main background has been successfully updated.",
-      });
-
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to upload main background image: " + error.message,
-        variant: "destructive",
-      });
-    }
-  };
+  }, []);
 
   return (
     <div className="mb-8">
-      <div className="flex justify-between items-center mb-4">
-        <Button
-          variant="ghost"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex items-center justify-between p-4 bg-white/50 hover:bg-white/80 rounded-lg shadow-sm transition-all duration-300"
-        >
-          <h2 className="text-2xl font-playfair">Event Schedule</h2>
-          {isCollapsed ? (
-            <ChevronDown className="h-6 w-6 transition-transform duration-200" />
-          ) : (
-            <ChevronUp className="h-6 w-6 transition-transform duration-200" />
-          )}
-        </Button>
-        <MainBackgroundUpload onUpload={handleMainBackgroundUpload} />
-      </div>
+      <EventHeader
+        isCollapsed={isCollapsed}
+        toggleCollapse={toggleCollapse}
+        isAdmin={isAdmin}
+        onMainBackgroundUpload={(e) => handleBackgroundUpload(e, 'wedding')}
+      />
       
       {!isCollapsed && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {(Object.entries(events) as [EventType, EventDetails][])
-            .sort((a, b) => {
-              const dateA = a[1].date instanceof Date ? a[1].date : parseISO(a[1].date as string);
-              const dateB = b[1].date instanceof Date ? b[1].date : parseISO(b[1].date as string);
-              return dateA.getTime() - dateB.getTime();
-            })
-            .map(([eventType, details]) => (
-              <EventCard
-                key={eventType}
-                eventType={eventType}
-                details={details}
-                guestCount={0}
-                onBackgroundUpload={handleBackgroundUpload}
-                uploading={uploading}
-              />
-            ))}
-        </div>
+        <EventGrid
+          sortedEvents={sortedEvents}
+          guests={guests}
+          onBackgroundUpload={handleBackgroundUpload}
+          uploading={uploading}
+        />
       )}
     </div>
   );
 };
+
+export const EventSummary = memo(EventSummaryComponent);
