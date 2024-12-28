@@ -19,7 +19,7 @@ export const useGuestState = () => {
       return data as Guest[];
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    cacheTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
+    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes (formerly cacheTime)
   });
 
   const { data: hosts = [] } = useQuery({
@@ -34,7 +34,7 @@ export const useGuestState = () => {
       return data as Host[];
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    cacheTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
+    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes (formerly cacheTime)
   });
 
   const addGuestMutation = useMutation({
@@ -95,7 +95,6 @@ export const useGuestState = () => {
     }
   });
 
-  // Update guest status mutation
   const updateGuestStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "confirmed" | "declined" }) => {
       const { error } = await supabase
@@ -121,7 +120,6 @@ export const useGuestState = () => {
     }
   });
 
-  // Add host mutation
   const addHostMutation = useMutation({
     mutationFn: async (host: Omit<Host, "id">) => {
       const { error } = await supabase
@@ -146,7 +144,6 @@ export const useGuestState = () => {
     }
   });
 
-  // Delete host mutation
   const deleteHostMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
