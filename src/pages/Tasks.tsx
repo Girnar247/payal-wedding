@@ -60,6 +60,16 @@ const Tasks = () => {
     setEditingTask(null);
   };
 
+  // Get unique event types from tasks
+  const eventTypes = Array.from(
+    new Set(
+      tasks.flatMap((task) => [
+        ...(task.event_types || []),
+        task.event_type,
+      ]).filter(Boolean)
+    )
+  );
+
   if (isLoadingTasks || isLoadingHosts) {
     return (
       <div className="min-h-screen bg-wedding-cream p-6 flex items-center justify-center">
@@ -98,9 +108,7 @@ const Tasks = () => {
           hosts={hosts}
           selectedHost={selectedHost}
           onHostSelect={setSelectedHost}
-          eventTypes={Array.from(
-            new Set(tasks.flatMap((task) => task.event_types || []))
-          )}
+          eventTypes={eventTypes}
           selectedEvent={selectedEvent}
           onEventSelect={setSelectedEvent}
         />

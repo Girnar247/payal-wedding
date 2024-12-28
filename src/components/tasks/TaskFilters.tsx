@@ -5,9 +5,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Host } from "@/types/guest";
 
 interface TaskFiltersProps {
-  hosts: any[];
+  hosts: Host[];
   selectedHost: string;
   onHostSelect: (hostId: string) => void;
   eventTypes: string[];
@@ -27,12 +28,12 @@ export const TaskFilters = ({
     <div className="flex flex-wrap gap-4">
       <div className="w-full md:w-64">
         <Select value={selectedHost} onValueChange={onHostSelect}>
-          <SelectTrigger>
+          <SelectTrigger className="bg-white">
             <SelectValue placeholder="Filter by host" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Hosts</SelectItem>
-            {hosts.map((host) => (
+            {hosts?.map((host) => (
               <SelectItem key={host.id} value={host.id}>
                 {host.name}
               </SelectItem>
@@ -43,12 +44,12 @@ export const TaskFilters = ({
 
       <div className="w-full md:w-64">
         <Select value={selectedEvent} onValueChange={onEventSelect}>
-          <SelectTrigger>
+          <SelectTrigger className="bg-white">
             <SelectValue placeholder="Filter by event" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Events</SelectItem>
-            {eventTypes.map((event) => (
+            {eventTypes?.map((event) => (
               <SelectItem key={event} value={event}>
                 {event.charAt(0).toUpperCase() + event.slice(1)}
               </SelectItem>
