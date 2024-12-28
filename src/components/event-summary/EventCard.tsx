@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useAdmin } from "@/contexts/AdminContext";
-import { useNavigate } from "react-router-dom";
 
 interface EventCardProps {
   eventType: EventType;
@@ -22,7 +21,6 @@ export const EventCard = ({
   uploading 
 }: EventCardProps) => {
   const { isAdmin } = useAdmin();
-  const navigate = useNavigate();
   
   const confirmedGuestCount = guests?.reduce((acc, guest) => {
     if (guest.rsvp_status === "confirmed" && guest.events.includes(eventType)) {
@@ -31,31 +29,17 @@ export const EventCard = ({
     return acc;
   }, 0) || 0;
 
-  const backgroundStyle = details.background_url ? {
-    backgroundImage: `url('${details.background_url}')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  } : {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-  };
-
-  const handleCardClick = () => {
-    if (eventType === "mayra") {
-      navigate("/mayra");
-    }
-  };
-
   return (
     <Card 
-      className={`p-4 relative overflow-hidden min-h-[200px] group ${eventType === "mayra" ? "cursor-pointer" : ""}`}
-      style={backgroundStyle}
-      onClick={handleCardClick}
+      className="p-4 relative overflow-hidden min-h-[200px] group bg-cover bg-center"
+      style={{
+        backgroundImage: details.background_url ? `url(${details.background_url})` : 'none',
+      }}
     >
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
-      <div className="absolute inset-0 bg-white/80" />
-      <div className="relative z-10 text-wedding-text">
+      <div className="relative z-10 text-white">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-playfair capitalize text-lg font-bold">{eventType}</h3>
+          <h3 className="font-playfair capitalize text-lg">{eventType}</h3>
           {isAdmin && (
             <div className="relative">
               <input
@@ -76,19 +60,17 @@ export const EventCard = ({
           )}
         </div>
         <div className="space-y-1 text-sm">
-          <p className="text-wedding-text font-medium">
+          <p className="text-white/90">
             {format(
               details.date instanceof Date ? details.date : parseISO(details.date as string),
               'EEEE, MMMM d, yyyy'
             )}
           </p>
-          <p className="text-wedding-text font-medium">{details.time}</p>
-          <p className="text-wedding-text font-medium">{details.venue}</p>
-          {eventType !== "mayra" && (
-            <p className="text-wedding-text font-bold mt-2">
-              Confirmed Guests: {confirmedGuestCount}
-            </p>
-          )}
+          <p className="text-white/90">{details.time}</p>
+          <p className="text-white/90">{details.venue}</p>
+          <p className="text-white font-semibold mt-2">
+            Confirmed Guests: {confirmedGuestCount}
+          </p>
         </div>
       </div>
     </Card>

@@ -158,33 +158,6 @@ export type Database = {
         }
         Relationships: []
       }
-      mayra_guests: {
-        Row: {
-          created_at: string
-          gift: string | null
-          id: string
-          name: string
-          relation: string | null
-          status: string | null
-        }
-        Insert: {
-          created_at?: string
-          gift?: string | null
-          id?: string
-          name: string
-          relation?: string | null
-          status?: string | null
-        }
-        Update: {
-          created_at?: string
-          gift?: string | null
-          id?: string
-          name?: string
-          relation?: string | null
-          status?: string | null
-        }
-        Relationships: []
-      }
       tasks: {
         Row: {
           assigned_to: string | null
@@ -192,8 +165,7 @@ export type Database = {
           created_by: string | null
           description: string | null
           due_date: string | null
-          event_type: string | null
-          event_types: string[] | null
+          event_type: string
           id: string
           priority: string
           status: string
@@ -206,8 +178,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           due_date?: string | null
-          event_type?: string | null
-          event_types?: string[] | null
+          event_type: string
           id?: string
           priority?: string
           status?: string
@@ -220,8 +191,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           due_date?: string | null
-          event_type?: string | null
-          event_types?: string[] | null
+          event_type?: string
           id?: string
           priority?: string
           status?: string

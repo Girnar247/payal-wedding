@@ -17,20 +17,15 @@ export const useEventState = () => {
 
       if (error) throw error;
 
-      console.log('Raw event data from Supabase:', data);
-
       const formattedEvents = data.reduce((acc: Record<EventType, EventDetails>, event) => {
         acc[event.type as EventType] = {
           date: event.date,
           time: event.time,
           venue: event.venue,
-          background_url: event.background_url,
-          main_background_url: event.main_background_url,
         };
         return acc;
       }, {} as Record<EventType, EventDetails>);
 
-      console.log('Formatted events:', formattedEvents);
       return formattedEvents;
     }
   });
@@ -42,8 +37,6 @@ export const useEventState = () => {
         date: details.date,
         time: details.time,
         venue: details.venue,
-        background_url: details.background_url,
-        main_background_url: details.main_background_url,
       }));
 
       const { error } = await supabase

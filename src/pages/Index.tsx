@@ -68,100 +68,91 @@ const Index = () => {
 
   return (
     <AdminProvider>
-      <div className="min-h-screen">
-        {/* Header section with background image */}
-        <div 
-          className="bg-cover bg-center bg-no-repeat py-8 relative"
-          style={{
-            backgroundImage: eventDetails?.wedding?.main_background_url ? 
-              `url(${eventDetails.wedding.main_background_url})` : 'none',
-          }}
-        >
-          {/* Add a semi-transparent overlay */}
-          <div className="absolute inset-0 bg-white/40" />
-          
-          {/* Content */}
-          <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
-            <div className="flex justify-between items-center">
-              <div className="text-center space-y-2">
-                <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
-                  Payal's Wedding - Guest List
-                </h1>
-                <p className="text-gray-600">Manage your special celebrations with elegance</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <Link to="/tasks">
-                  <Button variant="outline" className="bg-white/50">
-                    <ClipboardList className="h-4 w-4 mr-2" />
-                    Tasks
-                  </Button>
-                </Link>
-                <AdminButton />
-              </div>
+      <div 
+        className="min-h-screen bg-wedding-cream p-6 md:p-8"
+        style={{
+          backgroundImage: eventDetails?.wedding?.main_background_url ? 
+            `url(${eventDetails.wedding.main_background_url})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="flex justify-between items-center">
+            <div className="text-center space-y-2">
+              <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
+                Payal's Wedding - Guest List
+              </h1>
+              <p className="text-gray-600">Manage your special celebrations with elegance</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link to="/tasks">
+                <Button variant="outline" className="bg-white/50">
+                  <ClipboardList className="h-4 w-4 mr-2" />
+                  Tasks
+                </Button>
+              </Link>
+              <AdminButton />
             </div>
           </div>
-        </div>
 
-        {/* Content section with color theme */}
-        <div className="bg-wedding-cream">
-          <div className="max-w-7xl mx-auto px-6 md:px-8 py-8 space-y-8">
-            {Object.keys(eventDetails).length === 0 ? (
-              <EventConfiguration
-                eventDetails={eventDetails}
-                hosts={hosts}
-                onUpdateEvent={handleUpdateEventDetails}
-                onAddHost={handleAddHost}
-                onDeleteHost={handleDeleteHost}
-                onComplete={() => {}}
-              />
-            ) : (
-              <>
-                <EventSummary events={eventDetails} />
-                <Dashboard {...stats} />
+          {Object.keys(eventDetails).length === 0 ? (
+            <EventConfiguration
+              eventDetails={eventDetails}
+              hosts={hosts}
+              onUpdateEvent={handleUpdateEventDetails}
+              onAddHost={handleAddHost}
+              onDeleteHost={handleDeleteHost}
+              onComplete={() => {}}
+            />
+          ) : (
+            <>
+              <EventSummary events={eventDetails} />
+              <Dashboard {...stats} />
 
-                <div className="space-y-4">
-                  <SearchAndFilters
-                    searchTerm={searchTerm}
-                    onSearchChange={setSearchTerm}
-                    selectedHost={selectedHost}
-                    onHostSelect={setSelectedHost}
-                    selectedEvent={selectedEvent}
-                    onEventSelect={setSelectedEvent}
-                    selectedAttribute={selectedAttribute}
-                    onAttributeSelect={setSelectedAttribute}
-                    hosts={hosts}
-                    eventDetails={eventDetails}
-                    resultCount={filteredGuests.length}
-                  />
-
-                  <div className="flex justify-end items-center gap-4">
-                    <p className="text-sm text-gray-600">
-                      {filteredGuests.length} result{filteredGuests.length !== 1 ? 's' : ''}
-                    </p>
-
-                    <GuestActions
-                      showAddForm={showAddForm}
-                      setShowAddForm={setShowAddForm}
-                      filteredGuests={filteredGuests}
-                      hosts={hosts}
-                      viewMode={viewMode}
-                      setViewMode={setViewMode}
-                    />
-                  </div>
-                </div>
-
-                {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
-
-                <GuestManagement
-                  guests={filteredGuests}
+              <div className="space-y-4">
+                <SearchAndFilters
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  selectedHost={selectedHost}
+                  onHostSelect={setSelectedHost}
+                  selectedEvent={selectedEvent}
+                  onEventSelect={setSelectedEvent}
+                  selectedAttribute={selectedAttribute}
+                  onAttributeSelect={setSelectedAttribute}
                   hosts={hosts}
-                  defaultHost={defaultHost}
-                  onDeleteGuest={handleDeleteGuest}
-                  onUpdateStatus={handleUpdateStatus}
+                  eventDetails={eventDetails}
+                  resultCount={filteredGuests.length}
                 />
-              </>
-            )}
-          </div>
+
+                <div className="flex justify-end items-center gap-4">
+                  <p className="text-sm text-gray-600">
+                    {filteredGuests.length} result{filteredGuests.length !== 1 ? 's' : ''}
+                  </p>
+
+                  <GuestActions
+                    showAddForm={showAddForm}
+                    setShowAddForm={setShowAddForm}
+                    filteredGuests={filteredGuests}
+                    hosts={hosts}
+                    viewMode={viewMode}
+                    setViewMode={setViewMode}
+                  />
+                </div>
+              </div>
+
+              {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
+
+              <GuestManagement
+                guests={filteredGuests}
+                hosts={hosts}
+                defaultHost={defaultHost}
+                onDeleteGuest={handleDeleteGuest}
+                onUpdateStatus={handleUpdateStatus}
+              />
+            </>
+          )}
         </div>
       </div>
     </AdminProvider>
