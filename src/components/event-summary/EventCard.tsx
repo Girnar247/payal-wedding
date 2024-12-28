@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useAdmin } from "@/contexts/AdminContext";
+import { useNavigate } from "react-router-dom";
 
 interface EventCardProps {
   eventType: EventType;
@@ -21,8 +22,7 @@ export const EventCard = ({
   uploading 
 }: EventCardProps) => {
   const { isAdmin } = useAdmin();
-  
-  console.log(`Background URL for ${eventType}:`, details.background_url);
+  const navigate = useNavigate();
   
   const confirmedGuestCount = guests?.reduce((acc, guest) => {
     if (guest.rsvp_status === "confirmed" && guest.events.includes(eventType)) {
@@ -39,10 +39,17 @@ export const EventCard = ({
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
   };
 
+  const handleCardClick = () => {
+    if (eventType === "mayra") {
+      navigate("/mayra");
+    }
+  };
+
   return (
     <Card 
-      className="p-4 relative overflow-hidden min-h-[200px] group"
+      className={`p-4 relative overflow-hidden min-h-[200px] group ${eventType === "mayra" ? "cursor-pointer" : ""}`}
       style={backgroundStyle}
+      onClick={handleCardClick}
     >
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
       <div className="absolute inset-0 bg-white/80" />
@@ -77,9 +84,11 @@ export const EventCard = ({
           </p>
           <p className="text-wedding-text font-medium">{details.time}</p>
           <p className="text-wedding-text font-medium">{details.venue}</p>
-          <p className="text-wedding-text font-bold mt-2">
-            Confirmed Guests: {confirmedGuestCount}
-          </p>
+          {eventType !== "mayra" && (
+            <p className="text-wedding-text font-bold mt-2">
+              Confirmed Guests: {confirmedGuestCount}
+            </p>
+          )}
         </div>
       </div>
     </Card>

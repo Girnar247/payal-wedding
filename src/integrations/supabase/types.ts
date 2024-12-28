@@ -158,6 +158,33 @@ export type Database = {
         }
         Relationships: []
       }
+      mayra_guests: {
+        Row: {
+          created_at: string
+          gift: string | null
+          id: string
+          name: string
+          relation: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          gift?: string | null
+          id?: string
+          name: string
+          relation?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          gift?: string | null
+          id?: string
+          name?: string
+          relation?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assigned_to: string | null
