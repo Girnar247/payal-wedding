@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Home, Plus } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { TaskForm } from "@/components/tasks/TaskForm";
@@ -13,16 +13,29 @@ import { useTaskMutations } from "@/components/tasks/mutations/useTaskMutations"
 const Tasks = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
-  const [selectedHost, setSelectedHost] = useState("");
-  const [selectedEvent, setSelectedEvent] = useState("");
+  const [selectedHost, setSelectedHost] = useState("all");
+  const [selectedEvent, setSelectedEvent] = useState("all");
 
   const { deleteTaskMutation, updateTaskMutation, addTaskMutation } = useTaskMutations();
 
-  const { data: tasks = [], isLoading } = useQuery({
+  const { data: tasks = [], isLoading: isLoadingTasks } = useQuery({
     queryKey: ["tasks"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("tasks")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: hosts = [], isLoading: isLoadingHosts } = useQuery({
+    queryKey: ["hosts"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("hosts")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -47,10 +60,10 @@ const Tasks = () => {
     setEditingTask(null);
   };
 
-  if (isLoading) {
+  if (isLoadingTasks || isLoadingHosts) {
     return (
       <div className="min-h-screen bg-wedding-cream p-6 flex items-center justify-center">
-        <p>Loading tasks...</p>
+        <p>Loading...</p>
       </div>
     );
   }
@@ -82,7 +95,7 @@ const Tasks = () => {
         </div>
 
         <TaskFilters
-          hosts={[]}
+          hosts={hosts}
           selectedHost={selectedHost}
           onHostSelect={setSelectedHost}
           eventTypes={Array.from(
@@ -103,6 +116,9 @@ const Tasks = () => {
 
       <Dialog open={isFormOpen} onOpenChange={handleCloseForm}>
         <DialogContent className="sm:max-w-[500px]">
+          <DialogTitle>
+            {editingTask ? "Edit Task" : "Add New Task"}
+          </DialogTitle>
           <TaskForm
             initialData={editingTask}
             onSubmit={(data) => {

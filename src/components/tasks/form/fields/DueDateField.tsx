@@ -45,7 +45,6 @@ export const DueDateField = ({ form }: DueDateFieldProps) => {
                 selected={field.value ? new Date(field.value) : undefined}
                 onSelect={(date) => {
                   if (date) {
-                    // Ensure the date is in ISO format and preserve the time
                     const isoDate = date.toISOString();
                     field.onChange(isoDate);
                   } else {
@@ -53,6 +52,7 @@ export const DueDateField = ({ form }: DueDateFieldProps) => {
                   }
                 }}
                 initialFocus
+                className="rounded-md border bg-white"
               />
             </PopoverContent>
           </Popover>
