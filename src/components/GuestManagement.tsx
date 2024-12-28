@@ -1,10 +1,8 @@
 import { useState, useCallback, memo } from "react";
 import { GuestCard } from "@/components/GuestCard";
 import { GuestList } from "@/components/GuestList";
-import { Button } from "@/components/ui/button";
-import { LayoutGrid, List } from "lucide-react";
 import { Guest, Host } from "@/types/guest";
-import { useToast } from "@/components/ui/use-toast";
+import { ViewToggle } from "./guest-management/ViewToggle";
 
 interface GuestManagementProps {
   guests: Guest[];
@@ -22,7 +20,6 @@ const GuestManagementComponent = ({
   onUpdateStatus,
 }: GuestManagementProps) => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const { toast } = useToast();
 
   const toggleViewMode = useCallback(() => {
     setViewMode(prev => prev === "grid" ? "list" : "grid");
@@ -35,18 +32,7 @@ const GuestManagementComponent = ({
   return (
     <div>
       <div className="flex justify-end mb-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={toggleViewMode}
-        >
-          {viewMode === "grid" ? (
-            <List className="h-4 w-4 mr-2" />
-          ) : (
-            <LayoutGrid className="h-4 w-4 mr-2" />
-          )}
-          {viewMode === "grid" ? "List View" : "Grid View"}
-        </Button>
+        <ViewToggle viewMode={viewMode} onToggle={toggleViewMode} />
       </div>
 
       {viewMode === "grid" ? (

@@ -1,16 +1,14 @@
 import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { EventType, EventDetails } from "@/types/guest";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { Upload, ChevronDown, ChevronUp } from "lucide-react";
+import { Upload } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { EventCard } from "./event-summary/EventCard";
-import { MainBackgroundUpload } from "./event-summary/MainBackgroundUpload";
 import { parseISO } from "date-fns";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { EventHeader } from "./event-summary/EventHeader";
+import { EventGrid } from "./event-summary/EventGrid";
 
 interface EventSummaryProps {
   events: Record<EventType, EventDetails>;
@@ -31,7 +29,6 @@ const EventSummaryComponent = ({ events }: EventSummaryProps) => {
     setIsCollapsed(prev => !prev);
   }, []);
 
-  // Memoize sorted events with proper type handling
   const sortedEvents = useMemo(() => {
     return Object.entries(events).sort((a, b) => {
       const dateA = a[1].date instanceof Date ? a[1].date : parseISO(a[1].date as string);
@@ -40,12 +37,11 @@ const EventSummaryComponent = ({ events }: EventSummaryProps) => {
     });
   }, [events]);
 
-  // Memoize the background upload handler
   const handleBackgroundUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
     if (!event.target.files?.length) return;
     
     const file = event.target.files[0];
-    if (file.size > 500 * 1024) { // Reduced to 500KB limit for better performance
+    if (file.size > 500 * 1024) {
       toast({
         title: "Error",
         description: "File size should be less than 500KB",
@@ -98,35 +94,20 @@ const EventSummaryComponent = ({ events }: EventSummaryProps) => {
 
   return (
     <div className="mb-8">
-      <div className="flex justify-between items-center mb-4">
-        <Button
-          variant="ghost"
-          onClick={toggleCollapse}
-          className="flex items-center justify-between p-4 bg-white/50 hover:bg-white/80 rounded-lg shadow-sm transition-all duration-300"
-        >
-          <h2 className="text-2xl font-playfair">Event Schedule</h2>
-          {isCollapsed ? (
-            <ChevronDown className="h-6 w-6 transition-transform duration-200" />
-          ) : (
-            <ChevronUp className="h-6 w-6 transition-transform duration-200" />
-          )}
-        </Button>
-        {isAdmin && <MainBackgroundUpload onUpload={(e) => handleBackgroundUpload(e, 'wedding')} />}
-      </div>
+      <EventHeader
+        isCollapsed={isCollapsed}
+        toggleCollapse={toggleCollapse}
+        isAdmin={isAdmin}
+        onMainBackgroundUpload={(e) => handleBackgroundUpload(e, 'wedding')}
+      />
       
       {!isCollapsed && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {sortedEvents.map(([eventType, details]) => (
-            <EventCard
-              key={eventType}
-              eventType={eventType as EventType}
-              details={details}
-              guests={guests}
-              onBackgroundUpload={handleBackgroundUpload}
-              uploading={uploading}
-            />
-          ))}
-        </div>
+        <EventGrid
+          sortedEvents={sortedEvents}
+          guests={guests}
+          onBackgroundUpload={handleBackgroundUpload}
+          uploading={uploading}
+        />
       )}
     </div>
   );
