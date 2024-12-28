@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { EventType, EventDetails } from "@/types/guest";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { Upload } from "lucide-react";
+import { Upload, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { EventCard } from "./event-summary/EventCard";

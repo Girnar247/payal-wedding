@@ -26,7 +26,6 @@ export const EventConfiguration = ({
       <EventCalendar
         events={eventDetails}
         onUpdateEvent={onUpdateEvent}
-        editable={true}
       />
 
       <HostList
