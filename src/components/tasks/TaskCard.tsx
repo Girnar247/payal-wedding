@@ -11,8 +11,7 @@ interface TaskCardProps {
     description: string | null;
     status: string;
     priority: string;
-    event_type: string;
-    event_types?: string[];
+    event_types: string[];
     due_date: string | null;
     assigned_to: string | null;
   };
@@ -36,8 +35,6 @@ const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
     enabled: !!task.assigned_to,
   });
 
-  const events = task.event_types || [task.event_type];
-
   return (
     <Card className="mb-4 bg-white/50 backdrop-blur-sm">
       <CardHeader className="p-4 pb-2">
@@ -51,7 +48,7 @@ const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
       <CardContent className="p-4 pt-2">
         <TaskDetails
           description={task.description}
-          events={events}
+          events={task.event_types}
           dueDate={task.due_date}
           assignedHostName={assignedHost?.name}
         />

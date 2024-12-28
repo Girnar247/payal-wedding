@@ -166,6 +166,7 @@ export type Database = {
           description: string | null
           due_date: string | null
           event_type: string
+          event_types: string[] | null
           id: string
           priority: string
           status: string
@@ -179,6 +180,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           event_type: string
+          event_types?: string[] | null
           id?: string
           priority?: string
           status?: string
@@ -192,6 +194,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           event_type?: string
+          event_types?: string[] | null
           id?: string
           priority?: string
           status?: string

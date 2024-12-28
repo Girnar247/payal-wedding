@@ -18,7 +18,7 @@ export const TaskForm = ({ initialData, onSubmit, onCancel }: TaskFormProps) => 
     defaultValues: {
       title: initialData?.title || "",
       description: initialData?.description || "",
-      event_types: initialData?.event_type ? [initialData.event_type] : [],
+      event_types: initialData?.event_types || [],
       priority: initialData?.priority || "medium",
       status: initialData?.status || "pending",
       due_date: initialData?.due_date || undefined,
@@ -38,18 +38,9 @@ export const TaskForm = ({ initialData, onSubmit, onCancel }: TaskFormProps) => 
     },
   });
 
-  const handleSubmit = (data: TaskFormValues) => {
-    // Convert the array of event types to a single event type for backward compatibility
-    const formattedData = {
-      ...data,
-      event_type: data.event_types[0], // Use the first event type as the main one
-    };
-    onSubmit(formattedData);
-  };
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <TaskFormFields form={form} hosts={hosts} onCancel={onCancel} />
       </form>
     </Form>
