@@ -7,7 +7,6 @@ export const useGuestState = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Optimized query with better error handling and logging
   const { data: guests = [], isLoading: guestsLoading } = useQuery({
     queryKey: ['guests'],
     queryFn: async () => {
@@ -37,7 +36,6 @@ export const useGuestState = () => {
     initialData: [], // Provide initial data to prevent undefined states
   });
 
-  // Optimized hosts query with better error handling
   const { data: hosts = [], isLoading: hostsLoading } = useQuery({
     queryKey: ['hosts'],
     queryFn: async () => {
@@ -165,6 +163,66 @@ export const useGuestState = () => {
     }
   });
 
+  // Add new mutations for host management
+  const addHostMutation = useMutation({
+    mutationFn: async (host: Omit<Host, "id">) => {
+      console.log('Adding host:', host);
+      const { error } = await supabase
+        .from('hosts')
+        .insert([host]);
+
+      if (error) {
+        console.error('Error adding host:', error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hosts'] });
+      toast({
+        title: "Host Added",
+        description: "The host has been successfully added.",
+      });
+    },
+    onError: (error: Error) => {
+      console.error('Error in addHostMutation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add host: " + error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  const deleteHostMutation = useMutation({
+    mutationFn: async (id: string) => {
+      console.log('Deleting host:', id);
+      const { error } = await supabase
+        .from('hosts')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting host:', error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hosts'] });
+      toast({
+        title: "Host Deleted",
+        description: "The host has been removed from the list.",
+      });
+    },
+    onError: (error: Error) => {
+      console.error('Error in deleteHostMutation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete host: " + error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
   return {
     guests,
     hosts,
@@ -174,5 +232,7 @@ export const useGuestState = () => {
     handleDeleteGuest: (id: string) => deleteGuestMutation.mutate(id),
     handleUpdateStatus: (id: string, status: "confirmed" | "declined") => 
       updateGuestStatusMutation.mutate({ id, status }),
+    handleAddHost: (host: Omit<Host, "id">) => addHostMutation.mutate(host),
+    handleDeleteHost: (id: string) => deleteHostMutation.mutate(id),
   };
 };
