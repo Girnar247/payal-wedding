@@ -45,10 +45,10 @@ export const EventCard = ({
       style={backgroundStyle}
     >
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
-      <div className="absolute inset-0 bg-white/60" /> {/* Add 60% white overlay */}
+      <div className="absolute inset-0 bg-white/80" /> {/* Increased to 80% white overlay */}
       <div className="relative z-10 text-wedding-text">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-playfair capitalize text-lg">{eventType}</h3>
+          <h3 className="font-playfair capitalize text-lg font-bold">{eventType}</h3>
           {isAdmin && (
             <div className="relative">
               <input
@@ -69,15 +69,15 @@ export const EventCard = ({
           )}
         </div>
         <div className="space-y-1 text-sm">
-          <p className="text-wedding-text/90">
+          <p className="text-wedding-text font-medium">
             {format(
               details.date instanceof Date ? details.date : parseISO(details.date as string),
               'EEEE, MMMM d, yyyy'
             )}
           </p>
-          <p className="text-wedding-text/90">{details.time}</p>
-          <p className="text-wedding-text/90">{details.venue}</p>
-          <p className="text-wedding-text font-semibold mt-2">
+          <p className="text-wedding-text font-medium">{details.time}</p>
+          <p className="text-wedding-text font-medium">{details.venue}</p>
+          <p className="text-wedding-text font-bold mt-2">
             Confirmed Guests: {confirmedGuestCount}
           </p>
         </div>
