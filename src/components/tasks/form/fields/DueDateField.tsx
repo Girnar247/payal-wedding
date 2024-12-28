@@ -1,10 +1,5 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { TaskFormValues } from "../TaskFormTypes";
 
@@ -20,42 +15,22 @@ export const DueDateField = ({ form }: DueDateFieldProps) => {
       render={({ field }) => (
         <FormItem className="flex flex-col">
           <FormLabel>Due Date</FormLabel>
-          <Popover>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full pl-3 text-left font-normal",
-                    !field.value && "text-muted-foreground"
-                  )}
-                >
-                  {field.value ? (
-                    format(new Date(field.value), "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={field.value ? new Date(field.value) : undefined}
-                onSelect={(date) => {
-                  if (date) {
-                    const isoDate = date.toISOString();
-                    field.onChange(isoDate);
-                  } else {
-                    field.onChange(undefined);
-                  }
-                }}
-                initialFocus
-                className="rounded-md border bg-white"
-              />
-            </PopoverContent>
-          </Popover>
+          <FormControl>
+            <Input
+              type="date"
+              {...field}
+              value={field.value ? field.value.split('T')[0] : ''}
+              onChange={(e) => {
+                const date = e.target.value;
+                if (date) {
+                  field.onChange(new Date(date).toISOString());
+                } else {
+                  field.onChange(undefined);
+                }
+              }}
+              className="w-full"
+            />
+          </FormControl>
           <FormMessage />
         </FormItem>
       )}

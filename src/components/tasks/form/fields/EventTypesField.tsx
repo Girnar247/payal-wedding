@@ -1,9 +1,8 @@
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { UseFormReturn } from "react-hook-form";
 import { TaskFormValues } from "../TaskFormTypes";
 import { EventType } from "@/types/guest";
-import { cn } from "@/lib/utils";
 
 interface EventTypesFieldProps {
   form: UseFormReturn<TaskFormValues>;
@@ -18,47 +17,63 @@ export const EventTypesField = ({ form }: EventTypesFieldProps) => {
     "wedding",
   ];
 
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      form.setValue("event_types", eventTypes);
+    } else {
+      form.setValue("event_types", []);
+    }
+  };
+
+  const isAllSelected = form.watch("event_types")?.length === eventTypes.length;
+
   return (
     <FormField
       control={form.control}
       name="event_types"
-      render={({ field }) => (
+      render={() => (
         <FormItem>
           <FormLabel>Events</FormLabel>
-          <Select
-            onValueChange={(value) => {
-              const currentValues = field.value || [];
-              if (currentValues.includes(value)) {
-                field.onChange(currentValues.filter((v) => v !== value));
-              } else {
-                field.onChange([...currentValues, value]);
-              }
-            }}
-          >
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Select events">
-                  {field.value?.length
-                    ? `${field.value.length} events selected`
-                    : "Select events"}
-                </SelectValue>
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {eventTypes.map((event) => (
-                <SelectItem
-                  key={event}
-                  value={event}
-                  className={cn(
-                    "cursor-pointer",
-                    field.value?.includes(event) && "bg-accent"
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                checked={isAllSelected}
+                onCheckedChange={handleSelectAll}
+              />
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                All Events
+              </label>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {eventTypes.map((type) => (
+                <FormField
+                  key={type}
+                  control={form.control}
+                  name="event_types"
+                  render={({ field }) => (
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={field.value?.includes(type)}
+                        onCheckedChange={(checked) => {
+                          const currentValues = field.value || [];
+                          if (checked) {
+                            field.onChange([...currentValues, type]);
+                          } else {
+                            field.onChange(
+                              currentValues.filter((value) => value !== type)
+                            );
+                          }
+                        }}
+                      />
+                      <label className="text-sm font-medium leading-none capitalize peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        {type}
+                      </label>
+                    </div>
                   )}
-                >
-                  {event.charAt(0).toUpperCase() + event.slice(1)}
-                </SelectItem>
+                />
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          </div>
           <FormMessage />
         </FormItem>
       )}
