@@ -1,7 +1,7 @@
 import { Guest, Host } from "@/types/guest";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { GuestEditDialog } from "./guest-card/GuestEditDialog";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +20,7 @@ interface GuestCardProps {
   onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
 }
 
-export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
+const GuestCardComponent = ({ guest, host, onEdit, onDelete, onUpdateStatus }: GuestCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -100,3 +100,5 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
     </>
   );
 };
+
+export const GuestCard = memo(GuestCardComponent);

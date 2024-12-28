@@ -17,7 +17,9 @@ export const useGuestState = () => {
 
       if (error) throw error;
       return data as Guest[];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    cacheTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
   });
 
   const { data: hosts = [] } = useQuery({
@@ -30,7 +32,9 @@ export const useGuestState = () => {
 
       if (error) throw error;
       return data as Host[];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    cacheTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
   });
 
   const addGuestMutation = useMutation({

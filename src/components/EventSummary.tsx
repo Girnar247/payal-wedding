@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { EventType, EventDetails } from "@/types/guest";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -16,7 +16,7 @@ interface EventSummaryProps {
   events: Record<EventType, EventDetails>;
 }
 
-export const EventSummary = ({ events }: EventSummaryProps) => {
+const EventSummaryComponent = ({ events }: EventSummaryProps) => {
   const isMobile = useIsMobile();
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
   const [uploading, setUploading] = useState<string | null>(null);
@@ -44,10 +44,10 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
       }
       const file = event.target.files[0];
       
-      if (file.size > 2 * 1024 * 1024) { // Reduced to 2MB limit for better performance
+      if (file.size > 1 * 1024 * 1024) { // Reduced to 1MB limit for better performance
         toast({
           title: "Error",
-          description: "File size should be less than 2MB",
+          description: "File size should be less than 1MB",
           variant: "destructive",
         });
         return;
@@ -134,3 +134,5 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
     </div>
   );
 };
+
+export const EventSummary = memo(EventSummaryComponent);
