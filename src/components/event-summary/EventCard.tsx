@@ -22,6 +22,8 @@ export const EventCard = ({
 }: EventCardProps) => {
   const { isAdmin } = useAdmin();
   
+  console.log(`Background URL for ${eventType}:`, details.background_url);
+  
   const confirmedGuestCount = guests?.reduce((acc, guest) => {
     if (guest.rsvp_status === "confirmed" && guest.events.includes(eventType)) {
       return acc + 1 + (guest.plus_count || 0);
@@ -29,12 +31,18 @@ export const EventCard = ({
     return acc;
   }, 0) || 0;
 
+  const backgroundStyle = details.background_url ? {
+    backgroundImage: `url('${details.background_url}')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  } : {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  };
+
   return (
     <Card 
-      className="p-4 relative overflow-hidden min-h-[200px] group bg-cover bg-center"
-      style={{
-        backgroundImage: details.background_url ? `url(${details.background_url})` : 'none',
-      }}
+      className="p-4 relative overflow-hidden min-h-[200px] group"
+      style={backgroundStyle}
     >
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
       <div className="relative z-10 text-white">
