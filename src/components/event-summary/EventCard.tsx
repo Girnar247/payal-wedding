@@ -32,10 +32,9 @@ export const EventCard = ({
   }, 0) || 0;
 
   const backgroundStyle = details.background_url ? {
-    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), url('${details.background_url}')`,
+    backgroundImage: `url('${details.background_url}')`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    opacity: '0.8',
   } : {
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
   };
@@ -46,7 +45,7 @@ export const EventCard = ({
       style={backgroundStyle}
     >
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
-      <div className="absolute inset-0 bg-white/80" /> {/* Increased to 80% white overlay */}
+      <div className="absolute inset-0 bg-white/80" />
       <div className="relative z-10 text-wedding-text">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-playfair capitalize text-lg font-bold">{eventType}</h3>
