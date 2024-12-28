@@ -12,9 +12,6 @@ interface VenueDetailsProps {
 }
 
 export const VenueDetails = ({ venueDetails }: VenueDetailsProps) => {
-  // Create a custom map URL with a marker pin
-  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=25.1507,75.8524&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7Clabel:V%7C25.1507,75.8524&key=AIzaSyDHVtZNNF5mYqzRWLYZyt-BZSFsUxj_Uoc&style=feature:poi|visibility:off`;
-
   return (
     <Card className="p-6 bg-white/80 hover:bg-white transition-colors">
       <div className="space-y-6">
@@ -41,7 +38,7 @@ export const VenueDetails = ({ venueDetails }: VenueDetailsProps) => {
               className="block group"
             >
               <img 
-                src={mapUrl}
+                src="/lovable-uploads/dc11b7d5-bdd8-4838-80d6-50f7313f5b01.png"
                 alt="Map location of Agarwal Hotel & Resort"
                 className="w-full h-48 object-cover rounded-lg shadow-md transition-transform group-hover:scale-[1.02]"
               />
