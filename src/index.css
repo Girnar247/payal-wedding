@@ -41,12 +41,10 @@
   }
 }
 
-@layer components {
-  .glass-card {
-    @apply bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg;
-  }
+.glass-card {
+  @apply bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg;
+}
 
-  .fade-in {
-    @apply animate-fadeIn opacity-0;
-  }
+.fade-in {
+  @apply animate-fadeIn opacity-0;
 }

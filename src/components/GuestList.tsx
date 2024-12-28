@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { Guest, Host } from "@/types/guest";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Badge } from "./ui/badge";
@@ -16,7 +15,7 @@ interface GuestListProps {
   onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
 
-const GuestListComponent = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestListProps) => {
+export const GuestList = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestListProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -167,5 +166,3 @@ const GuestListComponent = ({ guests, hosts, defaultHost, onUpdateStatus }: Gues
     </div>
   );
 };
-
-export default memo(GuestListComponent);
