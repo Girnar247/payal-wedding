@@ -81,23 +81,23 @@ const Index = () => {
           <div className="absolute inset-0 bg-white/40" />
           
           {/* Content */}
-          <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
-            <div className="flex justify-between items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="flex flex-col space-y-4">
               <div className="text-center space-y-2">
-                <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
+                <h1 className="text-3xl md:text-5xl font-playfair text-wedding-text">
                   Payal's Wedding - Guest List
                 </h1>
                 <p className="text-gray-600">Manage your special celebrations with elegance</p>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link to="/wedding-summary">
-                  <Button variant="outline" className="bg-white/50">
+                  <Button variant="outline" className="w-full sm:w-auto bg-white/50">
                     <Heart className="h-4 w-4 mr-2" />
                     Wedding Summary
                   </Button>
                 </Link>
                 <Link to="/tasks">
-                  <Button variant="outline" className="bg-white/50">
+                  <Button variant="outline" className="w-full sm:w-auto bg-white/50">
                     <ClipboardList className="h-4 w-4 mr-2" />
                     Tasks
                   </Button>
@@ -110,7 +110,7 @@ const Index = () => {
 
         {/* Content section with color theme */}
         <div className="bg-wedding-cream">
-          <div className="max-w-7xl mx-auto px-6 md:px-8 py-8 space-y-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
             {Object.keys(eventDetails).length === 0 ? (
               <EventConfiguration
                 eventDetails={eventDetails}
@@ -140,19 +140,21 @@ const Index = () => {
                     resultCount={filteredGuests.length}
                   />
 
-                  <div className="flex justify-end items-center gap-4">
-                    <p className="text-sm text-gray-600">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mt-4">
+                    <p className="text-sm text-gray-600 order-2 sm:order-1">
                       {filteredGuests.length} result{filteredGuests.length !== 1 ? 's' : ''}
                     </p>
 
-                    <GuestActions
-                      showAddForm={showAddForm}
-                      setShowAddForm={setShowAddForm}
-                      filteredGuests={filteredGuests}
-                      hosts={hosts}
-                      viewMode={viewMode}
-                      setViewMode={setViewMode}
-                    />
+                    <div className="order-1 sm:order-2 w-full sm:w-auto">
+                      <GuestActions
+                        showAddForm={showAddForm}
+                        setShowAddForm={setShowAddForm}
+                        filteredGuests={filteredGuests}
+                        hosts={hosts}
+                        viewMode={viewMode}
+                        setViewMode={setViewMode}
+                      />
+                    </div>
                   </div>
                 </div>
 
