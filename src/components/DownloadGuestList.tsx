@@ -87,12 +87,12 @@ export const DownloadGuestList = ({ guests, hosts }: DownloadGuestListProps) => 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-full sm:w-auto bg-white/50 hover:bg-white/80">
+        <Button variant="outline" className="bg-white/50 hover:bg-white/80">
           <Download className="mr-2 h-4 w-4" />
           Download
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[200px] bg-white">
+      <DropdownMenuContent>
         <DropdownMenuItem onClick={downloadCSV}>
           Download as CSV
         </DropdownMenuItem>

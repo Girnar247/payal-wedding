@@ -63,10 +63,6 @@ const MayraEvent = () => {
     );
   }
 
-  const handleBackgroundUpload = async () => {
-    return Promise.resolve(); // Return a resolved promise to match the expected type
-  };
-
   return (
     <div className="min-h-screen bg-wedding-cream">
       <div className="max-w-7xl mx-auto px-6 md:px-8 py-8 space-y-8">
@@ -85,7 +81,7 @@ const MayraEvent = () => {
               eventType="mayra"
               details={eventDetails.mayra}
               guests={[] as Guest[]}
-              onBackgroundUpload={handleBackgroundUpload}
+              onBackgroundUpload={() => {}}
               uploading={null}
             />
           </div>

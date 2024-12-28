@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { Guest, Host, EventType, GuestAttribute } from '@/types/guest';
 import { toast } from '@/components/ui/use-toast';
 
@@ -85,7 +85,7 @@ export const useSupabase = () => {
     }) => {
       const { data, error } = await supabase
         .from('guests')
-        .update({ rsvp_status: status }) // Fixed property name to match database schema
+        .update({ rsvpStatus: status })
         .eq('id', id)
         .select()
         .single();

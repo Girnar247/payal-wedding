@@ -1,11 +1,12 @@
 import { Guest, Host } from "@/types/guest";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { UserCheck, UserX, Mail, MessageSquare } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 interface GuestListProps {

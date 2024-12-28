@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Home, Plus } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { TaskForm } from "@/components/tasks/TaskForm";
 import TaskBoard from "@/components/tasks/TaskBoard";
 import { TaskFilters } from "@/components/tasks/TaskFilters";
@@ -66,7 +66,7 @@ const Tasks = () => {
       tasks.flatMap((task) => [
         ...(task.event_types || []),
         task.event_type,
-      ]).filter((type): type is string => typeof type === 'string')
+      ]).filter(Boolean)
     )
   );
 

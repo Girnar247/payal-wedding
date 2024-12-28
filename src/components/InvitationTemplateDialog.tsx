@@ -5,7 +5,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
-import { supabase } from "@/integrations/supabase/client"; // Updated import
+import { supabase } from "@/lib/supabase";
 import { PlusCircle } from "lucide-react";
 
 export const InvitationTemplateDialog = () => {

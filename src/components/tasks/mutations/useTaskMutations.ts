@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { TaskFormValues } from "../form/TaskFormTypes";
 
@@ -54,12 +54,10 @@ export const useTaskMutations = () => {
 
   const addTaskMutation = useMutation({
     mutationFn: async (data: TaskFormValues) => {
-      const taskData = {
+      const { error } = await supabase.from("tasks").insert([{
         ...data,
-        event_type: data.event_types[0] || null,
-        title: data.title, // Ensure title is included
-      };
-      const { error } = await supabase.from("tasks").insert([taskData]);
+        event_type: data.event_types[0] || null, // Set the first event type as the legacy event_type
+      }]);
       if (error) throw error;
     },
     onSuccess: () => {

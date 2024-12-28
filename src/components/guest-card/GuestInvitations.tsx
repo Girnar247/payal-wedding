@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, MessageSquare } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 
 interface GuestInvitationsProps {
   guest: Guest;

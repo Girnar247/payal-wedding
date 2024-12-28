@@ -31,16 +31,16 @@ export const SearchAndFilters = ({
 }: SearchAndFiltersProps) => {
   return (
     <div className="w-full space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-4">
         <Input
           placeholder="Search guests..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full sm:w-64"
+          className="w-full md:w-64"
         />
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+        <div className="flex flex-wrap gap-2">
           <Select value={selectedHost} onValueChange={onHostSelect}>
-            <SelectTrigger className="w-full sm:w-48 bg-white">
+            <SelectTrigger className="w-full md:w-48 bg-white">
               <SelectValue placeholder="Filter by Host" />
             </SelectTrigger>
             <SelectContent>
@@ -54,7 +54,7 @@ export const SearchAndFilters = ({
           </Select>
 
           <Select value={selectedEvent} onValueChange={onEventSelect}>
-            <SelectTrigger className="w-full sm:w-48 bg-white">
+            <SelectTrigger className="w-full md:w-48 bg-white">
               <SelectValue placeholder="Filter by Event" />
             </SelectTrigger>
             <SelectContent>
@@ -68,7 +68,7 @@ export const SearchAndFilters = ({
           </Select>
 
           <Select value={selectedAttribute} onValueChange={onAttributeSelect}>
-            <SelectTrigger className="w-full sm:w-48 bg-white">
+            <SelectTrigger className="w-full md:w-48 bg-white">
               <SelectValue placeholder="Filter by Category" />
             </SelectTrigger>
             <SelectContent>

@@ -1,6 +1,6 @@
 import { EventType, EventDetails } from "@/types/guest";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 
 export const useEventState = () => {
@@ -30,20 +30,6 @@ export const useEventState = () => {
         return acc;
       }, {} as Record<EventType, EventDetails>);
 
-      // Initialize all event types with default values if they don't exist
-      const allEventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
-      allEventTypes.forEach(eventType => {
-        if (!formattedEvents[eventType]) {
-          formattedEvents[eventType] = {
-            date: new Date().toISOString(),
-            time: "",
-            venue: "",
-            background_url: null,
-            main_background_url: null,
-          };
-        }
-      });
-
       console.log('Formatted events:', formattedEvents);
       return formattedEvents;
     }
@@ -53,7 +39,7 @@ export const useEventState = () => {
     mutationFn: async (events: Record<EventType, EventDetails>) => {
       const eventsToInsert = Object.entries(events).map(([type, details]) => ({
         type,
-        date: typeof details.date === 'string' ? details.date : details.date.toISOString(),
+        date: details.date,
         time: details.time,
         venue: details.venue,
         background_url: details.background_url,
@@ -83,7 +69,7 @@ export const useEventState = () => {
   });
 
   return {
-    eventDetails: eventDetails as Record<EventType, EventDetails>,
+    eventDetails,
     isLoading,
     addEvents: (events: Record<EventType, EventDetails>) => addEventMutation.mutate(events),
   };

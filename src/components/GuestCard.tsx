@@ -4,7 +4,7 @@ import { GuestEditDialog } from "./guest-card/GuestEditDialog";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { GuestHeader } from "./guest-card/GuestHeader";
 import { GuestHostInfo } from "./guest-card/GuestHostInfo";
 import { GuestEventBadges } from "./guest-card/GuestEventBadges";

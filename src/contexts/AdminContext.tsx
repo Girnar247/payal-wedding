@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { Host } from '@/types/guest';
+import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 
 interface AdminContextType {
@@ -24,14 +25,14 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { data, error } = await supabase
         .from('hosts')
-        .select()
+        .select('*')
         .eq('is_admin', true)
         .eq('admin_password', password)
-        .limit(1);
+        .single();
 
       if (error) throw error;
 
-      if (data && data.length > 0) {
+      if (data) {
         setIsAdmin(true);
         toast({
           title: "Admin Access Granted",
@@ -45,7 +46,6 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         });
       }
     } catch (error) {
-      console.error('Admin login error:', error);
       toast({
         title: "Error",
         description: "Failed to verify admin credentials.",

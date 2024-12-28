@@ -21,11 +21,11 @@ export const GuestActions = ({
   setViewMode,
 }: GuestActionsProps) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-2 w-full">
+    <div className="flex gap-2 w-full md:w-auto">
       <Button
         onClick={() => setShowAddForm(!showAddForm)}
         variant="outline"
-        className="w-full sm:w-auto bg-white/50 hover:bg-white/80"
+        className="w-full md:w-auto bg-white/50 hover:bg-white/80"
       >
         {showAddForm ? (
           <>
@@ -40,7 +40,7 @@ export const GuestActions = ({
         )}
       </Button>
 
-      <div className="w-full sm:w-auto">
+      <div className="flex items-center gap-2">
         <DownloadGuestList guests={filteredGuests} hosts={hosts} />
       </div>
     </div>
