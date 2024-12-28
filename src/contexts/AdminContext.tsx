@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Host } from '@/types/guest';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -46,6 +45,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         });
       }
     } catch (error) {
+      console.error('Admin login error:', error);
       toast({
         title: "Error",
         description: "Failed to verify admin credentials.",
