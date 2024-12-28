@@ -71,13 +71,17 @@ const Index = () => {
       <div className="min-h-screen">
         {/* Header section with background image */}
         <div 
-          className="bg-cover bg-center bg-no-repeat py-8"
+          className="bg-cover bg-center bg-no-repeat py-8 relative"
           style={{
             backgroundImage: eventDetails?.wedding?.main_background_url ? 
               `url(${eventDetails.wedding.main_background_url})` : 'none',
           }}
         >
-          <div className="max-w-7xl mx-auto px-6 md:px-8">
+          {/* Add a semi-transparent overlay */}
+          <div className="absolute inset-0 bg-white/40" />
+          
+          {/* Content */}
+          <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
             <div className="flex justify-between items-center">
               <div className="text-center space-y-2">
                 <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
