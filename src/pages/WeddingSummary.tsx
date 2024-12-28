@@ -12,7 +12,7 @@ const WeddingSummary = () => {
   const venueDetails = {
     name: "Agarwal Hotel & Resort",
     address: "Jaswant vihar, Bundi Rd, Kota, Rajasthan 324008",
-    mapsLink: "https://maps.google.com/?q=Jaswant+vihar,+Bundi+Rd,+Kota,+Rajasthan+324008"
+    mapsLink: "https://maps.app.goo.gl/7kkEwVaR9CjGzLM67"
   };
 
   return (
