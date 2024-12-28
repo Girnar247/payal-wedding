@@ -1,7 +1,8 @@
+import { useState, useEffect } from "react";
 import { EventType, EventDetails } from "@/types/guest";
-import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { Upload } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { EventCard } from "./event-summary/EventCard";
@@ -9,16 +10,22 @@ import { MainBackgroundUpload } from "./event-summary/MainBackgroundUpload";
 import { parseISO } from "date-fns";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useGuestState } from "@/hooks/useGuestState";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface EventSummaryProps {
   events: Record<EventType, EventDetails>;
 }
 
 export const EventSummary = ({ events }: EventSummaryProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const isMobile = useIsMobile();
+  const [isCollapsed, setIsCollapsed] = useState(isMobile);
   const [uploading, setUploading] = useState<string | null>(null);
   const { isAdmin } = useAdmin();
   const { guests } = useGuestState();
+
+  useEffect(() => {
+    setIsCollapsed(isMobile);
+  }, [isMobile]);
 
   const handleBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
     try {
