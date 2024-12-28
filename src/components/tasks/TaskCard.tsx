@@ -14,6 +14,7 @@ interface TaskCardProps {
     status: string;
     priority: string;
     event_type: string;
+    event_types?: string[];
     due_date: string | null;
     assigned_to: string | null;
   };
@@ -50,6 +51,8 @@ const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
     }
   };
 
+  const events = task.event_types || [task.event_type];
+
   return (
     <Card className="mb-4 bg-white/50 backdrop-blur-sm">
       <CardHeader className="p-4 pb-2">
@@ -83,9 +86,11 @@ const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
           <p className="text-sm text-gray-600">{task.description}</p>
         )}
         <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="bg-wedding-sage/30">
-            {task.event_type}
-          </Badge>
+          {events.map((event) => (
+            <Badge key={event} variant="outline" className="bg-wedding-sage/30">
+              {event}
+            </Badge>
+          ))}
           {task.due_date && (
             <div className="flex items-center gap-1 text-xs text-gray-500">
               <CalendarIcon className="h-3 w-3" />
