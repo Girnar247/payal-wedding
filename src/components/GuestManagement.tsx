@@ -4,8 +4,8 @@ import { ViewToggle } from "./guest-management/ViewToggle";
 import { Skeleton } from "./ui/skeleton";
 
 // Lazy load components
-const GuestCard = lazy(() => import("@/components/GuestCard"));
-const GuestList = lazy(() => import("@/components/GuestList"));
+const GuestCard = lazy(() => import("@/components/GuestCard").then(module => ({ default: module.default })));
+const GuestList = lazy(() => import("@/components/GuestList").then(module => ({ default: module.default })));
 
 interface GuestManagementProps {
   guests: Guest[];

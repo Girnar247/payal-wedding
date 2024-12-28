@@ -15,7 +15,7 @@ interface GuestListProps {
   onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
 
-export const GuestList = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestListProps) => {
+const GuestListComponent = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestListProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -166,3 +166,5 @@ export const GuestList = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestL
     </div>
   );
 };
+
+export default memo(GuestListComponent);

@@ -101,4 +101,4 @@ const GuestCardComponent = ({ guest, host, onEdit, onDelete, onUpdateStatus }: G
   );
 };
 
-export const GuestCard = memo(GuestCardComponent);
+export default memo(GuestCardComponent);
