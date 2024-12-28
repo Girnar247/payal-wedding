@@ -10,7 +10,6 @@ import { GuestHostInfo } from "./guest-card/GuestHostInfo";
 import { GuestEventBadges } from "./guest-card/GuestEventBadges";
 import { GuestContactInfo } from "./guest-card/GuestContactInfo";
 import { GuestRSVPStatus } from "./guest-card/GuestRSVPStatus";
-import { GuestAccommodation } from "./guest-card/GuestAccommodation";
 
 interface GuestCardProps {
   guest: Guest;
@@ -35,6 +34,7 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
   const handleSave = async (updatedGuest: Partial<Guest>) => {
     try {
+      // First, make the Supabase update request
       const { data, error } = await supabase
         .from('guests')
         .update(updatedGuest)
@@ -44,17 +44,20 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
 
       if (error) throw error;
 
+      // After successful update, update the cache with the complete returned data
       queryClient.setQueryData(['guests'], (oldData: Guest[] | undefined) => {
         if (!oldData) return oldData;
         return oldData.map(g => g.id === guest.id ? { ...g, ...data } : g);
       });
 
+      // Close dialog and show success message
       handleCloseDialog();
       toast({
         title: "Success",
         description: "Guest details updated successfully.",
       });
 
+      // Finally, invalidate the query to ensure data consistency
       await queryClient.invalidateQueries({ queryKey: ['guests'] });
     } catch (error) {
       console.error('Error updating guest:', error);
@@ -83,7 +86,6 @@ export const GuestCard = ({ guest, host, onEdit, onDelete, onUpdateStatus }: Gue
         </CardHeader>
         <CardContent className="space-y-4">
           <GuestEventBadges events={guest.events} />
-          <GuestAccommodation guest={guest} />
         </CardContent>
       </Card>
 

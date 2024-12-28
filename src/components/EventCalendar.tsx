@@ -4,15 +4,14 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { EventDetails, EventType } from "@/types/guest";
 import { parseISO, format } from "date-fns";
-import { useAdmin } from "@/contexts/AdminContext";
 
 interface EventCalendarProps {
   events: Record<EventType, EventDetails>;
   onUpdateEvent?: (eventType: EventType, details: EventDetails) => void;
+  editable?: boolean;
 }
 
-export const EventCalendar = ({ events, onUpdateEvent }: EventCalendarProps) => {
-  const { isAdmin } = useAdmin();
+export const EventCalendar = ({ events, onUpdateEvent, editable = false }: EventCalendarProps) => {
   const eventDates = Object.values(events).map((event) => 
     event.date instanceof Date ? event.date : parseISO(event.date as string)
   );
@@ -53,7 +52,7 @@ export const EventCalendar = ({ events, onUpdateEvent }: EventCalendarProps) => 
                 <div className="space-y-2">
                   <div>
                     <Label>Date</Label>
-                    {isAdmin ? (
+                    {editable ? (
                       <Calendar
                         mode="single"
                         selected={details.date instanceof Date ? details.date : parseISO(details.date as string)}
@@ -68,7 +67,7 @@ export const EventCalendar = ({ events, onUpdateEvent }: EventCalendarProps) => 
                   </div>
                   <div>
                     <Label>Time</Label>
-                    {isAdmin ? (
+                    {editable ? (
                       <Input
                         type="time"
                         value={details.time}
@@ -81,7 +80,7 @@ export const EventCalendar = ({ events, onUpdateEvent }: EventCalendarProps) => 
                   </div>
                   <div>
                     <Label>Venue</Label>
-                    {isAdmin ? (
+                    {editable ? (
                       <Input
                         type="text"
                         value={details.venue}
