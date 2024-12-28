@@ -5,9 +5,11 @@ interface TaskColumnProps {
   title: string;
   tasks: any[];
   status: string;
+  onEditTask: (task: any) => void;
+  onDeleteTask: (taskId: string) => void;
 }
 
-const TaskColumn = ({ title, tasks, status }: TaskColumnProps) => {
+const TaskColumn = ({ title, tasks, status, onEditTask, onDeleteTask }: TaskColumnProps) => {
   const filteredTasks = tasks.filter((task) => task.status === status);
 
   return (
@@ -19,7 +21,12 @@ const TaskColumn = ({ title, tasks, status }: TaskColumnProps) => {
       </CardHeader>
       <CardContent className="p-4 pt-2">
         {filteredTasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            onEdit={onEditTask}
+            onDelete={onDeleteTask}
+          />
         ))}
       </CardContent>
     </Card>

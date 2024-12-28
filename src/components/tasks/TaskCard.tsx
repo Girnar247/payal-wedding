@@ -1,10 +1,14 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, UserIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon, UserIcon, Pencil, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 interface TaskCardProps {
   task: {
+    id: string;
     title: string;
     description: string | null;
     status: string;
@@ -13,9 +17,26 @@ interface TaskCardProps {
     due_date: string | null;
     assigned_to: string | null;
   };
+  onEdit: (task: any) => void;
+  onDelete: (taskId: string) => void;
 }
 
-const TaskCard = ({ task }: TaskCardProps) => {
+const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
+  const { data: assignedHost } = useQuery({
+    queryKey: ["host", task.assigned_to],
+    queryFn: async () => {
+      if (!task.assigned_to) return null;
+      const { data, error } = await supabase
+        .from("hosts")
+        .select("name")
+        .eq("id", task.assigned_to)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!task.assigned_to,
+  });
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high":
@@ -34,9 +55,27 @@ const TaskCard = ({ task }: TaskCardProps) => {
       <CardHeader className="p-4 pb-2">
         <div className="flex justify-between items-start gap-2">
           <h3 className="font-medium text-wedding-text">{task.title}</h3>
-          <Badge variant="secondary" className={getPriorityColor(task.priority)}>
-            {task.priority}
-          </Badge>
+          <div className="flex gap-2">
+            <Badge variant="secondary" className={getPriorityColor(task.priority)}>
+              {task.priority}
+            </Badge>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => onEdit(task)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-red-600 hover:text-red-700"
+              onClick={() => onDelete(task.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="p-4 pt-2 space-y-2">
@@ -53,10 +92,10 @@ const TaskCard = ({ task }: TaskCardProps) => {
               {format(new Date(task.due_date), "MMM d, yyyy")}
             </div>
           )}
-          {task.assigned_to && (
+          {assignedHost && (
             <div className="flex items-center gap-1 text-xs text-gray-500">
               <UserIcon className="h-3 w-3" />
-              Assigned
+              {assignedHost.name}
             </div>
           )}
         </div>
