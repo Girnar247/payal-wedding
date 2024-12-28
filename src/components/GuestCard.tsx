@@ -1,7 +1,7 @@
 import { Guest, Host } from "@/types/guest";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { GuestEditDialog } from "./guest-card/GuestEditDialog";
-import { useState, memo } from "react";
+import { useState, memo, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,15 +25,15 @@ const GuestCardComponent = ({ guest, host, onEdit, onDelete, onUpdateStatus }: G
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const handleOpenEditDialog = () => {
+  const handleOpenEditDialog = useCallback(() => {
     setIsEditDialogOpen(true);
-  };
+  }, []);
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     setIsEditDialogOpen(false);
-  };
+  }, []);
 
-  const handleSave = async (updatedGuest: Partial<Guest>) => {
+  const handleSave = useCallback(async (updatedGuest: Partial<Guest>) => {
     try {
       const { data, error } = await supabase
         .from('guests')
@@ -64,7 +64,7 @@ const GuestCardComponent = ({ guest, host, onEdit, onDelete, onUpdateStatus }: G
         variant: "destructive",
       });
     }
-  };
+  }, [guest.id, queryClient, toast, handleCloseDialog]);
 
   return (
     <>
