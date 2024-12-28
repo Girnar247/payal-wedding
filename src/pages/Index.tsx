@@ -14,7 +14,7 @@ import { GuestActions } from "@/components/actions/GuestActions";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { AdminButton } from "@/components/AdminButton";
 import { Button } from "@/components/ui/button";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Heart } from "lucide-react";
 
 const defaultHost: Host = {
   id: "",
@@ -90,6 +90,12 @@ const Index = () => {
                 <p className="text-gray-600">Manage your special celebrations with elegance</p>
               </div>
               <div className="flex items-center gap-4">
+                <Link to="/wedding-summary">
+                  <Button variant="outline" className="bg-white/50">
+                    <Heart className="h-4 w-4 mr-2" />
+                    Wedding Summary
+                  </Button>
+                </Link>
                 <Link to="/tasks">
                   <Button variant="outline" className="bg-white/50">
                     <ClipboardList className="h-4 w-4 mr-2" />

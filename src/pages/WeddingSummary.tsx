@@ -1,0 +1,99 @@
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Calendar, Heart, MapPin, ArrowLeft } from "lucide-react";
+import { useEventState } from "@/hooks/useEventState";
+import { format, parseISO } from "date-fns";
+
+const WeddingSummary = () => {
+  const { eventDetails } = useEventState();
+
+  return (
+    <div 
+      className="min-h-screen bg-cover bg-center bg-no-repeat relative"
+      style={{
+        backgroundImage: eventDetails?.wedding?.main_background_url ? 
+          `url(${eventDetails.wedding.main_background_url})` : 'none'
+      }}
+    >
+      {/* Semi-transparent overlay */}
+      <div className="absolute inset-0 bg-black/30" />
+      
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8 py-12">
+        {/* Navigation */}
+        <div className="flex justify-between items-center mb-8">
+          <Link to="/">
+            <Button variant="outline" className="bg-white/80 hover:bg-white">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+          </Link>
+        </div>
+
+        {/* Main Content */}
+        <Card className="p-8 bg-white/90 backdrop-blur-sm">
+          <div className="text-center space-y-6 max-w-3xl mx-auto">
+            <div className="space-y-2">
+              <h1 className="text-4xl md:text-6xl font-playfair text-wedding-text animate-fadeIn">
+                Payal Weds Pranai
+              </h1>
+              <div className="flex items-center justify-center space-x-2 text-wedding-text/80">
+                <Calendar className="h-5 w-5" />
+                <p className="text-xl font-inter">02.03.2025</p>
+              </div>
+            </div>
+
+            <div className="h-px bg-wedding-accent/30 w-1/2 mx-auto" />
+
+            {/* Event Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+              {Object.entries(eventDetails || {}).map(([type, details]) => (
+                <Card 
+                  key={type}
+                  className="p-6 bg-white/80 hover:bg-white transition-colors space-y-4"
+                >
+                  <div className="flex items-center justify-center">
+                    <Heart className="h-6 w-6 text-wedding-accent" />
+                  </div>
+                  <h3 className="text-xl font-playfair text-center capitalize">
+                    {type}
+                  </h3>
+                  <div className="space-y-2 text-sm text-center">
+                    <p className="font-medium">
+                      {format(
+                        details.date instanceof Date ? details.date : parseISO(details.date as string),
+                        'EEEE, MMMM d, yyyy'
+                      )}
+                    </p>
+                    <p>{details.time}</p>
+                    <div className="flex items-center justify-center space-x-1 text-wedding-text/80">
+                      <MapPin className="h-4 w-4" />
+                      <p>{details.venue}</p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Navigation Links */}
+            <div className="flex justify-center gap-4 mt-8">
+              <Link to="/tasks">
+                <Button variant="outline" className="bg-white/80 hover:bg-white">
+                  View Tasks
+                </Button>
+              </Link>
+              <Link to="/">
+                <Button variant="outline" className="bg-white/80 hover:bg-white">
+                  Manage Guest List
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default WeddingSummary;
