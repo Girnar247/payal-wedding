@@ -114,7 +114,7 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
             <ChevronUp className="h-6 w-6 transition-transform duration-200" />
           )}
         </Button>
-        {isAdmin && <MainBackgroundUpload onUpload={handleMainBackgroundUpload} />}
+        {isAdmin && <MainBackgroundUpload onUpload={(e) => handleBackgroundUpload(e, 'wedding')} />}
       </div>
       
       {!isCollapsed && (
