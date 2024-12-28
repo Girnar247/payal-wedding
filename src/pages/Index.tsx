@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { AddGuestForm } from "@/components/AddGuestForm";
 import { Dashboard } from "@/components/Dashboard";
 import { EventSummary } from "@/components/EventSummary";
@@ -12,6 +13,8 @@ import { SearchAndFilters } from "@/components/filters/SearchAndFilters";
 import { GuestActions } from "@/components/actions/GuestActions";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { AdminButton } from "@/components/AdminButton";
+import { Button } from "@/components/ui/button";
+import { ClipboardList } from "lucide-react";
 
 const defaultHost: Host = {
   id: "",
@@ -83,7 +86,15 @@ const Index = () => {
               </h1>
               <p className="text-gray-600">Manage your special celebrations with elegance</p>
             </div>
-            <AdminButton />
+            <div className="flex items-center gap-4">
+              <Link to="/tasks">
+                <Button variant="outline" className="bg-white/50">
+                  <ClipboardList className="h-4 w-4 mr-2" />
+                  Tasks
+                </Button>
+              </Link>
+              <AdminButton />
+            </div>
           </div>
 
           {Object.keys(eventDetails).length === 0 ? (
