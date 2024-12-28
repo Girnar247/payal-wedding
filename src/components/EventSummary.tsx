@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { EventType, EventDetails } from "@/types/guest";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -27,7 +27,7 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
     setIsCollapsed(isMobile);
   }, [isMobile]);
 
-  // Memoize sorted events to prevent unnecessary recalculations
+  // Memoize sorted events
   const sortedEvents = useMemo(() => {
     return Object.entries(events).sort((a, b) => {
       const dateA = a[1].date instanceof Date ? a[1].date : parseISO(a[1].date as string);
@@ -36,18 +36,18 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
     });
   }, [events]);
 
-  const handleBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
+  // Memoize the background upload handler
+  const handleBackgroundUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
     try {
       if (!event.target.files || event.target.files.length === 0) {
         return;
       }
       const file = event.target.files[0];
       
-      // Add file size check
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 2 * 1024 * 1024) { // Reduced to 2MB limit for better performance
         toast({
           title: "Error",
-          description: "File size should be less than 5MB",
+          description: "File size should be less than 2MB",
           variant: "destructive",
         });
         return;
@@ -97,7 +97,7 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
     } finally {
       setUploading(null);
     }
-  };
+  }, []);
 
   return (
     <div className="mb-8">

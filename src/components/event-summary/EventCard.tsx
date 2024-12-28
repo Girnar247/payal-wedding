@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,22 +20,33 @@ export const EventCard = memo(({ eventType, details, guests, onBackgroundUpload,
   const { isAdmin } = useAdmin();
 
   // Memoize guest count calculation
-  const confirmedGuestCount = guests.reduce((acc, guest) => {
-    if (guest.rsvp_status === "confirmed" && guest.events?.includes(eventType)) {
-      return acc + 1 + (guest.plus_count || 0);
-    }
-    return acc;
-  }, 0);
+  const confirmedGuestCount = useMemo(() => {
+    return guests.reduce((acc, guest) => {
+      if (guest.rsvp_status === "confirmed" && guest.events?.includes(eventType)) {
+        return acc + 1 + (guest.plus_count || 0);
+      }
+      return acc;
+    }, 0);
+  }, [guests, eventType]);
 
-  const handleCardClick = () => {
+  // Memoize card click handler
+  const handleCardClick = useCallback(() => {
     if (eventType === "mayra") {
       navigate("/mayra");
     }
-  };
+  }, [eventType, navigate]);
+
+  // Memoize date formatting
+  const formattedDate = useMemo(() => {
+    return format(
+      details.date instanceof Date ? details.date : parseISO(details.date as string),
+      'EEEE, MMMM d, yyyy'
+    );
+  }, [details.date]);
 
   return (
     <Card 
-      className={`p-4 relative overflow-hidden min-h-[200px] group bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-all duration-300 ${eventType === "mayra" ? "cursor-pointer" : ""}`}
+      className="p-4 relative overflow-hidden min-h-[200px] group bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-all duration-300"
       onClick={handleCardClick}
     >
       <div className="relative z-10 text-wedding-text">
@@ -65,12 +76,7 @@ export const EventCard = memo(({ eventType, details, guests, onBackgroundUpload,
         </div>
 
         <div className="space-y-2 text-sm">
-          <p className="font-medium">
-            {format(
-              details.date instanceof Date ? details.date : parseISO(details.date as string),
-              'EEEE, MMMM d, yyyy'
-            )}
-          </p>
+          <p className="font-medium">{formattedDate}</p>
           <p>{details.time}</p>
           <p>{details.venue}</p>
           {confirmedGuestCount > 0 && (
