@@ -43,10 +43,15 @@ export const DueDateField = ({ form }: DueDateFieldProps) => {
               <Calendar
                 mode="single"
                 selected={field.value ? new Date(field.value) : undefined}
-                onSelect={(date) => field.onChange(date?.toISOString())}
-                disabled={(date) =>
-                  date < new Date(new Date().setHours(0, 0, 0, 0))
-                }
+                onSelect={(date) => {
+                  if (date) {
+                    // Ensure the date is in ISO format and preserve the time
+                    const isoDate = date.toISOString();
+                    field.onChange(isoDate);
+                  } else {
+                    field.onChange(undefined);
+                  }
+                }}
                 initialFocus
               />
             </PopoverContent>
