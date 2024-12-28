@@ -4,13 +4,30 @@ import { Toaster } from "./components/ui/toaster";
 import "./App.css";
 import { Skeleton } from "./components/ui/skeleton";
 
-// Lazy load route components
-const Index = lazy(() => import("./pages/Index"));
+// Lazy load route components with prefetch
+const Index = lazy(() => {
+  // Prefetch other routes after main route loads
+  const prefetchOtherRoutes = () => {
+    const routes = [
+      import("./pages/Tasks"),
+      import("./pages/MayraEvent"),
+      import("./pages/WeddingSummary")
+    ];
+    Promise.all(routes);
+  };
+  
+  return import("./pages/Index").then(module => {
+    prefetchOtherRoutes();
+    return module;
+  });
+});
+
+// Separate chunks for other routes
 const Tasks = lazy(() => import("./pages/Tasks"));
 const MayraEvent = lazy(() => import("./pages/MayraEvent"));
 const WeddingSummary = lazy(() => import("./pages/WeddingSummary"));
 
-// Loading component
+// Optimized loading component with minimal UI
 const LoadingFallback = () => (
   <div className="p-8 max-w-7xl mx-auto">
     <div className="space-y-8">

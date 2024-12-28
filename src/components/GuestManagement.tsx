@@ -1,8 +1,11 @@
-import { useState, useCallback, memo } from "react";
-import { GuestCard } from "@/components/GuestCard";
-import { GuestList } from "@/components/GuestList";
+import { useState, useCallback, memo, Suspense, lazy } from "react";
 import { Guest, Host } from "@/types/guest";
 import { ViewToggle } from "./guest-management/ViewToggle";
+import { Skeleton } from "./ui/skeleton";
+
+// Lazy load components
+const GuestCard = lazy(() => import("@/components/GuestCard"));
+const GuestList = lazy(() => import("@/components/GuestList"));
 
 interface GuestManagementProps {
   guests: Guest[];
@@ -11,6 +14,14 @@ interface GuestManagementProps {
   onDeleteGuest: (id: string) => void;
   onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
+
+const LoadingSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {[1, 2, 3].map((i) => (
+      <Skeleton key={i} className="h-48 rounded-lg" />
+    ))}
+  </div>
+);
 
 const GuestManagementComponent = ({
   guests,
@@ -35,27 +46,29 @@ const GuestManagementComponent = ({
         <ViewToggle viewMode={viewMode} onToggle={toggleViewMode} />
       </div>
 
-      {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {guests.map((guest) => (
-            <GuestCard
-              key={guest.id}
-              guest={guest}
-              host={hosts.find((h) => h.id === guest.host_id) || defaultHost}
-              onEdit={handleEdit}
-              onDelete={onDeleteGuest}
-              onUpdateStatus={onUpdateStatus}
-            />
-          ))}
-        </div>
-      ) : (
-        <GuestList
-          guests={guests}
-          hosts={hosts}
-          defaultHost={defaultHost}
-          onUpdateStatus={onUpdateStatus}
-        />
-      )}
+      <Suspense fallback={<LoadingSkeleton />}>
+        {viewMode === "grid" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {guests.map((guest) => (
+              <GuestCard
+                key={guest.id}
+                guest={guest}
+                host={hosts.find((h) => h.id === guest.host_id) || defaultHost}
+                onEdit={handleEdit}
+                onDelete={onDeleteGuest}
+                onUpdateStatus={onUpdateStatus}
+              />
+            ))}
+          </div>
+        ) : (
+          <GuestList
+            guests={guests}
+            hosts={hosts}
+            defaultHost={defaultHost}
+            onUpdateStatus={onUpdateStatus}
+          />
+        )}
+      </Suspense>
 
       {guests.length === 0 && (
         <div className="text-center py-12 text-gray-500">

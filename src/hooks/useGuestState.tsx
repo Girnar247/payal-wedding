@@ -23,6 +23,8 @@ export const useGuestState = () => {
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
     retry: 1, // Only retry once on failure
+    refetchOnWindowFocus: false, // Disable automatic refetching on window focus
+    initialData: [], // Provide initial data to prevent undefined states
   });
 
   // Optimized hosts query with better caching
@@ -41,6 +43,8 @@ export const useGuestState = () => {
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
     retry: 1,
+    refetchOnWindowFocus: false,
+    initialData: [],
   });
 
   const addGuestMutation = useMutation({
