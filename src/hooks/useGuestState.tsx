@@ -7,9 +7,11 @@ export const useGuestState = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: guests = [] } = useQuery({
+  // Optimized query with better caching and stale time
+  const { data: guests = [], isLoading: guestsLoading } = useQuery({
     queryKey: ['guests'],
     queryFn: async () => {
+      console.log('Fetching guests...');
       const { data, error } = await supabase
         .from('guests')
         .select('*')
@@ -19,12 +21,15 @@ export const useGuestState = () => {
       return data as Guest[];
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes (formerly cacheTime)
+    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
+    retry: 1, // Only retry once on failure
   });
 
-  const { data: hosts = [] } = useQuery({
+  // Optimized hosts query with better caching
+  const { data: hosts = [], isLoading: hostsLoading } = useQuery({
     queryKey: ['hosts'],
     queryFn: async () => {
+      console.log('Fetching hosts...');
       const { data, error } = await supabase
         .from('hosts')
         .select('*')
@@ -34,7 +39,8 @@ export const useGuestState = () => {
       return data as Host[];
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes (formerly cacheTime)
+    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
+    retry: 1,
   });
 
   const addGuestMutation = useMutation({
@@ -172,6 +178,8 @@ export const useGuestState = () => {
   return {
     guests,
     hosts,
+    guestsLoading,
+    hostsLoading,
     handleAddGuest: (data: GuestFormData) => addGuestMutation.mutate(data),
     handleDeleteGuest: (id: string) => deleteGuestMutation.mutate(id),
     handleUpdateStatus: (id: string, status: "confirmed" | "declined") => 
