@@ -10,13 +10,14 @@ export const useEventState = () => {
   const { data: eventDetails = {}, isLoading } = useQuery({
     queryKey: ['events'],
     queryFn: async () => {
-      console.log('Fetching events...');
       const { data, error } = await supabase
         .from('events')
         .select('*')
         .order('created_at', { ascending: true });
 
       if (error) throw error;
+
+      console.log('Raw event data from Supabase:', data);
 
       const formattedEvents = data.reduce((acc: Record<EventType, EventDetails>, event) => {
         acc[event.type as EventType] = {
@@ -29,6 +30,7 @@ export const useEventState = () => {
         return acc;
       }, {} as Record<EventType, EventDetails>);
 
+      // Initialize all event types with default values if they don't exist
       const allEventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
       allEventTypes.forEach(eventType => {
         if (!formattedEvents[eventType]) {
@@ -42,11 +44,9 @@ export const useEventState = () => {
         }
       });
 
+      console.log('Formatted events:', formattedEvents);
       return formattedEvents;
-    },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
-    retry: 1,
+    }
   });
 
   const addEventMutation = useMutation({

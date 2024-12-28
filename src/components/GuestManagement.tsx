@@ -1,11 +1,10 @@
-import { useState, useCallback, memo, Suspense, lazy } from "react";
+import { useState } from "react";
+import { GuestCard } from "@/components/GuestCard";
+import { GuestList } from "@/components/GuestList";
+import { Button } from "@/components/ui/button";
+import { LayoutGrid, List } from "lucide-react";
 import { Guest, Host } from "@/types/guest";
-import { ViewToggle } from "./guest-management/ViewToggle";
-import { Skeleton } from "./ui/skeleton";
-
-// Lazy load components
-const GuestCard = lazy(() => import("@/components/GuestCard").then(module => ({ default: module.default })));
-const GuestList = lazy(() => import("@/components/GuestList").then(module => ({ default: module.default })));
+import { useToast } from "@/components/ui/use-toast";
 
 interface GuestManagementProps {
   guests: Guest[];
@@ -15,15 +14,7 @@ interface GuestManagementProps {
   onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
 
-const LoadingSkeleton = () => (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {[1, 2, 3].map((i) => (
-      <Skeleton key={i} className="h-48 rounded-lg" />
-    ))}
-  </div>
-);
-
-const GuestManagementComponent = ({
+export const GuestManagement = ({
   guests,
   hosts,
   defaultHost,
@@ -31,44 +22,46 @@ const GuestManagementComponent = ({
   onUpdateStatus,
 }: GuestManagementProps) => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-
-  const toggleViewMode = useCallback(() => {
-    setViewMode(prev => prev === "grid" ? "list" : "grid");
-  }, []);
-
-  const handleEdit = useCallback(() => {
-    // Empty callback for now, can be implemented later if needed
-  }, []);
+  const { toast } = useToast();
 
   return (
     <div>
       <div className="flex justify-end mb-4">
-        <ViewToggle viewMode={viewMode} onToggle={toggleViewMode} />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+        >
+          {viewMode === "grid" ? (
+            <List className="h-4 w-4 mr-2" />
+          ) : (
+            <LayoutGrid className="h-4 w-4 mr-2" />
+          )}
+          {viewMode === "grid" ? "List View" : "Grid View"}
+        </Button>
       </div>
 
-      <Suspense fallback={<LoadingSkeleton />}>
-        {viewMode === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {guests.map((guest) => (
-              <GuestCard
-                key={guest.id}
-                guest={guest}
-                host={hosts.find((h) => h.id === guest.host_id) || defaultHost}
-                onEdit={handleEdit}
-                onDelete={onDeleteGuest}
-                onUpdateStatus={onUpdateStatus}
-              />
-            ))}
-          </div>
-        ) : (
-          <GuestList
-            guests={guests}
-            hosts={hosts}
-            defaultHost={defaultHost}
-            onUpdateStatus={onUpdateStatus}
-          />
-        )}
-      </Suspense>
+      {viewMode === "grid" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {guests.map((guest) => (
+            <GuestCard
+              key={guest.id}
+              guest={guest}
+              host={hosts.find((h) => h.id === guest.host_id) || defaultHost}
+              onEdit={() => {}}
+              onDelete={onDeleteGuest}
+              onUpdateStatus={onUpdateStatus}
+            />
+          ))}
+        </div>
+      ) : (
+        <GuestList
+          guests={guests}
+          hosts={hosts}
+          defaultHost={defaultHost}
+          onUpdateStatus={onUpdateStatus}
+        />
+      )}
 
       {guests.length === 0 && (
         <div className="text-center py-12 text-gray-500">
@@ -78,5 +71,3 @@ const GuestManagementComponent = ({
     </div>
   );
 };
-
-export const GuestManagement = memo(GuestManagementComponent);

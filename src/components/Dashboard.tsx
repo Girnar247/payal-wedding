@@ -2,7 +2,7 @@ import { Card } from "./ui/card";
 import { User, UserCheck, UserX, Users, Home } from "lucide-react";
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 interface DashboardProps {
   totalGuests: number;
@@ -23,7 +23,7 @@ export const Dashboard = ({
 }: DashboardProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const stats = useMemo(() => [
+  const stats = [
     {
       label: "Invited Guests",
       value: totalGuests,
@@ -66,7 +66,7 @@ export const Dashboard = ({
       color: "bg-blue-100",
       textColor: "text-blue-700",
     },
-  ], [totalGuests, totalWithPlusOnes, confirmed, declined, pending, accommodationRequired]);
+  ];
 
   return (
     <div className="space-y-4">
