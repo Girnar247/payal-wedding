@@ -1,12 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Draggable } from "@hello-pangea/dnd";
 import TaskCard from "./TaskCard";
+import { Task } from "@/types/task";
 
 interface TaskColumnProps {
   title: string;
-  tasks: any[];
+  tasks: Task[];
   status: string;
-  onEditTask: (task: any) => void;
+  onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => void;
 }
 

@@ -1,5 +1,5 @@
 import { Task } from "@/types/task";
-import { TaskColumn } from "./TaskColumn";
+import TaskColumn from "./TaskColumn";
 
 interface TaskBoardProps {
   tasks: Task[];
@@ -42,18 +42,21 @@ const TaskBoard = ({
       <TaskColumn
         title="To Do"
         tasks={pendingTasks}
+        status="pending"
         onEditTask={onEditTask}
         onDeleteTask={onDeleteTask}
       />
       <TaskColumn
         title="In Progress"
         tasks={inProgressTasks}
+        status="in-progress"
         onEditTask={onEditTask}
         onDeleteTask={onDeleteTask}
       />
       <TaskColumn
         title="Completed"
         tasks={completedTasks}
+        status="completed"
         onEditTask={onEditTask}
         onDeleteTask={onDeleteTask}
       />
