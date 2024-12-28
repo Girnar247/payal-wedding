@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
@@ -11,7 +11,6 @@ const Index = lazy(() => {
     const routes = [
       import("./pages/Tasks"),
       import("./pages/MayraEvent"),
-      import("./pages/WeddingSummary")
     ];
     Promise.all(routes);
   };
@@ -25,7 +24,6 @@ const Index = lazy(() => {
 // Separate chunks for other routes
 const Tasks = lazy(() => import("./pages/Tasks"));
 const MayraEvent = lazy(() => import("./pages/MayraEvent"));
-const WeddingSummary = lazy(() => import("./pages/WeddingSummary"));
 
 // Optimized loading component with minimal UI
 const LoadingFallback = () => (
@@ -49,7 +47,6 @@ function App() {
           <Route path="/" element={<Index />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/mayra" element={<MayraEvent />} />
-          <Route path="/wedding-summary" element={<WeddingSummary />} />
         </Routes>
       </Suspense>
       <Toaster />
