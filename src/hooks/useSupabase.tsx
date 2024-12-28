@@ -85,7 +85,7 @@ export const useSupabase = () => {
     }) => {
       const { data, error } = await supabase
         .from('guests')
-        .update({ rsvpStatus: status })
+        .update({ rsvp_status: status }) // Fixed property name to match database schema
         .eq('id', id)
         .select()
         .single();

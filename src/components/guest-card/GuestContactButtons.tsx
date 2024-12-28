@@ -2,7 +2,7 @@ import { Guest } from "@/types/guest";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 interface GuestContactButtonsProps {
   guest: Guest;

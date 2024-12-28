@@ -1,6 +1,6 @@
 import { EventType, EventDetails } from "@/types/guest";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
 export const useEventState = () => {

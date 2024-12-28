@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { TaskHeader } from "./card/TaskHeader";
 import { TaskDetails } from "./card/TaskDetails";
 import { Task } from "@/types/task";
