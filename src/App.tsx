@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import MayraEvent from "./pages/MayraEvent";
+// import MayraEvent from "./pages/MayraEvent";
 // import Tasks from "./pages/Tasks";
 // import WeddingSummary from "./pages/WeddingSummary";
 import { Toaster } from "./components/ui/toaster";
@@ -11,8 +11,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/mayra" element={<MayraEvent />} />
         {/* Temporarily hidden routes
+        <Route path="/mayra" element={<MayraEvent />} />
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/wedding-summary" element={<WeddingSummary />} />
         */}
