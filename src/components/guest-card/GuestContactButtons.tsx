@@ -40,13 +40,13 @@ export const GuestContactButtons = ({ guest }: GuestContactButtonsProps) => {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       {guest.phone && (
         <Button
           variant="ghost"
           size="sm"
           onClick={handleWhatsappInvitation}
-          className="p-2"
+          className="p-2 h-8 w-8"
         >
           <MessageSquare className="h-4 w-4" />
         </Button>
@@ -55,7 +55,7 @@ export const GuestContactButtons = ({ guest }: GuestContactButtonsProps) => {
         <Button
           variant="ghost"
           size="sm"
-          className="p-2"
+          className="p-2 h-8 w-8"
           onClick={() => window.location.href = `mailto:${guest.email}`}
         >
           <Mail className="h-4 w-4" />
