@@ -14,8 +14,7 @@ const WeddingSummary = () => {
     address: "Jaswant vihar, Bundi Rd, Kota, Rajasthan 324008",
     mapsLink: "https://maps.app.goo.gl/7kkEwVaR9CjGzLM67",
     aerialImage: "/lovable-uploads/5a9e59b4-c0be-4289-8c54-b0738c7d7730.png",
-    // Using Google Maps Static API to show a preview
-    mapPreviewUrl: `https://maps.googleapis.com/maps/api/staticmap?center=Agarwal+Hotel+and+Resort+Kota&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7CAgarwal+Hotel+and+Resort+Kota&key=YOUR_GOOGLE_MAPS_API_KEY`
+    mapPreviewUrl: "https://maps.googleapis.com/maps/api/staticmap?center=25.1507,75.8524&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C25.1507,75.8524&key=AIzaSyDHVtZNNF5mYqzRWLYZyt-BZSFsUxj_Uoc"
   };
 
   return (
