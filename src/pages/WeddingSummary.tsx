@@ -12,7 +12,10 @@ const WeddingSummary = () => {
   const venueDetails = {
     name: "Agarwal Hotel & Resort",
     address: "Jaswant vihar, Bundi Rd, Kota, Rajasthan 324008",
-    mapsLink: "https://maps.app.goo.gl/7kkEwVaR9CjGzLM67"
+    mapsLink: "https://maps.app.goo.gl/7kkEwVaR9CjGzLM67",
+    aerialImage: "/lovable-uploads/5a9e59b4-c0be-4289-8c54-b0738c7d7730.png",
+    // Using Google Maps Static API to show a preview
+    mapPreviewUrl: `https://maps.googleapis.com/maps/api/staticmap?center=Agarwal+Hotel+and+Resort+Kota&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7CAgarwal+Hotel+and+Resort+Kota&key=YOUR_GOOGLE_MAPS_API_KEY`
   };
 
   return (
@@ -53,11 +56,35 @@ const WeddingSummary = () => {
 
             {/* Venue Details Card */}
             <Card className="p-6 bg-white/80 hover:bg-white transition-colors">
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-center">
                   <MapPin className="h-6 w-6 text-wedding-accent" />
                 </div>
                 <h3 className="text-xl font-playfair text-center">Main Venue</h3>
+                
+                {/* Venue Images */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Aerial View */}
+                  <div className="space-y-2">
+                    <img 
+                      src={venueDetails.aerialImage} 
+                      alt="Aerial view of Agarwal Hotel & Resort"
+                      className="w-full h-48 object-cover rounded-lg shadow-md"
+                    />
+                    <p className="text-sm text-wedding-text/70 text-center">Aerial View</p>
+                  </div>
+                  
+                  {/* Map Preview */}
+                  <div className="space-y-2">
+                    <img 
+                      src={venueDetails.mapPreviewUrl}
+                      alt="Map location of Agarwal Hotel & Resort"
+                      className="w-full h-48 object-cover rounded-lg shadow-md"
+                    />
+                    <p className="text-sm text-wedding-text/70 text-center">Location Map</p>
+                  </div>
+                </div>
+
                 <div className="space-y-2 text-center">
                   <p className="font-medium text-lg">{venueDetails.name}</p>
                   <p className="text-wedding-text/80">{venueDetails.address}</p>
