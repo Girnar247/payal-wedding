@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { AddGuestForm } from "@/components/AddGuestForm";
 import { Dashboard } from "@/components/Dashboard";
 import { EventSummary } from "@/components/EventSummary";
-import { EventType, GuestAttribute, Host, EventDetails } from "@/types/guest";
 import { GuestManagement } from "@/components/GuestManagement";
 import { EventConfiguration } from "@/components/EventConfiguration";
 import { useGuestState } from "@/hooks/useGuestState";
@@ -15,9 +14,9 @@ import { AdminProvider } from "@/contexts/AdminContext";
 import { AdminButton } from "@/components/AdminButton";
 import { Button } from "@/components/ui/button";
 import { ClipboardList, Heart, RefreshCw } from "lucide-react";
-import { toast } from "./ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
-const defaultHost: Host = {
+const defaultHost = {
   id: "",
   name: "Unassigned",
   email: "",
@@ -25,6 +24,7 @@ const defaultHost: Host = {
 };
 
 const Index = () => {
+  const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedHost, setSelectedHost] = useState<string>("all-hosts");
@@ -71,8 +71,8 @@ const Index = () => {
                          guest.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          guest.phone?.includes(searchTerm);
     const matchesHost = selectedHost === "all-hosts" || guest.host_id === selectedHost;
-    const matchesEvent = selectedEvent === "all-events" || guest.events.includes(selectedEvent as EventType);
-    const matchesAttribute = selectedAttribute === "all-categories" || guest.attributes.includes(selectedAttribute as GuestAttribute);
+    const matchesEvent = selectedEvent === "all-events" || guest.events.includes(selectedEvent);
+    const matchesAttribute = selectedAttribute === "all-categories" || guest.attributes.includes(selectedAttribute);
     
     return matchesSearch && matchesHost && matchesEvent && matchesAttribute;
   });

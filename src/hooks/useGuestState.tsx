@@ -1,5 +1,5 @@
 import { Guest, Host, GuestFormData } from "@/types/guest";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -168,6 +168,11 @@ export const useGuestState = () => {
     }
   });
 
+  const refreshData = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['guests'] });
+    await queryClient.invalidateQueries({ queryKey: ['hosts'] });
+  };
+
   return {
     guests,
     hosts,
@@ -177,5 +182,6 @@ export const useGuestState = () => {
       updateGuestStatusMutation.mutate({ id, status }),
     handleAddHost: (host: Omit<Host, "id">) => addHostMutation.mutate(host),
     handleDeleteHost: (id: string) => deleteHostMutation.mutate(id),
+    refreshData,
   };
 };
