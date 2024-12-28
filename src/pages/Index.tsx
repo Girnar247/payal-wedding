@@ -112,9 +112,10 @@ const Index = () => {
                   onAttributeSelect={setSelectedAttribute}
                   hosts={hosts}
                   eventDetails={eventDetails}
+                  resultCount={filteredGuests.length}
                 />
 
-                <div className="flex justify-between items-center">
+                <div className="flex justify-end items-center gap-4">
                   <p className="text-sm text-gray-600">
                     {filteredGuests.length} result{filteredGuests.length !== 1 ? 's' : ''}
                   </p>
