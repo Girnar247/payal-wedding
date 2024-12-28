@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Guest, Host } from "@/types/guest";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Badge } from "./ui/badge";
