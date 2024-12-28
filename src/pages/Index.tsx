@@ -1,21 +1,15 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { AddGuestForm } from "@/components/AddGuestForm";
-import { Dashboard } from "@/components/Dashboard";
-import { EventSummary } from "@/components/EventSummary";
-import { GuestManagement } from "@/components/GuestManagement";
-import { EventConfiguration } from "@/components/EventConfiguration";
+import { AdminProvider } from "@/contexts/AdminContext";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useEventState } from "@/hooks/useEventState";
 import { useGuestStats } from "@/hooks/useGuestStats";
-import { SearchAndFilters } from "@/components/filters/SearchAndFilters";
-import { GuestActions } from "@/components/actions/GuestActions";
-import { AdminProvider } from "@/contexts/AdminContext";
-import { AdminButton } from "@/components/AdminButton";
-import { Button } from "@/components/ui/button";
-import { ClipboardList, Heart, RefreshCw } from "lucide-react";
+import { EventSummary } from "@/components/EventSummary";
+import { Dashboard } from "@/components/Dashboard";
+import { EventConfiguration } from "@/components/EventConfiguration";
+import { HeaderSection } from "@/components/index/HeaderSection";
+import { GuestListSection } from "@/components/index/GuestListSection";
 import { useToast } from "@/hooks/use-toast";
-import { EventType, GuestAttribute, Host, EventDetails } from "@/types/guest";
+import { EventType, GuestAttribute, Host } from "@/types/guest";
 
 const defaultHost: Host = {
   id: "",
@@ -78,7 +72,7 @@ const Index = () => {
     return matchesSearch && matchesHost && matchesEvent && matchesAttribute;
   });
 
-  const handleUpdateEventDetails = (eventType: EventType, details: EventDetails) => {
+  const handleUpdateEventDetails = (eventType: EventType, details: any) => {
     addEvents({
       ...eventDetails,
       [eventType]: details
@@ -92,50 +86,11 @@ const Index = () => {
   return (
     <AdminProvider>
       <div className="min-h-screen">
-        <div 
-          className="bg-cover bg-center bg-no-repeat py-8 relative"
-          style={{
-            backgroundImage: eventDetails?.wedding?.main_background_url ? 
-              `url(${eventDetails.wedding.main_background_url})` : 'none',
-          }}
-        >
-          <div className="absolute inset-0 bg-white/40" />
-          
-          <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
-            <div className="flex justify-between items-center">
-              <div className="text-center space-y-2">
-                <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
-                  Payal's Wedding - Guest List
-                </h1>
-                <p className="text-gray-600">Manage your special celebrations with elegance</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <Button 
-                  variant="outline" 
-                  className="bg-white/50 hover:bg-white/80"
-                  onClick={handleRefresh}
-                  disabled={isRefreshing}
-                >
-                  <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                  Refresh
-                </Button>
-                <Link to="/wedding-summary">
-                  <Button variant="outline" className="bg-white/50 hover:bg-white/80">
-                    <Heart className="h-4 w-4 mr-2" />
-                    Wedding Summary
-                  </Button>
-                </Link>
-                <Link to="/tasks">
-                  <Button variant="outline" className="bg-white/50 hover:bg-white/80">
-                    <ClipboardList className="h-4 w-4 mr-2" />
-                    Tasks
-                  </Button>
-                </Link>
-                <AdminButton />
-              </div>
-            </div>
-          </div>
-        </div>
+        <HeaderSection 
+          eventDetails={eventDetails}
+          isRefreshing={isRefreshing}
+          onRefresh={handleRefresh}
+        />
 
         <div className="bg-wedding-cream">
           <div className="max-w-7xl mx-auto px-6 md:px-8 py-8 space-y-8">
@@ -152,46 +107,26 @@ const Index = () => {
               <>
                 <EventSummary events={eventDetails} />
                 <Dashboard {...stats} />
-
-                <div className="space-y-4">
-                  <SearchAndFilters
-                    searchTerm={searchTerm}
-                    onSearchChange={setSearchTerm}
-                    selectedHost={selectedHost}
-                    onHostSelect={setSelectedHost}
-                    selectedEvent={selectedEvent}
-                    onEventSelect={setSelectedEvent}
-                    selectedAttribute={selectedAttribute}
-                    onAttributeSelect={setSelectedAttribute}
-                    hosts={hosts}
-                    eventDetails={eventDetails}
-                    resultCount={filteredGuests.length}
-                  />
-
-                  <div className="flex justify-end items-center gap-4">
-                    <p className="text-sm text-gray-600">
-                      {filteredGuests.length} result{filteredGuests.length !== 1 ? 's' : ''}
-                    </p>
-
-                    <GuestActions
-                      showAddForm={showAddForm}
-                      setShowAddForm={setShowAddForm}
-                      filteredGuests={filteredGuests}
-                      hosts={hosts}
-                      viewMode={viewMode}
-                      setViewMode={setViewMode}
-                    />
-                  </div>
-                </div>
-
-                {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
-
-                <GuestManagement
-                  guests={filteredGuests}
+                <GuestListSection
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  selectedHost={selectedHost}
+                  setSelectedHost={setSelectedHost}
+                  selectedEvent={selectedEvent}
+                  setSelectedEvent={setSelectedEvent}
+                  selectedAttribute={selectedAttribute}
+                  setSelectedAttribute={setSelectedAttribute}
+                  showAddForm={showAddForm}
+                  setShowAddForm={setShowAddForm}
+                  viewMode={viewMode}
+                  setViewMode={setViewMode}
+                  filteredGuests={filteredGuests}
                   hosts={hosts}
+                  eventDetails={eventDetails}
+                  handleAddGuest={handleAddGuest}
+                  handleDeleteGuest={handleDeleteGuest}
+                  handleUpdateStatus={handleUpdateStatus}
                   defaultHost={defaultHost}
-                  onDeleteGuest={handleDeleteGuest}
-                  onUpdateStatus={handleUpdateStatus}
                 />
               </>
             )}
