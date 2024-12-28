@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { EventType, EventDetails } from "@/types/guest";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -27,12 +27,32 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
     setIsCollapsed(isMobile);
   }, [isMobile]);
 
+  // Memoize sorted events to prevent unnecessary recalculations
+  const sortedEvents = useMemo(() => {
+    return Object.entries(events).sort((a, b) => {
+      const dateA = a[1].date instanceof Date ? a[1].date : parseISO(a[1].date as string);
+      const dateB = b[1].date instanceof Date ? b[1].date : parseISO(b[1].date as string);
+      return dateA.getTime() - dateB.getTime();
+    });
+  }, [events]);
+
   const handleBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
     try {
       if (!event.target.files || event.target.files.length === 0) {
         return;
       }
       const file = event.target.files[0];
+      
+      // Add file size check
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          title: "Error",
+          description: "File size should be less than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const fileExt = file.name.split('.').pop();
       const sanitizedEventType = eventType.replace(/\s+/g, '_');
       const filePath = `${sanitizedEventType}/${crypto.randomUUID()}.${fileExt}`;
@@ -41,7 +61,10 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
 
       const { error: uploadError } = await supabase.storage
         .from('event-backgrounds')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) {
         throw uploadError;
@@ -76,54 +99,6 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
     }
   };
 
-  const handleMainBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      if (!event.target.files || event.target.files.length === 0) {
-        return;
-      }
-      const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const filePath = `main-background/${crypto.randomUUID()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('event-backgrounds')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      const { data: publicUrl } = supabase.storage
-        .from('event-backgrounds')
-        .getPublicUrl(filePath);
-
-      // Update each event type individually with the new main background URL
-      const eventTypes = Object.keys(events);
-      for (const eventType of eventTypes) {
-        const { error: updateError } = await supabase
-          .from('events')
-          .update({ main_background_url: publicUrl.publicUrl })
-          .eq('type', eventType);
-
-        if (updateError) {
-          throw updateError;
-        }
-      }
-
-      toast({
-        title: "Main Background Updated",
-        description: "The main background has been successfully updated.",
-      });
-
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to upload main background image: " + error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className="mb-8">
       <div className="flex justify-between items-center mb-4">
@@ -144,22 +119,16 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
       
       {!isCollapsed && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {(Object.entries(events) as [EventType, EventDetails][])
-            .sort((a, b) => {
-              const dateA = a[1].date instanceof Date ? a[1].date : parseISO(a[1].date as string);
-              const dateB = b[1].date instanceof Date ? b[1].date : parseISO(b[1].date as string);
-              return dateA.getTime() - dateB.getTime();
-            })
-            .map(([eventType, details]) => (
-              <EventCard
-                key={eventType}
-                eventType={eventType}
-                details={details}
-                guests={guests}
-                onBackgroundUpload={handleBackgroundUpload}
-                uploading={uploading}
-              />
-            ))}
+          {sortedEvents.map(([eventType, details]) => (
+            <EventCard
+              key={eventType}
+              eventType={eventType as EventType}
+              details={details}
+              guests={guests}
+              onBackgroundUpload={handleBackgroundUpload}
+              uploading={uploading}
+            />
+          ))}
         </div>
       )}
     </div>
