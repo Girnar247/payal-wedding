@@ -1,13 +1,19 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Calendar, Heart, MapPin, ArrowLeft } from "lucide-react";
+import { Calendar, Heart, MapPin, ArrowLeft, ExternalLink } from "lucide-react";
 import { useEventState } from "@/hooks/useEventState";
 import { format, parseISO } from "date-fns";
 import { EventType, EventDetails } from "@/types/guest";
 
 const WeddingSummary = () => {
   const { eventDetails } = useEventState();
+
+  const venueDetails = {
+    name: "Agarwal Hotel & Resort",
+    address: "Jaswant vihar, Bundi Rd, Kota, Rajasthan 324008",
+    mapsLink: "https://maps.google.com/?q=Jaswant+vihar,+Bundi+Rd,+Kota,+Rajasthan+324008"
+  };
 
   return (
     <div 
@@ -44,6 +50,29 @@ const WeddingSummary = () => {
                 <p className="text-xl font-inter">02.03.2025</p>
               </div>
             </div>
+
+            {/* Venue Details Card */}
+            <Card className="p-6 bg-white/80 hover:bg-white transition-colors">
+              <div className="space-y-4">
+                <div className="flex items-center justify-center">
+                  <MapPin className="h-6 w-6 text-wedding-accent" />
+                </div>
+                <h3 className="text-xl font-playfair text-center">Main Venue</h3>
+                <div className="space-y-2 text-center">
+                  <p className="font-medium text-lg">{venueDetails.name}</p>
+                  <p className="text-wedding-text/80">{venueDetails.address}</p>
+                  <a 
+                    href={venueDetails.mapsLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-wedding-accent hover:text-wedding-text transition-colors"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-1" />
+                    View on Google Maps
+                  </a>
+                </div>
+              </div>
+            </Card>
 
             <div className="h-px bg-wedding-accent/30 w-1/2 mx-auto" />
 
