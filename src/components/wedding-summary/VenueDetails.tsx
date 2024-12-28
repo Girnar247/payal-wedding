@@ -35,16 +35,15 @@ export const VenueDetails = ({ venueDetails }: VenueDetailsProps) => {
         
         {/* Images Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+          <div>
             <img 
               src={venueDetails.aerialImage} 
               alt="Aerial view of Agarwal Hotel & Resort"
               className="w-full h-48 object-cover rounded-lg shadow-md"
             />
-            <p className="text-sm text-wedding-text/70 text-center">Aerial View</p>
           </div>
           
-          <div className="space-y-2">
+          <div>
             <a 
               href={venueDetails.mapsLink}
               target="_blank"
@@ -56,9 +55,6 @@ export const VenueDetails = ({ venueDetails }: VenueDetailsProps) => {
                 alt="Map location of Agarwal Hotel & Resort"
                 className="w-full h-48 object-cover rounded-lg shadow-md transition-transform group-hover:scale-[1.02]"
               />
-              <p className="text-sm text-wedding-text/70 text-center group-hover:text-wedding-accent transition-colors">
-                Location Map (Click to open in Google Maps)
-              </p>
             </a>
           </div>
         </div>
