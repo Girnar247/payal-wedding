@@ -31,12 +31,6 @@ export const EventCard = ({
     return acc;
   }, 0) || 0;
 
-  const backgroundStyle = details.background_url ? {
-    backgroundImage: `url('${details.background_url}')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  } : {};
-
   const handleCardClick = () => {
     if (eventType === "mayra") {
       navigate("/mayra");
@@ -46,10 +40,8 @@ export const EventCard = ({
   return (
     <Card 
       className={`p-4 relative overflow-hidden min-h-[200px] group bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-all duration-300 ${eventType === "mayra" ? "cursor-pointer" : ""}`}
-      style={backgroundStyle}
       onClick={handleCardClick}
     >
-      {details.background_url && <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />}
       <div className="relative z-10 text-wedding-text">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-playfair capitalize text-lg font-bold">{eventType}</h3>
@@ -65,7 +57,7 @@ export const EventCard = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 bg-black/20 hover:bg-black/40"
+                className="h-8 w-8"
               >
                 <Upload className="h-4 w-4" />
               </Button>
