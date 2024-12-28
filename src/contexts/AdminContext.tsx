@@ -24,14 +24,14 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { data, error } = await supabase
         .from('hosts')
-        .select('*')
+        .select()
         .eq('is_admin', true)
         .eq('admin_password', password)
-        .single();
+        .limit(1);
 
       if (error) throw error;
 
-      if (data) {
+      if (data && data.length > 0) {
         setIsAdmin(true);
         toast({
           title: "Admin Access Granted",
