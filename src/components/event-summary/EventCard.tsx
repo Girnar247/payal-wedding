@@ -35,9 +35,7 @@ export const EventCard = ({
     backgroundImage: `url('${details.background_url}')`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-  } : {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-  };
+  } : {};
 
   const handleCardClick = () => {
     if (eventType === "mayra") {
@@ -47,12 +45,11 @@ export const EventCard = ({
 
   return (
     <Card 
-      className={`p-4 relative overflow-hidden min-h-[200px] group ${eventType === "mayra" ? "cursor-pointer" : ""}`}
+      className={`p-4 relative overflow-hidden min-h-[200px] group bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-all duration-300 ${eventType === "mayra" ? "cursor-pointer" : ""}`}
       style={backgroundStyle}
       onClick={handleCardClick}
     >
-      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
-      <div className="absolute inset-0 bg-white/80" />
+      {details.background_url && <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />}
       <div className="relative z-10 text-wedding-text">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-playfair capitalize text-lg font-bold">{eventType}</h3>

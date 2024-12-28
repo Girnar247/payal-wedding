@@ -10,7 +10,7 @@ interface EventCardProps {
 
 export const EventCard = ({ type, details }: EventCardProps) => {
   return (
-    <Card className="p-6 bg-white/80 hover:bg-white transition-colors space-y-4">
+    <Card className="p-6 bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-all duration-300 space-y-4">
       <div className="flex items-center justify-center">
         <Heart className="h-6 w-6 text-wedding-accent" />
       </div>
