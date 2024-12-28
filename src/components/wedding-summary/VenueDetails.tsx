@@ -38,7 +38,7 @@ export const VenueDetails = ({ venueDetails }: VenueDetailsProps) => {
               className="block group"
             >
               <img 
-                src="/lovable-uploads/dc11b7d5-bdd8-4838-80d6-50f7313f5b01.png"
+                src="/lovable-uploads/a8572afe-4d1b-4f62-aeba-35179b1a9a08.png"
                 alt="Map location of Agarwal Hotel & Resort"
                 className="w-full h-48 object-cover rounded-lg shadow-md transition-transform group-hover:scale-[1.02]"
               />
