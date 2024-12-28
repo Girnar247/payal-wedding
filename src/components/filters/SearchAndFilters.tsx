@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EventType, Host } from "@/types/guest";
@@ -16,7 +17,7 @@ interface SearchAndFiltersProps {
   resultCount?: number;
 }
 
-export const SearchAndFilters = ({
+const SearchAndFiltersComponent = ({
   searchTerm,
   onSearchChange,
   selectedHost,
@@ -29,13 +30,17 @@ export const SearchAndFilters = ({
   eventDetails,
   resultCount,
 }: SearchAndFiltersProps) => {
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onSearchChange(e.target.value);
+  }, [onSearchChange]);
+
   return (
     <div className="w-full space-y-4">
       <div className="flex flex-col sm:flex-row gap-4">
         <Input
           placeholder="Search guests..."
           value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={handleSearchChange}
           className="w-full sm:w-64"
         />
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
@@ -84,3 +89,5 @@ export const SearchAndFilters = ({
     </div>
   );
 };
+
+export const SearchAndFilters = memo(SearchAndFiltersComponent);

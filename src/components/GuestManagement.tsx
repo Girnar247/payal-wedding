@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { GuestCard } from "@/components/GuestCard";
 import { GuestList } from "@/components/GuestList";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ interface GuestManagementProps {
   onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
 
-export const GuestManagement = ({
+const GuestManagementComponent = ({
   guests,
   hosts,
   defaultHost,
@@ -24,13 +24,21 @@ export const GuestManagement = ({
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const { toast } = useToast();
 
+  const toggleViewMode = useCallback(() => {
+    setViewMode(prev => prev === "grid" ? "list" : "grid");
+  }, []);
+
+  const handleEdit = useCallback(() => {
+    // Empty callback for now, can be implemented later if needed
+  }, []);
+
   return (
     <div>
       <div className="flex justify-end mb-4">
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+          onClick={toggleViewMode}
         >
           {viewMode === "grid" ? (
             <List className="h-4 w-4 mr-2" />
@@ -48,7 +56,7 @@ export const GuestManagement = ({
               key={guest.id}
               guest={guest}
               host={hosts.find((h) => h.id === guest.host_id) || defaultHost}
-              onEdit={() => {}}
+              onEdit={handleEdit}
               onDelete={onDeleteGuest}
               onUpdateStatus={onUpdateStatus}
             />
@@ -71,3 +79,5 @@ export const GuestManagement = ({
     </div>
   );
 };
+
+export const GuestManagement = memo(GuestManagementComponent);

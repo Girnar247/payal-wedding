@@ -27,7 +27,11 @@ const EventSummaryComponent = ({ events }: EventSummaryProps) => {
     setIsCollapsed(isMobile);
   }, [isMobile]);
 
-  // Memoize sorted events
+  const toggleCollapse = useCallback(() => {
+    setIsCollapsed(prev => !prev);
+  }, []);
+
+  // Memoize sorted events with proper type handling
   const sortedEvents = useMemo(() => {
     return Object.entries(events).sort((a, b) => {
       const dateA = a[1].date instanceof Date ? a[1].date : parseISO(a[1].date as string);
@@ -38,21 +42,19 @@ const EventSummaryComponent = ({ events }: EventSummaryProps) => {
 
   // Memoize the background upload handler
   const handleBackgroundUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
-    try {
-      if (!event.target.files || event.target.files.length === 0) {
-        return;
-      }
-      const file = event.target.files[0];
-      
-      if (file.size > 1 * 1024 * 1024) { // Reduced to 1MB limit for better performance
-        toast({
-          title: "Error",
-          description: "File size should be less than 1MB",
-          variant: "destructive",
-        });
-        return;
-      }
+    if (!event.target.files?.length) return;
+    
+    const file = event.target.files[0];
+    if (file.size > 500 * 1024) { // Reduced to 500KB limit for better performance
+      toast({
+        title: "Error",
+        description: "File size should be less than 500KB",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    try {
       const fileExt = file.name.split('.').pop();
       const sanitizedEventType = eventType.replace(/\s+/g, '_');
       const filePath = `${sanitizedEventType}/${crypto.randomUUID()}.${fileExt}`;
@@ -66,9 +68,7 @@ const EventSummaryComponent = ({ events }: EventSummaryProps) => {
           upsert: false
         });
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       const { data: publicUrl } = supabase.storage
         .from('event-backgrounds')
@@ -79,19 +79,16 @@ const EventSummaryComponent = ({ events }: EventSummaryProps) => {
         .update({ background_url: publicUrl.publicUrl })
         .eq('type', eventType);
 
-      if (updateError) {
-        throw updateError;
-      }
+      if (updateError) throw updateError;
 
       toast({
-        title: "Background Updated",
-        description: "The event background has been successfully updated.",
+        title: "Success",
+        description: "Background updated successfully.",
       });
-
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to upload background image: " + error.message,
+        description: "Failed to upload background image",
         variant: "destructive",
       });
     } finally {
@@ -104,7 +101,7 @@ const EventSummaryComponent = ({ events }: EventSummaryProps) => {
       <div className="flex justify-between items-center mb-4">
         <Button
           variant="ghost"
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={toggleCollapse}
           className="flex items-center justify-between p-4 bg-white/50 hover:bg-white/80 rounded-lg shadow-sm transition-all duration-300"
         >
           <h2 className="text-2xl font-playfair">Event Schedule</h2>
