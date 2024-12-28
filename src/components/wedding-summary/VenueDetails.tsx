@@ -31,12 +31,21 @@ export const VenueDetails = ({ venueDetails }: VenueDetailsProps) => {
           </div>
           
           <div className="space-y-2">
-            <img 
-              src={venueDetails.mapPreviewUrl}
-              alt="Map location of Agarwal Hotel & Resort"
-              className="w-full h-48 object-cover rounded-lg shadow-md"
-            />
-            <p className="text-sm text-wedding-text/70 text-center">Location Map</p>
+            <a 
+              href={venueDetails.mapsLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block group"
+            >
+              <img 
+                src={venueDetails.mapPreviewUrl}
+                alt="Map location of Agarwal Hotel & Resort"
+                className="w-full h-48 object-cover rounded-lg shadow-md transition-transform group-hover:scale-[1.02]"
+              />
+              <p className="text-sm text-wedding-text/70 text-center group-hover:text-wedding-accent transition-colors">
+                Location Map (Click to open in Google Maps)
+              </p>
+            </a>
           </div>
         </div>
 
