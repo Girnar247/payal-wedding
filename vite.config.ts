@@ -22,56 +22,16 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Split vendor chunks more granularly
-          'react-vendor': ['react', 'react-dom'],
-          'router-vendor': ['react-router-dom'],
-          'query-vendor': ['@tanstack/react-query'],
-          'date-vendor': ['date-fns'],
-          'ui-vendor': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-label',
-            '@radix-ui/react-slot',
-            '@radix-ui/react-toast',
-            'class-variance-authority',
-            'clsx',
-            'lucide-react'
-          ],
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          // Remove the problematic UI bundling
         },
       },
-      // Optimize external dependencies
-      external: [],
     },
-    // Enable minification in production
-    minify: true,
-    // Enable CSS code splitting
-    cssCodeSplit: true,
-    // Enable source maps only in development
-    sourcemap: mode === 'development',
-    // Optimize chunk size
     chunkSizeWarningLimit: 1000,
-    // Improve asset optimization
-    assetsInlineLimit: 4096,
+    cssCodeSplit: true,
+    sourcemap: mode === 'development',
   },
-  // Optimize dependency pre-bundling
   optimizeDeps: {
-    include: [
-      'react',
-      'react-dom',
-      'react-router-dom',
-      '@tanstack/react-query',
-      'date-fns',
-      'lucide-react'
-    ],
-    exclude: [],
-  },
-  // Enable CSS modules optimization
-  css: {
-    modules: {
-      localsConvention: 'camelCase',
-    },
-    // Optimize PostCSS
-    postcss: {
-      plugins: [],
-    },
+    include: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
   },
 }));
