@@ -4,15 +4,16 @@ import { supabase } from '@/integrations/supabase/client';
 import App from './App';
 import './index.css';
 
-// Configure QueryClient with optimized settings
+// Configure QueryClient with optimized settings for faster initial load
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes
       retry: 1,
+      gcTime: 1000 * 60 * 30, // 30 minutes
       refetchOnWindowFocus: false,
-      networkMode: 'offlineFirst',
+      // Prefetch guest list data
+      select: (data) => data,
     },
   },
 });
@@ -21,17 +22,7 @@ const queryClient = new QueryClient({
 queryClient.prefetchQuery({
   queryKey: ['guests'],
   queryFn: async () => {
-    console.time('guests-fetch');
-    const { data, error } = await supabase
-      .from('guests')
-      .select('*')
-      .order('created_at', { ascending: false });
-    console.timeEnd('guests-fetch');
-    
-    if (error) {
-      console.error('Error fetching guests:', error);
-      throw error;
-    }
+    const { data } = await supabase.from('guests').select('*');
     return data;
   },
 });
