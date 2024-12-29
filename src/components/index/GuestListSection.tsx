@@ -60,23 +60,17 @@ export const GuestListSection = ({
         onAttributeSelect={setSelectedAttribute}
         hosts={hosts}
         eventDetails={eventDetails}
-        resultCount={filteredGuests.length}
       />
 
-      <div className="flex justify-end items-center gap-4">
-        <p className="text-sm text-gray-600">
-          {filteredGuests.length} result{filteredGuests.length !== 1 ? 's' : ''}
-        </p>
-
-        <GuestActions
-          showAddForm={showAddForm}
-          setShowAddForm={setShowAddForm}
-          filteredGuests={filteredGuests}
-          hosts={hosts}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-        />
-      </div>
+      <GuestActions
+        showAddForm={showAddForm}
+        setShowAddForm={setShowAddForm}
+        filteredGuests={filteredGuests}
+        hosts={hosts}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        resultCount={filteredGuests.length}
+      />
 
       {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
 

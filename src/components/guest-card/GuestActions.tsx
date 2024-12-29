@@ -1,54 +1,33 @@
-import { MoreHorizontal, UserCheck, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Guest } from "@/types/guest";
+import { Check, X } from "lucide-react";
 
 interface GuestActionsProps {
-  guest: Guest;
-  onEdit: () => void;
-  onDelete: (id: string) => void;
-  onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
+  onConfirm: () => void;
+  onDecline: () => void;
+  status: string;
 }
 
-export const GuestActions = ({
-  guest,
-  onEdit,
-  onDelete,
-  onUpdateStatus,
-}: GuestActionsProps) => {
+export const GuestActions = ({ onConfirm, onDecline, status }: GuestActionsProps) => {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-white">
-        <DropdownMenuItem onClick={() => onUpdateStatus(guest.id, "confirmed")}>
-          <UserCheck className="mr-2 h-4 w-4 text-green-600" />
-          Confirm
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onUpdateStatus(guest.id, "declined")}>
-          <UserX className="mr-2 h-4 w-4 text-red-500" />
-          Decline
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onUpdateStatus(guest.id, "pending")}>
-          <UserX className="mr-2 h-4 w-4 text-yellow-500" />
-          Mark as Pending
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => onDelete(guest.id)}
-          className="text-red-600"
-        >
-          Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex gap-2 mt-4">
+      <Button
+        onClick={onConfirm}
+        variant={status === "confirmed" ? "default" : "outline"}
+        size="sm"
+        className="flex-1 h-8 px-2 md:px-4"
+      >
+        <Check className="h-4 w-4 md:mr-2" />
+        <span className="hidden md:inline">Confirm</span>
+      </Button>
+      <Button
+        onClick={onDecline}
+        variant={status === "declined" ? "destructive" : "outline"}
+        size="sm"
+        className="flex-1 h-8 px-2 md:px-4"
+      >
+        <X className="h-4 w-4 md:mr-2" />
+        <span className="hidden md:inline">Decline</span>
+      </Button>
+    </div>
   );
 };

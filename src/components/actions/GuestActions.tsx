@@ -10,6 +10,7 @@ interface GuestActionsProps {
   hosts: Host[];
   viewMode: "grid" | "list";
   setViewMode: (mode: "grid" | "list") => void;
+  resultCount?: number;
 }
 
 export const GuestActions = ({
@@ -19,9 +20,10 @@ export const GuestActions = ({
   hosts,
   viewMode,
   setViewMode,
+  resultCount,
 }: GuestActionsProps) => {
   return (
-    <div className="flex gap-2 w-full md:w-auto">
+    <div className="flex flex-wrap items-center justify-between gap-2 w-full">
       <Button
         onClick={() => setShowAddForm(!showAddForm)}
         variant="outline"
@@ -35,12 +37,17 @@ export const GuestActions = ({
         ) : (
           <>
             <PlusCircle className="mr-2 h-4 w-4" />
-            Add New Guest
+            Add Guest
           </>
         )}
       </Button>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        {resultCount !== undefined && (
+          <span>
+            {resultCount} result{resultCount !== 1 ? 's' : ''}
+          </span>
+        )}
         <DownloadGuestList guests={filteredGuests} hosts={hosts} />
       </div>
     </div>
