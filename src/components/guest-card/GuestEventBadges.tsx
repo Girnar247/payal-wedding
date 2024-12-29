@@ -13,14 +13,18 @@ export const GuestEventBadges = ({ events }: GuestEventBadgesProps) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('events')
-        .select('event_name, type')
+        .select('event_name')
         .order('created_at', { ascending: true });
 
       if (error) throw error;
 
       // Create a mapping of event type to event name
-      const nameMapping = data.reduce((acc: Record<string, string>, event) => {
-        acc[event.type] = event.event_name;
+      const nameMapping = data.reduce((acc: Record<string, string>, event, index) => {
+        // Map each event name to the corresponding event type based on order
+        const eventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
+        if (index < eventTypes.length) {
+          acc[eventTypes[index]] = event.event_name;
+        }
         return acc;
       }, {});
 

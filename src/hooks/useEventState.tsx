@@ -19,20 +19,23 @@ export const useEventState = () => {
 
       console.log('Raw event data from Supabase:', data);
 
-      const formattedEvents = data.reduce((acc: Record<EventType, EventDetails>, event) => {
-        acc[event.type as EventType] = {
-          date: event.date,
-          time: event.time,
-          venue: event.venue,
-          background_url: event.background_url,
-          main_background_url: event.main_background_url,
-        };
+      // Map the events to their corresponding types based on order
+      const eventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
+      const formattedEvents = data.reduce((acc: Record<EventType, EventDetails>, event, index) => {
+        if (index < eventTypes.length) {
+          acc[eventTypes[index]] = {
+            date: event.date,
+            time: event.time,
+            venue: event.venue,
+            background_url: event.background_url,
+            main_background_url: event.main_background_url,
+          };
+        }
         return acc;
       }, {} as Record<EventType, EventDetails>);
 
       // Initialize all event types with default values if they don't exist
-      const allEventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
-      allEventTypes.forEach(eventType => {
+      eventTypes.forEach(eventType => {
         if (!formattedEvents[eventType]) {
           formattedEvents[eventType] = {
             date: new Date().toISOString(),
@@ -51,8 +54,8 @@ export const useEventState = () => {
 
   const addEventMutation = useMutation({
     mutationFn: async (events: Record<EventType, EventDetails>) => {
-      const eventsToInsert = Object.entries(events).map(([type, details]) => ({
-        type,
+      const eventsToInsert = Object.entries(events).map(([eventType, details], index) => ({
+        event_name: eventType.charAt(0).toUpperCase() + eventType.slice(1),
         date: typeof details.date === 'string' ? details.date : details.date.toISOString(),
         time: details.time,
         venue: details.venue,
