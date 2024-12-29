@@ -49,11 +49,10 @@ export const GuestContactInfo = ({ guest }: GuestContactInfoProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 hover:bg-green-50"
+              className="h-6 w-6 p-0 hover:bg-green-50"
               onClick={() => handleWhatsApp(guest.phone!)}
             >
-              <MessageSquare className="h-4 w-4 mr-1" />
-              WhatsApp
+              <MessageSquare className="h-4 w-4" />
             </Button>
           </div>
         </div>

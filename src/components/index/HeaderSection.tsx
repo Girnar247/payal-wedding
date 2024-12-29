@@ -13,13 +13,13 @@ interface HeaderSectionProps {
 
 export const HeaderSection = ({ eventDetails, isRefreshing, onRefresh }: HeaderSectionProps) => {
   const isMobile = useIsMobile();
+  const mainBackgroundUrl = "https://vztjldlvnklafclbinnv.supabase.co/storage/v1/object/public/event-backgrounds/main-background/96777c07-eea8-4596-901c-7137315f7b01.webp";
 
   return (
     <div 
       className="bg-cover bg-center bg-no-repeat py-8 relative"
       style={{
-        backgroundImage: eventDetails?.wedding?.main_background_url ? 
-          `url(${eventDetails.wedding.main_background_url})` : 'none',
+        backgroundImage: `url(${mainBackgroundUrl})`,
       }}
     >
       <div className="absolute inset-0 bg-white/40" />

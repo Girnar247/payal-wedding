@@ -1,6 +1,6 @@
 import { Guest } from "@/types/guest";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash, Check, X, Clock } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,10 +28,19 @@ export const GuestActions = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestA
           <Pencil className="mr-2 h-4 w-4" />
           Edit
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => onDelete(guest.id)}
-          className="text-red-600"
-        >
+        <DropdownMenuItem onClick={() => onUpdateStatus(guest.id, "confirmed")}>
+          <Check className="mr-2 h-4 w-4 text-green-600" />
+          Confirm
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onUpdateStatus(guest.id, "declined")}>
+          <X className="mr-2 h-4 w-4 text-red-600" />
+          Decline
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onUpdateStatus(guest.id, "pending")}>
+          <Clock className="mr-2 h-4 w-4 text-yellow-600" />
+          Pending
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onDelete(guest.id)} className="text-red-600">
           <Trash className="mr-2 h-4 w-4" />
           Delete
         </DropdownMenuItem>
