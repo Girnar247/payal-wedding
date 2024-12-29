@@ -1,6 +1,6 @@
 import { Guest, Host } from "@/types/guest";
 import { Button } from "@/components/ui/button";
-import { Mail, MessageSquare } from "lucide-react";
+import { Mail } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,21 +45,6 @@ export const GuestInvitations = ({ guest, host }: GuestInvitationsProps) => {
     }
   };
 
-  const handleWhatsappInvitation = () => {
-    if (!guest.phone) {
-      toast({
-        title: "Error",
-        description: "Guest phone number is required to send WhatsApp invitation.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const message = encodeURIComponent("You are invited to our wedding celebration!");
-    const whatsappUrl = `https://wa.me/${guest.phone}?text=${message}`;
-    window.open(whatsappUrl, '_blank');
-  };
-
   return (
     <div className="flex gap-2 mt-4">
       <Button
@@ -71,16 +56,6 @@ export const GuestInvitations = ({ guest, host }: GuestInvitationsProps) => {
       >
         <Mail className="h-4 w-4" />
         {guest.invitation_sent ? "Invitation Sent" : "Send Invitation"}
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleWhatsappInvitation}
-        disabled={!guest.phone}
-        className="flex items-center gap-2"
-      >
-        <MessageSquare className="h-4 w-4" />
-        WhatsApp
       </Button>
     </div>
   );

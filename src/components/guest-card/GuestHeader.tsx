@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { GuestActions } from "./GuestActions";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface GuestHeaderProps {
   guest: Guest;
@@ -12,6 +13,8 @@ interface GuestHeaderProps {
 }
 
 export const GuestHeader = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestHeaderProps) => {
+  const isMobile = useIsMobile();
+  
   const statusColors = {
     confirmed: "bg-green-100 text-green-800",
     declined: "bg-red-100 text-red-800",
@@ -56,7 +59,8 @@ export const GuestHeader = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestHe
             className="bg-green-50 hover:bg-green-100"
             onClick={() => onUpdateStatus(guest.id, "confirmed")}
           >
-            <Check className="w-4 h-4 mr-1" /> Confirm
+            <Check className="w-4 h-4" />
+            {!isMobile && <span className="ml-1">Confirm</span>}
           </Button>
           <Button
             size="sm"
@@ -64,7 +68,8 @@ export const GuestHeader = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestHe
             className="bg-red-50 hover:bg-red-100"
             onClick={() => onUpdateStatus(guest.id, "declined")}
           >
-            <X className="w-4 h-4 mr-1" /> Decline
+            <X className="w-4 h-4" />
+            {!isMobile && <span className="ml-1">Decline</span>}
           </Button>
         </div>
       )}
