@@ -7,20 +7,26 @@ interface GuestEventBadgesProps {
 
 export const GuestEventBadges = ({ events }: GuestEventBadgesProps) => {
   const getEventDisplayName = (event: EventType) => {
-    const displayNames: Record<EventType, string> = {
-      haldi: "Haldi",
-      mehndi: "Mehndi",
-      mayra: "Mayra",
-      sangeet: "Sangeet",
-      wedding: "Wedding"
-    };
-    return displayNames[event] || event;
+    switch (event) {
+      case "haldi":
+        return "Haldi";
+      case "mehndi":
+        return "Mehndi";
+      case "mayra":
+        return "Mayra";
+      case "sangeet":
+        return "Sangeet";
+      case "wedding":
+        return "Wedding";
+      default:
+        return event;
+    }
   };
 
   return (
     <div className="flex flex-wrap gap-2">
       {events.map((event) => (
-        <Badge key={event} variant="outline" className="text-wedding-text capitalize">
+        <Badge key={event} variant="outline" className="text-wedding-text">
           {getEventDisplayName(event)}
         </Badge>
       ))}
