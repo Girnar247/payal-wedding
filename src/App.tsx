@@ -5,10 +5,17 @@ import './App.css';
 // Eagerly load the Index component for faster initial render
 import Index from './pages/Index';
 
-// Lazy load other routes
+// Lazy load other routes with loading states
 const WeddingSummary = lazy(() => import('./pages/WeddingSummary'));
 const Tasks = lazy(() => import('./pages/Tasks'));
 const MayraEvent = lazy(() => import('./pages/MayraEvent'));
+
+// Loading component for better UX during lazy loading
+const LoadingSpinner = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+  </div>
+);
 
 const App = () => {
   return (
@@ -21,9 +28,7 @@ const App = () => {
         <Route
           path="/wedding-summary"
           element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-            </div>}>
+            <Suspense fallback={<LoadingSpinner />}>
               <WeddingSummary />
             </Suspense>
           }
@@ -31,9 +36,7 @@ const App = () => {
         <Route
           path="/tasks"
           element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-            </div>}>
+            <Suspense fallback={<LoadingSpinner />}>
               <Tasks />
             </Suspense>
           }
@@ -41,9 +44,7 @@ const App = () => {
         <Route
           path="/mayra"
           element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-            </div>}>
+            <Suspense fallback={<LoadingSpinner />}>
               <MayraEvent />
             </Suspense>
           }

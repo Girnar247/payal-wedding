@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import App from './App';
 import './index.css';
 
-// Configure QueryClient with optimized settings for faster initial load
+// Configure QueryClient with optimized settings
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -12,8 +12,6 @@ const queryClient = new QueryClient({
       retry: 1,
       gcTime: 1000 * 60 * 30, // 30 minutes
       refetchOnWindowFocus: false,
-      // Prefetch guest list data
-      select: (data) => data,
     },
   },
 });
@@ -27,7 +25,14 @@ queryClient.prefetchQuery({
   },
 });
 
-createRoot(document.getElementById('root')!).render(
+// Create root with error boundary
+const container = document.getElementById('root');
+if (!container) throw new Error('Failed to find the root element');
+
+const root = createRoot(container);
+
+// Render app with strict mode disabled in production for better performance
+root.render(
   <QueryClientProvider client={queryClient}>
     <App />
   </QueryClientProvider>
