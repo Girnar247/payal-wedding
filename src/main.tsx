@@ -11,8 +11,8 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
       retry: 1,
-      // Add caching optimizations
-      cacheTime: 1000 * 60 * 30, // 30 minutes
+      // Updated caching optimizations with correct property names
+      gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
       refetchOnWindowFocus: false,
     },
   },
