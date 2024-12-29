@@ -1,20 +1,39 @@
 import { EventType } from "@/types/guest";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface GuestEventBadgesProps {
   events: EventType[];
 }
 
 export const GuestEventBadges = ({ events }: GuestEventBadgesProps) => {
+  const { data: eventNames } = useQuery({
+    queryKey: ['events'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('event_name, type')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      // Create a mapping of event type to event name
+      const nameMapping = data.reduce((acc: Record<string, string>, event) => {
+        acc[event.type] = event.event_name;
+        return acc;
+      }, {});
+
+      return nameMapping;
+    }
+  });
+
   const getEventDisplayName = (event: EventType) => {
-    const displayNames: Record<string, string> = {
-      haldi: "Haldi",
-      mehndi: "Mehndi",
-      mayra: "Mayra",
-      sangeet: "Sangeet",
-      wedding: "Wedding"
-    };
-    return displayNames[event] || event;
+    if (eventNames && eventNames[event]) {
+      return eventNames[event];
+    }
+    // Fallback to capitalized event type if no name is found
+    return event.charAt(0).toUpperCase() + event.slice(1);
   };
 
   return (

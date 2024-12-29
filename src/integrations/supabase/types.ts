@@ -14,30 +14,30 @@ export type Database = {
           background_url: string | null
           created_at: string
           date: string
+          event_name: string
           id: string
           main_background_url: string | null
           time: string
-          type: string
           venue: string
         }
         Insert: {
           background_url?: string | null
           created_at?: string
           date: string
+          event_name: string
           id?: string
           main_background_url?: string | null
           time: string
-          type: string
           venue: string
         }
         Update: {
           background_url?: string | null
           created_at?: string
           date?: string
+          event_name?: string
           id?: string
           main_background_url?: string | null
           time?: string
-          type?: string
           venue?: string
         }
         Relationships: []
