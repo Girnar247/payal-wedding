@@ -10,10 +10,10 @@ const WeddingSummary = lazy(() => import('./pages/WeddingSummary'));
 const Tasks = lazy(() => import('./pages/Tasks'));
 const MayraEvent = lazy(() => import('./pages/MayraEvent'));
 
-// Loading component for better UX during lazy loading
+// Optimized loading component for better UX during lazy loading
 const LoadingSpinner = () => (
   <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+    <div className="loading-spinner"></div>
   </div>
 );
 

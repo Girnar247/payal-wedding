@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import App from './App';
 import './index.css';
 
-// Configure QueryClient with optimized settings
+// Configure QueryClient with optimized settings for initial render
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -12,18 +12,28 @@ const queryClient = new QueryClient({
       retry: 1,
       gcTime: 1000 * 60 * 30, // 30 minutes
       refetchOnWindowFocus: false,
+      suspense: true, // Enable suspense mode for better loading states
     },
   },
 });
 
-// Prefetch critical data
-queryClient.prefetchQuery({
-  queryKey: ['guests'],
-  queryFn: async () => {
-    const { data } = await supabase.from('guests').select('*');
-    return data;
-  },
-});
+// Prefetch critical data in parallel
+Promise.all([
+  queryClient.prefetchQuery({
+    queryKey: ['guests'],
+    queryFn: async () => {
+      const { data } = await supabase.from('guests').select('*');
+      return data;
+    },
+  }),
+  queryClient.prefetchQuery({
+    queryKey: ['events'],
+    queryFn: async () => {
+      const { data } = await supabase.from('events').select('*');
+      return data;
+    },
+  }),
+]);
 
 // Create root with error boundary
 const container = document.getElementById('root');
