@@ -9,7 +9,7 @@ export const GuestEventBadges = ({ events }: GuestEventBadgesProps) => {
   return (
     <div className="flex flex-wrap gap-2">
       {events.map((event) => (
-        <Badge key={event} variant="outline" className="capitalize">
+        <Badge key={event} variant="outline" className="text-wedding-text">
           {event}
         </Badge>
       ))}
