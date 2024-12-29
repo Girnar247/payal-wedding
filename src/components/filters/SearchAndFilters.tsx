@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EventType, Host } from "@/types/guest";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SearchAndFiltersProps {
   searchTerm: string;
@@ -29,16 +30,25 @@ export const SearchAndFilters = ({
   eventDetails,
   resultCount,
 }: SearchAndFiltersProps) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="w-full space-y-4">
       <div className="flex flex-col md:flex-row gap-4">
-        <Input
-          placeholder="Search guests..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full md:w-64"
-        />
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col w-full md:w-64 gap-2">
+          <Input
+            placeholder="Search guests..."
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="w-full bg-white"
+          />
+          {isMobile && resultCount !== undefined && (
+            <p className="text-sm text-gray-600 px-1">
+              {resultCount} result{resultCount !== 1 ? 's' : ''}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2 flex-1">
           <Select value={selectedHost} onValueChange={onHostSelect}>
             <SelectTrigger className="w-full md:w-48 bg-white">
               <SelectValue placeholder="Filter by Host" />
@@ -81,6 +91,11 @@ export const SearchAndFilters = ({
           </Select>
         </div>
       </div>
+      {!isMobile && resultCount !== undefined && (
+        <p className="text-sm text-gray-600">
+          {resultCount} result{resultCount !== 1 ? 's' : ''}
+        </p>
+      )}
     </div>
   );
 };

@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, Heart, RefreshCw } from "lucide-react";
+import { ArrowLeft, ClipboardList, Heart, RefreshCw } from "lucide-react";
 import { AdminButton } from "@/components/AdminButton";
 import { EventDetails } from "@/types/guest";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface HeaderSectionProps {
   eventDetails: Record<string, EventDetails>;
@@ -11,6 +12,8 @@ interface HeaderSectionProps {
 }
 
 export const HeaderSection = ({ eventDetails, isRefreshing, onRefresh }: HeaderSectionProps) => {
+  const isMobile = useIsMobile();
+
   return (
     <div 
       className="bg-cover bg-center bg-no-repeat py-8 relative"
@@ -21,15 +24,15 @@ export const HeaderSection = ({ eventDetails, isRefreshing, onRefresh }: HeaderS
     >
       <div className="absolute inset-0 bg-white/40" />
       
-      <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
-        <div className="flex justify-between items-center">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl md:text-5xl font-playfair text-wedding-text">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-center md:text-left space-y-2 w-full md:w-auto">
+            <h1 className="text-3xl md:text-5xl font-playfair text-wedding-text">
               Payal's Wedding - Guest List
             </h1>
             <p className="text-gray-600">Manage your special celebrations with elegance</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 w-full md:w-auto">
             <Button 
               variant="outline" 
               className="bg-white/50 hover:bg-white/80"
@@ -37,18 +40,18 @@ export const HeaderSection = ({ eventDetails, isRefreshing, onRefresh }: HeaderS
               disabled={isRefreshing}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
+              {!isMobile && "Refresh"}
             </Button>
             <Link to="/wedding-summary">
               <Button variant="outline" className="bg-white/50 hover:bg-white/80">
                 <Heart className="h-4 w-4 mr-2" />
-                Wedding Summary
+                {!isMobile && "Wedding Summary"}
               </Button>
             </Link>
             <Link to="/tasks">
               <Button variant="outline" className="bg-white/50 hover:bg-white/80">
                 <ClipboardList className="h-4 w-4 mr-2" />
-                Tasks
+                {!isMobile && "Tasks"}
               </Button>
             </Link>
             <AdminButton />
