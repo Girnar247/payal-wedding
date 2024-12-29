@@ -7,20 +7,14 @@ interface GuestEventBadgesProps {
 
 export const GuestEventBadges = ({ events }: GuestEventBadgesProps) => {
   const getEventDisplayName = (event: EventType) => {
-    switch (event) {
-      case "haldi":
-        return "Haldi";
-      case "mehndi":
-        return "Mehndi";
-      case "mayra":
-        return "Mayra";
-      case "sangeet":
-        return "Sangeet";
-      case "wedding":
-        return "Wedding";
-      default:
-        return event;
-    }
+    const displayNames: Record<string, string> = {
+      haldi: "Haldi",
+      mehndi: "Mehndi",
+      mayra: "Mayra",
+      sangeet: "Sangeet",
+      wedding: "Wedding"
+    };
+    return displayNames[event] || event;
   };
 
   return (
