@@ -1,4 +1,5 @@
 import { Guest } from "@/types/guest";
+import { Badge } from "@/components/ui/badge";
 import { GuestActions } from "./GuestActions";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
