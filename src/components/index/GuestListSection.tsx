@@ -63,13 +63,12 @@ export const GuestListSection = ({
       />
 
       <GuestActions
-        showAddForm={showAddForm}
-        setShowAddForm={setShowAddForm}
         filteredGuests={filteredGuests}
         hosts={hosts}
         viewMode={viewMode}
         setViewMode={setViewMode}
         resultCount={filteredGuests.length}
+        onAddGuest={handleAddGuest}
       />
 
       {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
