@@ -6,7 +6,6 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { EventCard } from "./event-summary/EventCard";
 import { MainBackgroundUpload } from "./event-summary/MainBackgroundUpload";
-import { parseISO } from "date-fns";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -97,6 +96,41 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
     }
   };
 
+  const handleMainBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!event.target.files || event.target.files.length === 0) {
+        return;
+      }
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const filePath = `main/${crypto.randomUUID()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('event-backgrounds')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: publicUrl } = supabase.storage
+        .from('event-backgrounds')
+        .getPublicUrl(filePath);
+
+      toast({
+        title: "Main Background Updated",
+        description: "The main background has been successfully updated.",
+      });
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload main background image: " + error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="mb-8">
       <div className="flex justify-between items-center mb-4">
@@ -120,7 +154,7 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
           {sortedEvents.map(([eventType, details]) => (
             <EventCard
               key={eventType}
-              eventType={eventType}
+              eventType={eventType as EventType}
               details={details}
               guests={guests}
               onBackgroundUpload={handleBackgroundUpload}
