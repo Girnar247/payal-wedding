@@ -24,6 +24,9 @@ export const GuestManagement = ({
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const { toast } = useToast();
 
+  // Sort guests alphabetically by name
+  const sortedGuests = [...guests].sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <div>
       <div className="flex justify-end mb-4">
@@ -43,7 +46,7 @@ export const GuestManagement = ({
 
       {viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {guests.map((guest) => (
+          {sortedGuests.map((guest) => (
             <GuestCard
               key={guest.id}
               guest={guest}
@@ -56,7 +59,7 @@ export const GuestManagement = ({
         </div>
       ) : (
         <GuestList
-          guests={guests}
+          guests={sortedGuests}
           hosts={hosts}
           defaultHost={defaultHost}
           onUpdateStatus={onUpdateStatus}

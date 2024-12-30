@@ -18,13 +18,13 @@ interface EventSummaryProps {
 
 export const EventSummary = ({ events }: EventSummaryProps) => {
   const isMobile = useIsMobile();
-  const [isCollapsed, setIsCollapsed] = useState(isMobile);
+  const [isCollapsed, setIsCollapsed] = useState(true); // Changed to true for default collapsed state
   const [uploading, setUploading] = useState<string | null>(null);
   const { isAdmin } = useAdmin();
   const { guests } = useGuestState();
 
   useEffect(() => {
-    setIsCollapsed(isMobile);
+    setIsCollapsed(true); // Set to true to ensure it stays collapsed on mobile
   }, [isMobile]);
 
   const handleBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {

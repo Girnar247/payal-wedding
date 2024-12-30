@@ -30,15 +30,15 @@ export const GuestActions = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestA
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onUpdateStatus(guest.id, "confirmed")}>
           <Check className="mr-2 h-4 w-4 text-green-600" />
-          Confirm
+          Mark as Confirmed
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onUpdateStatus(guest.id, "declined")}>
           <X className="mr-2 h-4 w-4 text-red-600" />
-          Decline
+          Mark as Declined
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onUpdateStatus(guest.id, "pending")}>
           <Clock className="mr-2 h-4 w-4 text-yellow-600" />
-          Pending
+          Mark as Pending
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onDelete(guest.id)} className="text-red-600">
           <Trash className="mr-2 h-4 w-4" />

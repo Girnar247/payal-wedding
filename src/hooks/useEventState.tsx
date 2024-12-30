@@ -54,7 +54,7 @@ export const useEventState = () => {
 
   const addEventMutation = useMutation({
     mutationFn: async (events: Record<EventType, EventDetails>) => {
-      const eventsToInsert = Object.entries(events).map(([eventType, details], index) => ({
+      const eventsToInsert = Object.entries(events).map(([eventType, details]) => ({
         event_name: eventType.charAt(0).toUpperCase() + eventType.slice(1),
         date: typeof details.date === 'string' ? details.date : details.date.toISOString(),
         time: details.time,
