@@ -19,22 +19,22 @@ export const useEventState = () => {
 
       console.log('Raw event data from Supabase:', data);
 
-      // Map the events to their corresponding types based on order
-      const eventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
-      const formattedEvents = data.reduce((acc: Record<EventType, EventDetails>, event, index) => {
-        if (index < eventTypes.length) {
-          acc[eventTypes[index]] = {
-            date: event.date,
-            time: event.time,
-            venue: event.venue,
-            background_url: event.background_url,
-            main_background_url: event.main_background_url,
-          };
-        }
+      // Map the events to their corresponding types based on event_name
+      const formattedEvents = data.reduce((acc: Record<EventType, EventDetails>, event) => {
+        // Convert event_name to lowercase and remove spaces for the key
+        const eventKey = event.event_name.toLowerCase().replace(/\s+/g, '') as EventType;
+        acc[eventKey] = {
+          date: event.date,
+          time: event.time,
+          venue: event.venue,
+          background_url: event.background_url,
+          main_background_url: event.main_background_url,
+        };
         return acc;
       }, {} as Record<EventType, EventDetails>);
 
       // Initialize all event types with default values if they don't exist
+      const eventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
       eventTypes.forEach(eventType => {
         if (!formattedEvents[eventType]) {
           formattedEvents[eventType] = {

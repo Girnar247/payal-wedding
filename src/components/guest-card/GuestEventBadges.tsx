@@ -19,12 +19,10 @@ export const GuestEventBadges = ({ events }: GuestEventBadgesProps) => {
       if (error) throw error;
 
       // Create a mapping of event type to event name
-      const nameMapping = data.reduce((acc: Record<string, string>, event, index) => {
-        // Map each event name to the corresponding event type based on order
-        const eventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
-        if (index < eventTypes.length) {
-          acc[eventTypes[index]] = event.event_name;
-        }
+      const nameMapping = data.reduce((acc: Record<string, string>, event) => {
+        // Convert event_name to lowercase and remove spaces for the key
+        const key = event.event_name.toLowerCase().replace(/\s+/g, '');
+        acc[key] = event.event_name;
         return acc;
       }, {});
 
