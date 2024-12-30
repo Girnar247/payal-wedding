@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { EventType, EventDetails } from "@/types/guest";
-import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { Upload, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { EventCard } from "./event-summary/EventCard";
@@ -11,6 +10,7 @@ import { parseISO } from "date-fns";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useQuery } from "@tanstack/react-query";
 
 interface EventSummaryProps {
   events: Record<EventType, EventDetails>;
@@ -18,13 +18,34 @@ interface EventSummaryProps {
 
 export const EventSummary = ({ events }: EventSummaryProps) => {
   const isMobile = useIsMobile();
-  const [isCollapsed, setIsCollapsed] = useState(true); // Changed to true for default collapsed state
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [uploading, setUploading] = useState<string | null>(null);
   const { isAdmin } = useAdmin();
   const { guests } = useGuestState();
 
+  const { data: sortedEvents } = useQuery({
+    queryKey: ['sorted-events'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .order('date', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching sorted events:', error);
+        return Object.entries(events);
+      }
+
+      return data.map(event => {
+        const eventType = event.event_name.toLowerCase().replace(/\s+/g, '') as EventType;
+        return [eventType, events[eventType]] as [EventType, EventDetails];
+      });
+    },
+    initialData: Object.entries(events) as [EventType, EventDetails][],
+  });
+
   useEffect(() => {
-    setIsCollapsed(true); // Set to true to ensure it stays collapsed on mobile
+    setIsCollapsed(true);
   }, [isMobile]);
 
   const handleBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>, eventType: string) => {
@@ -54,7 +75,7 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
       const { error: updateError } = await supabase
         .from('events')
         .update({ background_url: publicUrl.publicUrl })
-        .eq('type', eventType);
+        .eq('event_name', eventType);
 
       if (updateError) {
         throw updateError;
@@ -73,54 +94,6 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
       });
     } finally {
       setUploading(null);
-    }
-  };
-
-  const handleMainBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      if (!event.target.files || event.target.files.length === 0) {
-        return;
-      }
-      const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const filePath = `main-background/${crypto.randomUUID()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('event-backgrounds')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      const { data: publicUrl } = supabase.storage
-        .from('event-backgrounds')
-        .getPublicUrl(filePath);
-
-      // Update each event type individually with the new main background URL
-      const eventTypes = Object.keys(events);
-      for (const eventType of eventTypes) {
-        const { error: updateError } = await supabase
-          .from('events')
-          .update({ main_background_url: publicUrl.publicUrl })
-          .eq('type', eventType);
-
-        if (updateError) {
-          throw updateError;
-        }
-      }
-
-      toast({
-        title: "Main Background Updated",
-        description: "The main background has been successfully updated.",
-      });
-
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to upload main background image: " + error.message,
-        variant: "destructive",
-      });
     }
   };
 
@@ -144,22 +117,16 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
       
       {!isCollapsed && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {(Object.entries(events) as [EventType, EventDetails][])
-            .sort((a, b) => {
-              const dateA = a[1].date instanceof Date ? a[1].date : parseISO(a[1].date as string);
-              const dateB = b[1].date instanceof Date ? b[1].date : parseISO(b[1].date as string);
-              return dateA.getTime() - dateB.getTime();
-            })
-            .map(([eventType, details]) => (
-              <EventCard
-                key={eventType}
-                eventType={eventType}
-                details={details}
-                guests={guests}
-                onBackgroundUpload={handleBackgroundUpload}
-                uploading={uploading}
-              />
-            ))}
+          {sortedEvents.map(([eventType, details]) => (
+            <EventCard
+              key={eventType}
+              eventType={eventType}
+              details={details}
+              guests={guests}
+              onBackgroundUpload={handleBackgroundUpload}
+              uploading={uploading}
+            />
+          ))}
         </div>
       )}
     </div>

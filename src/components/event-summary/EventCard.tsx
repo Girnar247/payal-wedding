@@ -5,6 +5,8 @@ import { Upload } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface EventCardProps {
   eventType: EventType;
@@ -24,6 +26,24 @@ export const EventCard = ({
   const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   
+  const { data: eventName } = useQuery({
+    queryKey: ['event-name', eventType],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('event_name')
+        .eq('event_name', eventType)
+        .single();
+
+      if (error) {
+        console.error('Error fetching event name:', error);
+        return eventType.charAt(0).toUpperCase() + eventType.slice(1);
+      }
+
+      return data?.event_name || eventType.charAt(0).toUpperCase() + eventType.slice(1);
+    }
+  });
+
   const confirmedGuestCount = guests?.reduce((acc, guest) => {
     if (guest.rsvp_status === "confirmed" && guest.events.includes(eventType)) {
       return acc + 1 + (guest.plus_count || 0);
@@ -44,7 +64,7 @@ export const EventCard = ({
     >
       <div className="relative z-10 text-wedding-text">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-playfair capitalize text-lg font-bold">{eventType}</h3>
+          <h3 className="font-playfair text-lg font-bold">{eventName}</h3>
           {isAdmin && (
             <div className="relative">
               <input
