@@ -48,26 +48,28 @@ export const GuestHeader = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestHe
         />
       </div>
       
-      <div className="flex gap-2">
-        <Button
-          size="sm"
-          variant="outline"
-          className="bg-green-50 hover:bg-green-100"
-          onClick={() => onUpdateStatus(guest.id, "confirmed")}
-        >
-          <Check className="w-4 h-4 mr-1" /> 
-          Confirm
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          className="bg-red-50 hover:bg-red-100"
-          onClick={() => onUpdateStatus(guest.id, "declined")}
-        >
-          <X className="w-4 h-4 mr-1" /> 
-          Decline
-        </Button>
-      </div>
+      {guest.rsvp_status === 'pending' && (
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="bg-green-50 hover:bg-green-100"
+            onClick={() => onUpdateStatus(guest.id, "confirmed")}
+          >
+            <Check className="w-4 h-4 mr-1" /> 
+            Confirm
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="bg-red-50 hover:bg-red-100"
+            onClick={() => onUpdateStatus(guest.id, "declined")}
+          >
+            <X className="w-4 h-4 mr-1" /> 
+            Decline
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

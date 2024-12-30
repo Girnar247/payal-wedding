@@ -25,6 +25,10 @@ export const AddGuestDialog = ({ hosts, onSubmit }: AddGuestDialogProps) => {
     }
     onSubmit(data);
     setOpen(false);
+    toast({
+      title: "Success",
+      description: "Guest has been successfully added!",
+    });
   };
 
   return (
