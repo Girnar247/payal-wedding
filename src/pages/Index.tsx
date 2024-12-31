@@ -27,7 +27,8 @@ const Index = () => {
   const [selectedAttribute, setSelectedAttribute] = useState<string>("all-categories");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
   const {
     guests,
     hosts,
@@ -40,7 +41,34 @@ const Index = () => {
   } = useGuestState();
 
   const { eventDetails, isLoading, addEvents } = useEventState();
-  const stats = useGuestStats(guests);
+  const stats = {
+    totalGuests: guests.length,
+    totalWithPlusOnes: guests.reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
+    confirmed: guests.reduce((acc, guest) => {
+      if (guest.rsvp_status === "confirmed") {
+        return acc + 1 + (guest.plus_count || 0);
+      }
+      return acc;
+    }, 0),
+    declined: guests.reduce((acc, guest) => {
+      if (guest.rsvp_status === "declined") {
+        return acc + 1 + (guest.plus_count || 0);
+      }
+      return acc;
+    }, 0),
+    pending: guests.reduce((acc, guest) => {
+      if (guest.rsvp_status === "pending") {
+        return acc + 1 + (guest.plus_count || 0);
+      }
+      return acc;
+    }, 0),
+    accommodationRequired: guests.reduce((acc, guest) => {
+      if (guest.accommodation_required) {
+        return acc + guest.accommodation_count;
+      }
+      return acc;
+    }, 0),
+  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -106,7 +134,7 @@ const Index = () => {
             ) : (
               <>
                 <EventSummary events={eventDetails} />
-                <Dashboard {...stats} />
+                <Dashboard {...stats} onFilterByStatus={setStatusFilter} />
                 <GuestListSection
                   searchTerm={searchTerm}
                   setSearchTerm={setSearchTerm}
@@ -120,7 +148,11 @@ const Index = () => {
                   setShowAddForm={setShowAddForm}
                   viewMode={viewMode}
                   setViewMode={setViewMode}
-                  filteredGuests={filteredGuests}
+                  filteredGuests={filteredGuests.filter(guest => {
+                    if (!statusFilter) return true;
+                    if (statusFilter === "accommodation") return guest.accommodation_required;
+                    return guest.rsvp_status === statusFilter;
+                  })}
                   hosts={hosts}
                   eventDetails={eventDetails}
                   handleAddGuest={handleAddGuest}

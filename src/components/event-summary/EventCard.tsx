@@ -33,7 +33,7 @@ export const EventCard = ({
         .from('events')
         .select('event_name')
         .eq('event_name', eventType)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching event name:', error);

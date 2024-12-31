@@ -11,6 +11,7 @@ interface DashboardProps {
   declined: number;
   pending: number;
   accommodationRequired: number;
+  onFilterByStatus?: (status: string | null) => void;
 }
 
 export const Dashboard = ({ 
@@ -19,7 +20,8 @@ export const Dashboard = ({
   confirmed, 
   declined, 
   pending,
-  accommodationRequired 
+  accommodationRequired,
+  onFilterByStatus 
 }: DashboardProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -30,6 +32,7 @@ export const Dashboard = ({
       icon: User,
       color: "bg-wedding-rose/20",
       textColor: "text-wedding-text",
+      status: null
     },
     {
       label: "Total Guests",
@@ -37,6 +40,7 @@ export const Dashboard = ({
       icon: Users,
       color: "bg-wedding-rose/20",
       textColor: "text-wedding-text",
+      status: null
     },
     {
       label: "Confirmed",
@@ -44,6 +48,7 @@ export const Dashboard = ({
       icon: UserCheck,
       color: "bg-green-100",
       textColor: "text-green-700",
+      status: "confirmed"
     },
     {
       label: "Declined",
@@ -51,6 +56,7 @@ export const Dashboard = ({
       icon: UserX,
       color: "bg-red-100",
       textColor: "text-red-700",
+      status: "declined"
     },
     {
       label: "Pending",
@@ -58,6 +64,7 @@ export const Dashboard = ({
       icon: User,
       color: "bg-yellow-100",
       textColor: "text-yellow-700",
+      status: "pending"
     },
     {
       label: "Need Accommodation",
@@ -65,6 +72,7 @@ export const Dashboard = ({
       icon: Home,
       color: "bg-blue-100",
       textColor: "text-blue-700",
+      status: "accommodation"
     },
   ];
 
@@ -88,7 +96,10 @@ export const Dashboard = ({
           {stats.map((stat) => (
             <Card
               key={stat.label}
-              className="glass-card p-6 transition-all duration-300 hover:shadow-xl"
+              className={`glass-card p-6 transition-all duration-300 hover:shadow-xl cursor-pointer ${
+                onFilterByStatus ? 'hover:scale-105' : ''
+              }`}
+              onClick={() => onFilterByStatus?.(stat.status)}
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -98,7 +109,7 @@ export const Dashboard = ({
                   </p>
                 </div>
                 <div className={`p-3 rounded-full ${stat.color}`}>
-                  <stat.icon className={`h-6 w-6 ${stat.textColor}`} />
+                  <stat.icon className={`h-6 w-4 ${stat.textColor}`} />
                 </div>
               </div>
             </Card>

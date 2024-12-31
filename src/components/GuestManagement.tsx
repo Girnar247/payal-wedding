@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { LayoutGrid, List } from "lucide-react";
 import { Guest, Host } from "@/types/guest";
 import { useToast } from "@/components/ui/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface GuestManagementProps {
   guests: Guest[];
@@ -22,14 +23,42 @@ export const GuestManagement = ({
   onUpdateStatus,
 }: GuestManagementProps) => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<"name" | "category">("name");
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Sort guests alphabetically by name
-  const sortedGuests = [...guests].sort((a, b) => a.name.localeCompare(b.name));
+  // Sort and filter guests
+  const filteredAndSortedGuests = [...guests]
+    .filter(guest => {
+      if (!statusFilter) return true;
+      if (statusFilter === "accommodation") return guest.accommodation_required;
+      return guest.rsvp_status === statusFilter;
+    })
+    .sort((a, b) => {
+      if (sortBy === "name") {
+        return a.name.localeCompare(b.name);
+      } else {
+        // Sort by first attribute if exists
+        const aCategory = a.attributes[0] || "";
+        const bCategory = b.attributes[0] || "";
+        return aCategory.localeCompare(bCategory);
+      }
+    });
 
   return (
     <div>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex gap-4">
+          <Select value={sortBy} onValueChange={(value: "name" | "category") => setSortBy(value)}>
+            <SelectTrigger className="w-[180px] bg-white">
+              <SelectValue placeholder="Sort by..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">Sort by Name</SelectItem>
+              <SelectItem value="category">Sort by Category</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <Button
           variant="outline"
           size="sm"
@@ -46,7 +75,7 @@ export const GuestManagement = ({
 
       {viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedGuests.map((guest) => (
+          {filteredAndSortedGuests.map((guest) => (
             <GuestCard
               key={guest.id}
               guest={guest}
@@ -59,16 +88,16 @@ export const GuestManagement = ({
         </div>
       ) : (
         <GuestList
-          guests={sortedGuests}
+          guests={filteredAndSortedGuests}
           hosts={hosts}
           defaultHost={defaultHost}
           onUpdateStatus={onUpdateStatus}
         />
       )}
 
-      {guests.length === 0 && (
+      {filteredAndSortedGuests.length === 0 && (
         <div className="text-center py-12 text-gray-500">
-          <p>No guests added yet. Click the button above to add your first guest.</p>
+          <p>No guests found matching the current filters.</p>
         </div>
       )}
     </div>
