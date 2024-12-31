@@ -16,6 +16,7 @@ export type Database = {
           date: string
           event_name: string
           id: string
+          is_visible: boolean | null
           main_background_url: string | null
           time: string
           venue: string
@@ -26,6 +27,7 @@ export type Database = {
           date: string
           event_name: string
           id?: string
+          is_visible?: boolean | null
           main_background_url?: string | null
           time: string
           venue: string
@@ -36,6 +38,7 @@ export type Database = {
           date?: string
           event_name?: string
           id?: string
+          is_visible?: boolean | null
           main_background_url?: string | null
           time?: string
           venue?: string

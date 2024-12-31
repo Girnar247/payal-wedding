@@ -18,12 +18,13 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
   const { guests } = useGuestState();
   const { uploading, handleBackgroundUpload, handleMainBackgroundUpload } = useBackgroundUpload();
 
-  const { data: sortedEvents } = useQuery({
+  const { data: sortedEvents, isLoading } = useQuery({
     queryKey: ['sorted-events'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('events')
         .select('*')
+        .eq('is_visible', true)
         .order('date', { ascending: true });
 
       if (error) {
@@ -42,6 +43,10 @@ export const EventSummary = ({ events }: EventSummaryProps) => {
   useEffect(() => {
     setIsCollapsed(true);
   }, [isMobile]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="mb-8">
