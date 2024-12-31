@@ -43,10 +43,10 @@ export const EventCard = ({
 
       if (error) {
         console.error('Error fetching event name:', error);
-        return eventType.charAt(0).toUpperCase() + eventType.slice(1);
+        return eventType;
       }
 
-      return data?.event_name || eventType.charAt(0).toUpperCase() + eventType.slice(1);
+      return data?.event_name || eventType;
     }
   });
 
