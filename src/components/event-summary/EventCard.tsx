@@ -38,7 +38,7 @@ export const EventCard = ({
       const { data, error } = await supabase
         .from('events')
         .select('event_name')
-        .eq('event_name', eventType)
+        .eq('event_type', eventType)
         .maybeSingle();
 
       if (error) {
@@ -55,7 +55,7 @@ export const EventCard = ({
       const { error } = await supabase
         .from('events')
         .update({ event_name: newName })
-        .eq('event_name', eventType);
+        .eq('event_type', eventType);
 
       if (error) throw error;
     },
