@@ -47,10 +47,10 @@ export const GuestManagement = ({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+        <div className="w-full sm:w-auto">
           <Select value={sortBy} onValueChange={(value: "name" | "category") => setSortBy(value)}>
-            <SelectTrigger className="w-[180px] bg-white">
+            <SelectTrigger className="w-full sm:w-[180px] bg-white">
               <SelectValue placeholder="Sort by..." />
             </SelectTrigger>
             <SelectContent>
@@ -63,6 +63,7 @@ export const GuestManagement = ({
           variant="outline"
           size="sm"
           onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+          className="w-full sm:w-auto"
         >
           {viewMode === "grid" ? (
             <List className="h-4 w-4 mr-2" />

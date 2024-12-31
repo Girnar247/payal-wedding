@@ -1,12 +1,15 @@
 import { EventType, EventDetails, Guest } from "@/types/guest";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { Upload, Edit2 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
 
 interface EventCardProps {
   eventType: EventType;
@@ -25,6 +28,9 @@ export const EventCard = ({
 }: EventCardProps) => {
   const { isAdmin } = useAdmin();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState("");
   
   const { data: eventName } = useQuery({
     queryKey: ['event-name', eventType],
@@ -43,6 +49,43 @@ export const EventCard = ({
       return data?.event_name || eventType.charAt(0).toUpperCase() + eventType.slice(1);
     }
   });
+
+  const updateEventName = useMutation({
+    mutationFn: async (newName: string) => {
+      const { error } = await supabase
+        .from('events')
+        .update({ event_name: newName })
+        .eq('event_name', eventType);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['event-name', eventType] });
+      toast({
+        title: "Success",
+        description: "Event name updated successfully",
+      });
+      setIsEditing(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update event name",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleEditClick = () => {
+    setEditedName(eventName || "");
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    if (editedName.trim()) {
+      updateEventName.mutate(editedName);
+    }
+  };
 
   const confirmedGuestCount = guests?.reduce((acc, guest) => {
     if (guest.rsvp_status === "confirmed" && guest.events.includes(eventType)) {
@@ -64,7 +107,36 @@ export const EventCard = ({
     >
       <div className="relative z-10 text-wedding-text">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-playfair text-lg font-bold">{eventName}</h3>
+          {isEditing ? (
+            <div className="flex gap-2 items-center">
+              <Input
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                className="w-40"
+                autoFocus
+                onKeyPress={(e) => e.key === 'Enter' && handleSave()}
+              />
+              <Button size="sm" onClick={handleSave}>Save</Button>
+              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <h3 className="font-playfair text-lg font-bold">{eventName}</h3>
+              {isAdmin && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-0 h-6 w-6"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditClick();
+                  }}
+                >
+                  <Edit2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          )}
           {isAdmin && (
             <div className="relative">
               <input
