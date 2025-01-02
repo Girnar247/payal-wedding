@@ -2,6 +2,7 @@ import { Button } from "./ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { useAdmin } from "@/contexts/AdminContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export const DownloadApkButton = () => {
   const { isAdmin } = useAdmin();
@@ -9,15 +10,19 @@ export const DownloadApkButton = () => {
 
   const handleDownload = async () => {
     try {
-      const response = await fetch('/app-release.apk');
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const { data, error } = await supabase.storage
+        .from('app-releases')
+        .download('app-release.apk');
+
+      if (error) throw error;
+
+      const url = URL.createObjectURL(data);
       const a = document.createElement('a');
       a.href = url;
       a.download = 'payal-wedding.apk';
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
+      URL.revokeObjectURL(url);
       document.body.removeChild(a);
       
       toast({
@@ -25,6 +30,7 @@ export const DownloadApkButton = () => {
         description: "The APK file is being downloaded.",
       });
     } catch (error) {
+      console.error('Download error:', error);
       toast({
         title: "Download Failed",
         description: "There was an error downloading the APK file.",
