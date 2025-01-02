@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ClipboardList, Heart, RefreshCw, Pencil } from "lucide-react";
 import { AdminButton } from "@/components/AdminButton";
+import { DownloadApkButton } from "@/components/DownloadApkButton";
 import { EventDetails } from "@/types/guest";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
@@ -93,6 +94,7 @@ export const HeaderSection = ({ eventDetails, isRefreshing, onRefresh }: HeaderS
                 {!isMobile && "Tasks"}
               </Button>
             </Link>
+            <DownloadApkButton />
             <AdminButton />
           </div>
         </div>
