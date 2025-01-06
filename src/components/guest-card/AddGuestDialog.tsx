@@ -26,7 +26,7 @@ export const AddGuestDialog = ({ hosts, onSubmit, side }: AddGuestDialogProps) =
       return;
     }
     
-    // Ensure the side is set correctly based on the current view
+    // Ensure the side is explicitly set based on the current view
     const guestData = {
       ...data,
       side // Explicitly set the side here

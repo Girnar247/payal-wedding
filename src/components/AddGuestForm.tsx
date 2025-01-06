@@ -20,13 +20,14 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     hostId: "",
     events: [],
     attributes: [],
-    side
+    side // Initialize with the provided side
   });
 
   const handleSubmit = (e: React.FormEvent | null) => {
     if (e) e.preventDefault();
     
     console.log('AddGuestForm - Handling submit with data:', formData);
+    console.log('AddGuestForm - Current side:', side);
 
     if (!formData.name.trim()) {
       toast({
@@ -73,17 +74,17 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
-    // Ensure the side is preserved from the props
+    // Always use the side from props to ensure consistency
     const submissionData = {
       ...formData,
-      side
+      side // Explicitly set the side from props
     };
     
-    console.log('AddGuestForm - Current side:', side);
     console.log('AddGuestForm - Submitting guest data:', submissionData);
     
     onSubmit(submissionData);
 
+    // Reset form after submission
     setFormData({
       name: "",
       email: "",
@@ -92,7 +93,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       hostId: "",
       events: [],
       attributes: [],
-      side
+      side // Maintain the current side
     });
 
     toast({
