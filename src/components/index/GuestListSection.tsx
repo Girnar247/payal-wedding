@@ -1,4 +1,3 @@
-import { SearchAndFilters } from "@/components/filters/SearchAndFilters";
 import { GuestActions } from "@/components/actions/GuestActions";
 import { AddGuestForm } from "@/components/AddGuestForm";
 import { GuestManagement } from "@/components/GuestManagement";
@@ -49,19 +48,6 @@ export const GuestListSection = ({
 }: GuestListSectionProps) => {
   return (
     <div className="space-y-4">
-      <SearchAndFilters
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        selectedHost={selectedHost}
-        onHostSelect={setSelectedHost}
-        selectedEvent={selectedEvent}
-        onEventSelect={setSelectedEvent}
-        selectedAttribute={selectedAttribute}
-        onAttributeSelect={setSelectedAttribute}
-        hosts={hosts}
-        eventDetails={eventDetails}
-      />
-
       <GuestActions
         filteredGuests={filteredGuests}
         hosts={hosts}
