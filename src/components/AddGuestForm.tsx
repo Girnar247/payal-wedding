@@ -11,6 +11,7 @@ import { GuestHostSelect } from "./guest-form/GuestHostSelect";
 import { AddGuestFormProps, GuestFormData } from "@/types/form";
 
 export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
+  // Initialize form data with the provided side
   const [formData, setFormData] = useState<GuestFormData>({
     name: "",
     email: "",
