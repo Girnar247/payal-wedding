@@ -1,61 +1,54 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SideAuthDialog } from "./SideAuthDialog";
-import { useAdmin } from "@/contexts/AdminContext";
+import { Side } from "@/types/guest";
 
 interface SideSelectorProps {
-  selectedSide: "bride" | "groom";
-  onSideChange: (side: "bride" | "groom") => void;
+  selectedSide: Side;
+  onSideChange: (side: Side) => void;
 }
 
 export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [attemptedSide, setAttemptedSide] = useState<"bride" | "groom">("bride");
-  const { isAdmin } = useAdmin();
-  const [authorizedSides, setAuthorizedSides] = useState<Set<"bride" | "groom">>(new Set());
+  const [sideToAuth, setSideToAuth] = useState<Side>("bride");
+  const [authorizedSides, setAuthorizedSides] = useState<Side[]>([selectedSide]);
 
-  const handleSideClick = (side: "bride" | "groom") => {
-    if (isAdmin || authorizedSides.has(side)) {
+  const handleSideClick = (side: Side) => {
+    if (authorizedSides.includes(side)) {
       onSideChange(side);
     } else {
-      setAttemptedSide(side);
+      setSideToAuth(side);
       setShowAuthDialog(true);
     }
   };
 
   const handleAuthSuccess = () => {
-    setAuthorizedSides(prev => new Set([...prev, attemptedSide]));
-    onSideChange(attemptedSide);
-    setShowAuthDialog(false);
-  };
-
-  const handleDialogClose = () => {
+    setAuthorizedSides([...authorizedSides, sideToAuth]);
+    onSideChange(sideToAuth);
     setShowAuthDialog(false);
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <div className="flex space-x-4">
-        <Button
-          variant={selectedSide === "bride" ? "default" : "outline"}
-          onClick={() => handleSideClick("bride")}
-          className="w-32"
-        >
-          Bride Side
-        </Button>
-        <Button
-          variant={selectedSide === "groom" ? "default" : "outline"}
-          onClick={() => handleSideClick("groom")}
-          className="w-32"
-        >
-          Groom Side
-        </Button>
-      </div>
+    <div className="flex justify-center gap-4 mb-6">
+      <Button
+        variant={selectedSide === "bride" ? "default" : "outline"}
+        onClick={() => handleSideClick("bride")}
+        className="w-32"
+      >
+        Bride's Side
+      </Button>
+      <Button
+        variant={selectedSide === "groom" ? "default" : "outline"}
+        onClick={() => handleSideClick("groom")}
+        className="w-32"
+      >
+        Groom's Side
+      </Button>
 
       <SideAuthDialog
-        side={attemptedSide}
+        side={sideToAuth}
         isOpen={showAuthDialog}
-        onClose={handleDialogClose}
+        onClose={() => setShowAuthDialog(false)}
         onSuccess={handleAuthSuccess}
       />
     </div>
