@@ -11,7 +11,6 @@ import { GuestHostSelect } from "./guest-form/GuestHostSelect";
 import { AddGuestFormProps, GuestFormData } from "@/types/form";
 
 export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
-  // Initialize form data with the provided side
   const [formData, setFormData] = useState<GuestFormData>({
     name: "",
     email: "",
@@ -20,13 +19,12 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     hostId: "",
     events: [],
     attributes: [],
-    side // Initialize with the provided side
+    side
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate plus count
     if (formData.plusCount > 20) {
       toast({
         title: "Error",
@@ -36,22 +34,19 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
-    // Always use the current side prop when submitting
     const submissionData = {
       ...formData,
-      side // Ensure we're using the current side prop
+      side
     };
     
-    console.log('Submitting guest with side:', side); // Debug log
+    console.log('Submitting guest with side:', side);
     onSubmit(submissionData);
 
-    // Show enhanced toast notification with side information
     toast({
-      title: `Guest Added to ${side === 'bride' ? "Bride's" : "Groom's"} Side`,
-      description: `${formData.name} has been added successfully to the ${side === 'bride' ? "Bride's" : "Groom's"} side of the wedding.`,
+      title: `Guest Added to ${side === 'bride' ? "Bride's" : "Groom's"} Side (${side})`,
+      description: `${formData.name} has been added successfully to the ${side === 'bride' ? "Bride's" : "Groom's"} side of the wedding. Side value: ${side}`,
     });
     
-    // Reset form with the current side
     setFormData({
       name: "",
       email: "",
@@ -60,7 +55,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       hostId: "",
       events: [],
       attributes: [],
-      side // Keep the current side when resetting
+      side
     });
   };
 
