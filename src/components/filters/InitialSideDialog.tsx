@@ -1,5 +1,4 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { SideAuthDialog } from "./SideAuthDialog";
 import { useState } from "react";
 

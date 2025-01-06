@@ -28,24 +28,7 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
         .eq('is_admin', true)
         .single();
 
-      if (error) {
-        console.error('Error fetching passwords:', error);
-        toast({
-          title: "Error",
-          description: "Failed to verify password. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!data) {
-        toast({
-          title: "Error",
-          description: "No admin configuration found.",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (error) throw error;
 
       const correctPassword = side === 'bride' ? data.bride_side_password : data.groom_side_password;
 
@@ -67,7 +50,7 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: "Failed to verify password.",
+        description: "Failed to verify password. Please try again.",
         variant: "destructive",
       });
     } finally {
