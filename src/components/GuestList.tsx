@@ -12,11 +12,10 @@ interface GuestListProps {
   guests: Guest[];
   hosts: Host[];
   defaultHost: Host;
-  onDeleteGuest: (id: string) => void;  // Added this prop
-  onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
+  onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
 
-export const GuestList = ({ guests, hosts, defaultHost, onDeleteGuest, onUpdateStatus }: GuestListProps) => {
+export const GuestList = ({ guests, hosts, defaultHost, onUpdateStatus }: GuestListProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
