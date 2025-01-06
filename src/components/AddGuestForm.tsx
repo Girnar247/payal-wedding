@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { UserPlus } from "lucide-react";
 import { Card } from "./ui/card";
@@ -130,7 +130,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
   };
 
   // Call addTestGuest immediately after component mount
-  React.useEffect(() => {
+  useEffect(() => {
     if (side === "groom") {
       console.log('Component mounted, adding test guest...');
       addTestGuest();
