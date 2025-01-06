@@ -32,6 +32,10 @@ export const SearchAndFilters = ({
 }: SearchAndFiltersProps) => {
   const isMobile = useIsMobile();
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onSearchChange(e.target.value);
+  };
+
   return (
     <div className="w-full space-y-4">
       <div className="flex flex-col md:flex-row gap-4">
@@ -39,7 +43,7 @@ export const SearchAndFilters = ({
           <Input
             placeholder="Search guests..."
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full bg-white"
           />
         </div>

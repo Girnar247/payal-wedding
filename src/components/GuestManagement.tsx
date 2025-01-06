@@ -30,9 +30,12 @@ export const GuestManagement = ({
   // Sort and filter guests
   const filteredAndSortedGuests = [...guests]
     .filter(guest => {
-      if (!statusFilter) return true;
-      if (statusFilter === "accommodation") return guest.accommodation_required;
-      return guest.rsvp_status === statusFilter;
+      // Apply status filter
+      if (statusFilter) {
+        if (statusFilter === "accommodation") return guest.accommodation_required;
+        return guest.rsvp_status === statusFilter;
+      }
+      return true;
     })
     .sort((a, b) => {
       if (sortBy === "name") {
