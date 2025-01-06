@@ -24,6 +24,7 @@ export const Dashboard = ({
   onFilterByStatus 
 }: DashboardProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   const stats = [
     {
@@ -76,6 +77,11 @@ export const Dashboard = ({
     },
   ];
 
+  const handleFilterClick = (status: string | null) => {
+    setActiveFilter(status === activeFilter ? null : status);
+    onFilterByStatus?.(status === activeFilter ? null : status);
+  };
+
   return (
     <div className="space-y-4">
       <Button
@@ -98,8 +104,8 @@ export const Dashboard = ({
               key={stat.label}
               className={`glass-card p-6 transition-all duration-300 hover:shadow-xl cursor-pointer ${
                 onFilterByStatus ? 'hover:scale-105' : ''
-              }`}
-              onClick={() => onFilterByStatus?.(stat.status)}
+              } ${activeFilter === stat.status ? 'ring-2 ring-wedding-rose shadow-lg' : ''}`}
+              onClick={() => handleFilterClick(stat.status)}
             >
               <div className="flex items-center justify-between">
                 <div>
