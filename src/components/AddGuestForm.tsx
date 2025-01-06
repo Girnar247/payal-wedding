@@ -43,8 +43,8 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     onSubmit(submissionData);
 
     toast({
-      title: `Guest Added to ${side === 'bride' ? "Bride's" : "Groom's"} Side (${side})`,
-      description: `${formData.name} has been added successfully to the ${side === 'bride' ? "Bride's" : "Groom's"} side of the wedding. Side value: ${side}`,
+      title: "Success",
+      description: `The Guest has been successfully added to the ${side} side`,
     });
     
     setFormData({
