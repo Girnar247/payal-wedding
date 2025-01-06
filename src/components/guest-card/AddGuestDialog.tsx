@@ -26,14 +26,16 @@ export const AddGuestDialog = ({ hosts, onSubmit, side }: AddGuestDialogProps) =
       return;
     }
     
-    // Ensure the side is explicitly set based on the current view
+    console.log('AddGuestDialog - Before submission - Side:', side);
+    console.log('AddGuestDialog - Before submission - Data:', data);
+    
+    // Force the side to match the current view
     const guestData = {
       ...data,
-      side // Explicitly set the side here
+      side: side // Explicitly override the side here
     };
     
-    console.log('AddGuestDialog - Adding guest with side:', side);
-    console.log('AddGuestDialog - Guest data:', guestData);
+    console.log('AddGuestDialog - After side override - Data:', guestData);
     
     onSubmit(guestData);
     setOpen(false);
