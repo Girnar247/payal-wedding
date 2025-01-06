@@ -56,6 +56,11 @@ export const GuestListContent = ({
 
   return (
     <div className="space-y-4">
+      <SideSelector
+        selectedSide={selectedSide}
+        onSideChange={setSelectedSide}
+      />
+
       <SearchAndFilters
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
