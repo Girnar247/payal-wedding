@@ -19,11 +19,13 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     hostId: "",
     events: [],
     attributes: [],
-    side
+    side // Initialize with the provided side
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate plus count
     if (formData.plusCount > 20) {
       toast({
         title: "Error",
@@ -33,11 +35,16 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
-    onSubmit({
+    // Always use the current side prop when submitting
+    const submissionData = {
       ...formData,
-      side // Always use the current side prop
-    });
+      side // Ensure we're using the current side prop
+    };
     
+    console.log('Submitting guest with side:', side); // Debug log
+    onSubmit(submissionData);
+    
+    // Reset form with the current side
     setFormData({
       name: "",
       email: "",
@@ -46,7 +53,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       hostId: "",
       events: [],
       attributes: [],
-      side // Reset with the current side
+      side // Keep the current side when resetting
     });
   };
 
