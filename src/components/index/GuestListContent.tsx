@@ -4,6 +4,7 @@ import { GuestListSection } from "@/components/index/GuestListSection";
 import { SideSelector } from "@/components/filters/SideSelector";
 import { SearchAndFilters } from "@/components/filters/SearchAndFilters";
 import { Host } from "@/types/guest";
+import { Dashboard } from "@/components/Dashboard";
 
 interface GuestListContentProps {
   selectedSide: "bride" | "groom";
@@ -46,6 +47,18 @@ export const GuestListContent = ({
   // Filter hosts based on the selected side
   const filteredHosts = hosts.filter(host => host.side === selectedSide);
 
+  // Filter guests based on search and filters
+  const filteredGuests = guests.filter(guest => {
+    const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesHost = selectedHost === "all-hosts" || guest.host_id === selectedHost;
+    const matchesEvent = selectedEvent === "all-events" || guest.events.includes(selectedEvent);
+    const matchesAttribute = selectedAttribute === "all-categories" || guest.attributes.includes(selectedAttribute);
+    const matchesStatus = !statusFilter || 
+      (statusFilter === "accommodation" ? guest.accommodation_required : guest.rsvp_status === statusFilter);
+
+    return matchesSearch && matchesHost && matchesEvent && matchesAttribute && matchesStatus;
+  });
+
   const handleAddGuestWithSide = (data: any) => {
     handleAddGuest({ ...data, side: selectedSide });
   };
@@ -55,6 +68,16 @@ export const GuestListContent = ({
       <SideSelector
         selectedSide={selectedSide}
         onSideChange={setSelectedSide}
+      />
+
+      <Dashboard
+        totalGuests={stats.totalGuests}
+        totalWithPlusOnes={stats.totalWithPlusOnes}
+        confirmed={stats.confirmed}
+        declined={stats.declined}
+        pending={stats.pending}
+        accommodationRequired={stats.accommodationRequired}
+        onFilterByStatus={setStatusFilter}
       />
 
       <SearchAndFilters
@@ -83,7 +106,7 @@ export const GuestListContent = ({
         setShowAddForm={setShowAddForm}
         viewMode={viewMode}
         setViewMode={setViewMode}
-        filteredGuests={guests}
+        filteredGuests={filteredGuests}
         hosts={filteredHosts}
         eventDetails={eventDetails}
         handleAddGuest={handleAddGuestWithSide}
