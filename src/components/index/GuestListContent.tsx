@@ -60,7 +60,12 @@ export const GuestListContent = ({
   });
 
   const handleAddGuestWithSide = (data: any) => {
-    handleAddGuest({ ...data, side: selectedSide });
+    // Ensure the side is set correctly
+    const guestData = {
+      ...data,
+      side: selectedSide
+    };
+    handleAddGuest(guestData);
   };
 
   return (

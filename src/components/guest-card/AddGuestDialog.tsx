@@ -24,7 +24,12 @@ export const AddGuestDialog = ({ hosts, onSubmit, side }: AddGuestDialogProps) =
       });
       return;
     }
-    onSubmit(data);
+    // Ensure the side is set correctly based on the current view
+    const guestData = {
+      ...data,
+      side: side
+    };
+    onSubmit(guestData);
     setOpen(false);
     toast({
       title: "Success",
