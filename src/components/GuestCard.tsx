@@ -12,6 +12,11 @@ import { GuestContactInfo } from "./guest-card/GuestContactInfo";
 import { GuestRSVPStatus } from "./guest-card/GuestRSVPStatus";
 import { GuestAccommodation } from "./guest-card/GuestAccommodation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { GuestActions } from "./guest-card/GuestActions";
 
 interface GuestCardProps {
   guest: Guest;
@@ -140,11 +145,10 @@ export const GuestCard = ({ guest, host, onDelete, onUpdateStatus }: GuestCardPr
                   <SelectValue placeholder="Select a host" />
                 </SelectTrigger>
                 <SelectContent>
-                  {hosts.map((h) => (
-                    <SelectItem key={h.id} value={h.id}>
-                      {h.name}
-                    </SelectItem>
-                  ))}
+                  {/* We'll get hosts from props */}
+                  <SelectItem value={host.id}>
+                    {host.name}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             ) : (
