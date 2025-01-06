@@ -19,13 +19,13 @@ interface GuestFormData {
   hostId: string;
   events: EventType[];
   attributes: GuestAttribute[];
-  side?: "bride" | "groom";
+  side: "bride" | "groom";
 }
 
 interface AddGuestFormProps {
   onSubmit: (data: GuestFormData) => void;
   hosts: Host[];
-  side?: "bride" | "groom";
+  side: "bride" | "groom";
 }
 
 export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
@@ -37,7 +37,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     hostId: "",
     events: [],
     attributes: [],
-    side: side // Initialize with the provided side
+    side
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,12 +50,12 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       });
       return;
     }
-    // Ensure the side is included in the submitted data
-    const submissionData = {
+    
+    onSubmit({
       ...formData,
-      side: side // Explicitly set the side from props
-    };
-    onSubmit(submissionData);
+      side // Always use the current side prop
+    });
+    
     setFormData({
       name: "",
       email: "",
@@ -64,7 +64,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       hostId: "",
       events: [],
       attributes: [],
-      side: side // Reset with the current side
+      side // Reset with the current side
     });
   };
 
