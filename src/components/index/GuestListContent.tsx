@@ -2,6 +2,7 @@ import { useState } from "react";
 import { EventSummary } from "@/components/EventSummary";
 import { GuestListSection } from "@/components/index/GuestListSection";
 import { SideSelector } from "@/components/filters/SideSelector";
+import { SearchAndFilters } from "@/components/filters/SearchAndFilters";
 import { Host } from "@/types/guest";
 
 interface GuestListContentProps {
@@ -41,6 +42,13 @@ export const GuestListContent = ({
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
+  const defaultHost = {
+    id: "",
+    name: "Unassigned",
+    email: "",
+    phone: "",
+  };
 
   const handleAddGuestWithSide = (data: any) => {
     handleAddGuest({ ...data, side: selectedSide });
