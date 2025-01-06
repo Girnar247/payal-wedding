@@ -12,11 +12,6 @@ interface SideAuthDialogProps {
   onSuccess: () => void;
 }
 
-interface HostPasswords {
-  bride_side_password: string | null;
-  groom_side_password: string | null;
-}
-
 export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDialogProps) => {
   const [password, setPassword] = useState("");
   const { toast } = useToast();
@@ -46,7 +41,7 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
 
       if (password === correctPassword) {
         onSuccess();
-        onClose();
+        setPassword("");
         toast({
           title: "Access Granted",
           description: `You now have access to the ${side}'s side guest list.`,
@@ -80,6 +75,7 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
             placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="w-full"
           />
           <Button type="submit" className="w-full">Submit</Button>
         </form>

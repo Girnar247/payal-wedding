@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { SideAuthDialog } from "./SideAuthDialog";
 import { useAdmin } from "@/contexts/AdminContext";
@@ -14,6 +14,14 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
   const { isAdmin } = useAdmin();
   const [authorizedSides, setAuthorizedSides] = useState<Set<"bride" | "groom">>(new Set());
 
+  // Show auth dialog immediately if no side is authorized
+  useEffect(() => {
+    if (!isAdmin && authorizedSides.size === 0) {
+      setAttemptedSide("bride");
+      setShowAuthDialog(true);
+    }
+  }, [isAdmin, authorizedSides]);
+
   const handleSideClick = (side: "bride" | "groom") => {
     if (isAdmin || authorizedSides.has(side)) {
       onSideChange(side);
@@ -26,6 +34,7 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
   const handleAuthSuccess = () => {
     setAuthorizedSides(prev => new Set([...prev, attemptedSide]));
     onSideChange(attemptedSide);
+    setShowAuthDialog(false);
   };
 
   return (
@@ -50,7 +59,13 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
       <SideAuthDialog
         side={attemptedSide}
         isOpen={showAuthDialog}
-        onClose={() => setShowAuthDialog(false)}
+        onClose={() => {
+          setShowAuthDialog(false);
+          // If no sides are authorized, keep showing the dialog
+          if (authorizedSides.size === 0) {
+            setShowAuthDialog(true);
+          }
+        }}
         onSuccess={handleAuthSuccess}
       />
     </div>
