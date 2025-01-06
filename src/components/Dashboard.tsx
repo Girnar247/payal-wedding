@@ -33,7 +33,8 @@ export const Dashboard = ({
       icon: User,
       color: "bg-wedding-rose/20",
       textColor: "text-wedding-text",
-      status: null
+      status: null,
+      filterValue: null
     },
     {
       label: "Total Guests",
@@ -41,7 +42,8 @@ export const Dashboard = ({
       icon: Users,
       color: "bg-wedding-rose/20",
       textColor: "text-wedding-text",
-      status: null
+      status: null,
+      filterValue: null
     },
     {
       label: "Confirmed",
@@ -49,7 +51,8 @@ export const Dashboard = ({
       icon: UserCheck,
       color: "bg-green-100",
       textColor: "text-green-700",
-      status: "confirmed"
+      status: "confirmed",
+      filterValue: "confirmed"
     },
     {
       label: "Declined",
@@ -57,7 +60,8 @@ export const Dashboard = ({
       icon: UserX,
       color: "bg-red-100",
       textColor: "text-red-700",
-      status: "declined"
+      status: "declined",
+      filterValue: "declined"
     },
     {
       label: "Pending",
@@ -65,7 +69,8 @@ export const Dashboard = ({
       icon: User,
       color: "bg-yellow-100",
       textColor: "text-yellow-700",
-      status: "pending"
+      status: "pending",
+      filterValue: "pending"
     },
     {
       label: "Need Accommodation",
@@ -73,13 +78,22 @@ export const Dashboard = ({
       icon: Home,
       color: "bg-blue-100",
       textColor: "text-blue-700",
-      status: "accommodation"
+      status: "accommodation",
+      filterValue: "accommodation"
     },
   ];
 
-  const handleFilterClick = (status: string | null) => {
-    setActiveFilter(status === activeFilter ? null : status);
-    onFilterByStatus?.(status === activeFilter ? null : status);
+  const handleFilterClick = (status: string | null, filterValue: string | null) => {
+    if (!onFilterByStatus) return;
+    
+    // If clicking the same filter, clear it
+    if (activeFilter === status) {
+      setActiveFilter(null);
+      onFilterByStatus(null);
+    } else {
+      setActiveFilter(status);
+      onFilterByStatus(filterValue);
+    }
   };
 
   return (
@@ -102,10 +116,10 @@ export const Dashboard = ({
           {stats.map((stat) => (
             <Card
               key={stat.label}
-              className={`glass-card p-6 transition-all duration-300 hover:shadow-xl cursor-pointer ${
-                onFilterByStatus ? 'hover:scale-105' : ''
+              className={`glass-card p-6 transition-all duration-300 hover:shadow-xl ${
+                onFilterByStatus && stat.filterValue ? 'cursor-pointer hover:scale-105' : ''
               } ${activeFilter === stat.status ? 'ring-2 ring-wedding-rose shadow-lg' : ''}`}
-              onClick={() => handleFilterClick(stat.status)}
+              onClick={() => handleFilterClick(stat.status, stat.filterValue)}
             >
               <div className="flex items-center justify-between">
                 <div>
