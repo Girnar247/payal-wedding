@@ -14,13 +14,6 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
   const { isAdmin } = useAdmin();
   const [authorizedSides, setAuthorizedSides] = useState<Set<"bride" | "groom">>(new Set());
 
-  useEffect(() => {
-    if (!isAdmin && authorizedSides.size === 0) {
-      setAttemptedSide("bride");
-      setShowAuthDialog(true);
-    }
-  }, [isAdmin]);
-
   const handleSideClick = (side: "bride" | "groom") => {
     if (isAdmin || authorizedSides.has(side)) {
       onSideChange(side);
@@ -37,9 +30,6 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
   };
 
   const handleDialogClose = () => {
-    if (!isAdmin && authorizedSides.size === 0) {
-      return;
-    }
     setShowAuthDialog(false);
   };
 

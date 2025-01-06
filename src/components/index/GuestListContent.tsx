@@ -43,12 +43,8 @@ export const GuestListContent = ({
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
-  const defaultHost = {
-    id: "",
-    name: "Unassigned",
-    email: "",
-    phone: "",
-  };
+  // Filter hosts based on the selected side
+  const filteredHosts = hosts.filter(host => host.side === selectedSide);
 
   const handleAddGuestWithSide = (data: any) => {
     handleAddGuest({ ...data, side: selectedSide });
@@ -70,7 +66,7 @@ export const GuestListContent = ({
         onEventSelect={setSelectedEvent}
         selectedAttribute={selectedAttribute}
         onAttributeSelect={setSelectedAttribute}
-        hosts={hosts}
+        hosts={filteredHosts}
         eventDetails={eventDetails}
       />
 
@@ -88,12 +84,18 @@ export const GuestListContent = ({
         viewMode={viewMode}
         setViewMode={setViewMode}
         filteredGuests={guests}
-        hosts={hosts}
+        hosts={filteredHosts}
         eventDetails={eventDetails}
         handleAddGuest={handleAddGuestWithSide}
         handleDeleteGuest={handleDeleteGuest}
         handleUpdateStatus={handleUpdateStatus}
-        defaultHost={defaultHost}
+        defaultHost={filteredHosts[0] || {
+          id: "",
+          name: "Unassigned",
+          email: "",
+          phone: "",
+          side: selectedSide
+        }}
       />
     </div>
   );

@@ -33,6 +33,7 @@ export interface Host {
   phone: string;
   created_at?: string;
   avatar_url?: string;
+  side: "bride" | "groom";
 }
 
 export interface GuestFormData {
@@ -43,4 +44,5 @@ export interface GuestFormData {
   hostId: string;
   events: EventType[];
   attributes: GuestAttribute[];
+  side?: "bride" | "groom";
 }
