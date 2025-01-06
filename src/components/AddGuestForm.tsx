@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { UserPlus } from "lucide-react";
 import { Card } from "./ui/card";
@@ -23,39 +23,12 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     side
   });
 
-  // Function to programmatically add a test guest
-  const addTestGuest = () => {
-    console.log('Starting to add test guest on the groom side');
-    
-    // Find Pranai Mehta's host ID
-    const pranaiHost = hosts.find(host => host.name === 'Pranai Mehta');
-    if (!pranaiHost) {
-      console.error('Could not find host: Pranai Mehta');
-      return;
-    }
-
-    const testData: GuestFormData = {
-      name: "test program",
-      email: "test@example.com",
-      phone: "+1234567890",
-      plusCount: 2,
-      hostId: pranaiHost.id,
-      events: ["wedding", "sangeet"],
-      attributes: ["friends"],
-      side: "groom"  // Explicitly set to groom
-    };
-
-    console.log('Test guest data prepared:', testData);
-    handleSubmit(null, testData);
-  };
-
-  const handleSubmit = (e: React.FormEvent | null, testData?: GuestFormData) => {
+  const handleSubmit = (e: React.FormEvent | null) => {
     if (e) e.preventDefault();
     
-    const dataToSubmit = testData || formData;
-    console.log('Handling submit with data:', dataToSubmit);
+    console.log('AddGuestForm - Handling submit with data:', formData);
 
-    if (!dataToSubmit.name.trim()) {
+    if (!formData.name.trim()) {
       toast({
         title: "Error",
         description: "Guest name is required",
@@ -64,7 +37,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
 
-    if (dataToSubmit.attributes.length === 0) {
+    if (formData.attributes.length === 0) {
       toast({
         title: "Error",
         description: "Please select at least one guest category",
@@ -73,7 +46,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
 
-    if (dataToSubmit.events.length === 0) {
+    if (formData.events.length === 0) {
       toast({
         title: "Error",
         description: "Please select at least one event",
@@ -82,7 +55,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
 
-    if (!dataToSubmit.hostId) {
+    if (!formData.hostId) {
       toast({
         title: "Error",
         description: "Please select a host",
@@ -91,7 +64,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
-    if (dataToSubmit.plusCount > 20) {
+    if (formData.plusCount > 20) {
       toast({
         title: "Error",
         description: "Contact admin to add more than the limit - 20 guests",
@@ -100,10 +73,10 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
-    // Only use the side from props if it's not provided in the test data
+    // Ensure the side is preserved from the props
     const submissionData = {
-      ...dataToSubmit,
-      side: dataToSubmit.side || side
+      ...formData,
+      side
     };
     
     console.log('AddGuestForm - Current side:', side);
@@ -111,32 +84,22 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     
     onSubmit(submissionData);
 
-    if (!testData) {
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        plusCount: 0,
-        hostId: "",
-        events: [],
-        attributes: [],
-        side
-      });
-    }
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      plusCount: 0,
+      hostId: "",
+      events: [],
+      attributes: [],
+      side
+    });
 
     toast({
       title: "Success",
-      description: `Guest has been successfully added to the ${submissionData.side === 'bride' ? "Bride's" : "Groom's"} side`,
+      description: `Guest has been successfully added to the ${side === 'bride' ? "Bride's" : "Groom's"} side`,
     });
   };
-
-  // Call addTestGuest immediately after component mount
-  useEffect(() => {
-    if (side === "groom") {
-      console.log('Component mounted, adding test guest...');
-      addTestGuest();
-    }
-  }, []);
 
   return (
     <Card className="glass-card p-6 max-w-md mx-auto fade-in">
