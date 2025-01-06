@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { LayoutGrid, List } from "lucide-react";
 import { Guest, Host, EventType, GuestAttribute } from "@/types/guest";
 import { useToast } from "@/hooks/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface GuestManagementProps {
   guests: Guest[];
@@ -94,7 +93,6 @@ export const GuestManagement = ({
         defaultHost={defaultHost}
         onDeleteGuest={onDeleteGuest}
         onUpdateStatus={onUpdateStatus}
-        viewMode={viewMode}
       />
     </div>
   );
