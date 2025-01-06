@@ -37,7 +37,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     hostId: "",
     events: [],
     attributes: [],
-    side: side
+    side: side // Initialize with the provided side
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,7 +50,12 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       });
       return;
     }
-    onSubmit(formData);
+    // Ensure the side is included in the submitted data
+    const submissionData = {
+      ...formData,
+      side: side // Explicitly set the side from props
+    };
+    onSubmit(submissionData);
     setFormData({
       name: "",
       email: "",
@@ -59,7 +64,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       hostId: "",
       events: [],
       attributes: [],
-      side: side
+      side: side // Reset with the current side
     });
   };
 
