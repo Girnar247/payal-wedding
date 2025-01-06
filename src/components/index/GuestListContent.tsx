@@ -65,6 +65,10 @@ export const GuestListContent = ({
       ...data,
       side: selectedSide // This will be either 'bride' or 'groom'
     };
+    
+    // Log the side being set for debugging
+    console.log('Adding guest with side:', selectedSide);
+    
     handleAddGuest(guestData);
   };
 
