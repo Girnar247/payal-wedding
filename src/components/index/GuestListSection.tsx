@@ -58,7 +58,13 @@ export const GuestListSection = ({
         side={defaultHost.side}
       />
 
-      {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
+      {showAddForm && (
+        <AddGuestForm 
+          onSubmit={handleAddGuest} 
+          hosts={hosts} 
+          side={defaultHost.side}
+        />
+      )}
 
       <GuestManagement
         guests={filteredGuests}
