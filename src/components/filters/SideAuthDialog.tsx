@@ -14,10 +14,12 @@ interface SideAuthDialogProps {
 
 export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDialogProps) => {
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
     try {
       const { data, error } = await supabase
@@ -30,7 +32,7 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
         console.error('Error fetching passwords:', error);
         toast({
           title: "Error",
-          description: "Failed to verify password.",
+          description: "Failed to verify password. Please try again.",
           variant: "destructive",
         });
         return;
@@ -68,14 +70,16 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
         description: "Failed to verify password.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Enter Password for {side === 'bride' ? "Bride's" : "Groom's"} Side</DialogTitle>
+          <DialogTitle className="text-center">Enter Password for {side === 'bride' ? "Bride's" : "Groom's"} Side</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
@@ -86,7 +90,13 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
             className="w-full"
             autoFocus
           />
-          <Button type="submit" className="w-full">Submit</Button>
+          <Button 
+            type="submit" 
+            className="w-full"
+            disabled={isLoading}
+          >
+            {isLoading ? "Verifying..." : "Submit"}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>
