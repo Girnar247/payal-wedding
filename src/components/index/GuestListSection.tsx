@@ -55,6 +55,7 @@ export const GuestListSection = ({
         setViewMode={setViewMode}
         resultCount={filteredGuests.length}
         onAddGuest={handleAddGuest}
+        side={defaultHost.side}
       />
 
       {showAddForm && <AddGuestForm onSubmit={handleAddGuest} hosts={hosts} />}
