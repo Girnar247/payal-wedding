@@ -17,14 +17,16 @@ interface GuestFormData {
   hostId: string;
   events: EventType[];
   attributes: GuestAttribute[];
+  side?: "bride" | "groom";
 }
 
 interface AddGuestFormProps {
   onSubmit: (data: GuestFormData) => void;
   hosts: Host[];
+  side?: "bride" | "groom";
 }
 
-export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
+export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
   const [formData, setFormData] = useState<GuestFormData>({
     name: "",
     phone: "",
@@ -32,6 +34,7 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
     hostId: "",
     events: [],
     attributes: [],
+    side: side
   });
 
   const eventTypes: EventType[] = ["haldi", "mehndi", "mayra", "sangeet", "wedding"];
@@ -55,6 +58,7 @@ export const AddGuestForm = ({ onSubmit, hosts }: AddGuestFormProps) => {
       hostId: "",
       events: [],
       attributes: [],
+      side: side
     });
   };
 
