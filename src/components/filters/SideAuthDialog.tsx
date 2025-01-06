@@ -12,12 +12,6 @@ interface SideAuthDialogProps {
   onSuccess: () => void;
 }
 
-type PasswordData = {
-  bride_side_password: string;
-} | {
-  groom_side_password: string;
-};
-
 export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDialogProps) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -28,19 +22,11 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase
-        .from('hosts')
-        .select(side === 'bride' ? 'bride_side_password' : 'groom_side_password')
-        .eq('is_admin', true)
-        .single();
+      // Simple password check without database query
+      const isCorrectPassword = (side === 'bride' && password === 'chatikuta123') || 
+                              (side === 'groom' && password === 'pranai123');
 
-      if (error) throw error;
-
-      const correctPassword = side === 'bride' 
-        ? (data as { bride_side_password: string }).bride_side_password
-        : (data as { groom_side_password: string }).groom_side_password;
-
-      if (password === 'chatikuta123' && side === 'bride' || password === 'pranai123' && side === 'groom') {
+      if (isCorrectPassword) {
         toast({
           title: "Access Granted",
           description: `You now have access to the ${side}'s side guest list.`,
