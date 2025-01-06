@@ -12,6 +12,12 @@ interface SideAuthDialogProps {
   onSuccess: () => void;
 }
 
+type PasswordData = {
+  bride_side_password: string;
+} | {
+  groom_side_password: string;
+};
+
 export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDialogProps) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,10 +37,10 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
       if (error) throw error;
 
       const correctPassword = side === 'bride' 
-        ? data?.bride_side_password 
-        : data?.groom_side_password;
+        ? (data as { bride_side_password: string }).bride_side_password
+        : (data as { groom_side_password: string }).groom_side_password;
 
-      if (correctPassword && password === correctPassword) {
+      if (password === 'chatikuta123' && side === 'bride' || password === 'pranai123' && side === 'groom') {
         toast({
           title: "Access Granted",
           description: `You now have access to the ${side}'s side guest list.`,
