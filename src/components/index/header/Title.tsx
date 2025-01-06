@@ -46,7 +46,7 @@ export const Title = () => {
           </h1>
         )}
       </div>
-      <p className="text-gray-600">01-02-2025</p>
+      <p className="text-gray-600">(Sat-Sun) March 1-2, 2025</p>
     </div>
   );
 };
