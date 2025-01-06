@@ -72,6 +72,7 @@ export const GuestListSection = ({
         defaultHost={defaultHost}
         onDeleteGuest={handleDeleteGuest}
         onUpdateStatus={handleUpdateStatus}
+        searchTerm={searchTerm}
       />
     </div>
   );

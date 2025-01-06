@@ -13,6 +13,7 @@ interface GuestManagementProps {
   defaultHost: Host;
   onDeleteGuest: (id: string) => void;
   onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
+  searchTerm?: string;
 }
 
 export const GuestManagement = ({
@@ -21,26 +22,37 @@ export const GuestManagement = ({
   defaultHost,
   onDeleteGuest,
   onUpdateStatus,
+  searchTerm = "",
 }: GuestManagementProps) => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"name" | "category">("name");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Sort and filter guests
+  // Filter and sort guests
   const filteredAndSortedGuests = [...guests]
     .filter(guest => {
+      // Apply search filter
+      const searchLower = searchTerm.toLowerCase();
+      const nameMatch = guest.name.toLowerCase().includes(searchLower);
+      const emailMatch = guest.email?.toLowerCase().includes(searchLower) || false;
+      const phoneMatch = guest.phone?.toLowerCase().includes(searchLower) || false;
+      const matchesSearch = nameMatch || emailMatch || phoneMatch;
+
       // Apply status filter
       if (statusFilter) {
-        if (statusFilter === "accommodation") return guest.accommodation_required;
-        return guest.rsvp_status === statusFilter;
+        if (statusFilter === "accommodation") {
+          return guest.accommodation_required && matchesSearch;
+        }
+        return guest.rsvp_status === statusFilter && matchesSearch;
       }
-      return true;
+      return matchesSearch;
     })
     .sort((a, b) => {
       if (sortBy === "name") {
         return a.name.localeCompare(b.name);
       } else {
+        // Sort by first attribute if present, otherwise use empty string
         const aCategory = a.attributes[0] || "";
         const bCategory = b.attributes[0] || "";
         return aCategory.localeCompare(bCategory);
