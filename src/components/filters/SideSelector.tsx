@@ -20,7 +20,7 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
       setAttemptedSide("bride");
       setShowAuthDialog(true);
     }
-  }, [isAdmin, authorizedSides]);
+  }, [isAdmin]);
 
   const handleSideClick = (side: "bride" | "groom") => {
     if (isAdmin || authorizedSides.has(side)) {
@@ -34,6 +34,14 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
   const handleAuthSuccess = () => {
     setAuthorizedSides(prev => new Set([...prev, attemptedSide]));
     onSideChange(attemptedSide);
+    setShowAuthDialog(false);
+  };
+
+  const handleDialogClose = () => {
+    // If no sides are authorized, keep showing the dialog
+    if (!isAdmin && authorizedSides.size === 0) {
+      return;
+    }
     setShowAuthDialog(false);
   };
 
@@ -59,13 +67,7 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
       <SideAuthDialog
         side={attemptedSide}
         isOpen={showAuthDialog}
-        onClose={() => {
-          setShowAuthDialog(false);
-          // If no sides are authorized, keep showing the dialog
-          if (authorizedSides.size === 0) {
-            setShowAuthDialog(true);
-          }
-        }}
+        onClose={handleDialogClose}
         onSuccess={handleAuthSuccess}
       />
     </div>

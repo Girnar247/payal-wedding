@@ -26,7 +26,15 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
         .eq('is_admin', true)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching passwords:', error);
+        toast({
+          title: "Error",
+          description: "Failed to verify password.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       if (!data) {
         toast({
@@ -76,6 +84,7 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full"
+            autoFocus
           />
           <Button type="submit" className="w-full">Submit</Button>
         </form>
