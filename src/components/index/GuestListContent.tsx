@@ -49,29 +49,16 @@ export const GuestListContent = ({
   // Filter hosts based on the selected side
   const filteredHosts = hosts.filter(host => host.side === selectedSide);
 
-  // Filter guests based on search and filters
-  const filteredGuests = guests.filter(guest => {
-    const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesHost = selectedHost === "all-hosts" || guest.host_id === selectedHost;
-    const matchesEvent = selectedEvent === "all-events" || guest.events.includes(selectedEvent);
-    const matchesAttribute = selectedAttribute === "all-categories" || guest.attributes.includes(selectedAttribute);
-    const matchesStatus = !statusFilter || 
-      (statusFilter === "accommodation" ? guest.accommodation_required : guest.rsvp_status === statusFilter);
-
-    return matchesSearch && matchesHost && matchesEvent && matchesAttribute && matchesStatus;
-  });
-
   const handleAddGuestWithSide = (data: any) => {
-    console.log('GuestListContent - Adding guest with side:', selectedSide);
     const guestData = {
       ...data,
-      side: selectedSide // Ensure side is explicitly set here
+      side: selectedSide // Explicitly set the side from the current selectedSide
     };
+    console.log('GuestListContent - Adding guest with side:', selectedSide);
     console.log('GuestListContent - Final guest data:', guestData);
     handleAddGuest(guestData);
   };
 
-  // Handle side changes with toast notification
   const handleSideChange = (newSide: "bride" | "groom") => {
     console.log('GuestListContent - Side changed to:', newSide);
     setSelectedSide(newSide);
@@ -124,7 +111,7 @@ export const GuestListContent = ({
         setShowAddForm={setShowAddForm}
         viewMode={viewMode}
         setViewMode={setViewMode}
-        filteredGuests={filteredGuests}
+        filteredGuests={guests}
         hosts={filteredHosts}
         eventDetails={eventDetails}
         handleAddGuest={handleAddGuestWithSide}

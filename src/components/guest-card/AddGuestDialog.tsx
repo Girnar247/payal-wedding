@@ -4,7 +4,7 @@ import { AddGuestForm } from "@/components/AddGuestForm";
 import { UserPlus } from "lucide-react";
 import { Host } from "@/types/guest";
 import { useState } from "react";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface AddGuestDialogProps {
   hosts: Host[];
@@ -14,6 +14,7 @@ interface AddGuestDialogProps {
 
 export const AddGuestDialog = ({ hosts, onSubmit, side }: AddGuestDialogProps) => {
   const [open, setOpen] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = (data: any) => {
     if (!data.hostId) {

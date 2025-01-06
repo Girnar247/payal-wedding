@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { UserPlus } from "lucide-react";
 import { Card } from "./ui/card";
-import { toast } from "./ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { GuestBasicInfo } from "./guest-form/GuestBasicInfo";
 import { GuestCategories } from "./guest-form/GuestCategories";
 import { GuestEvents } from "./guest-form/GuestEvents";
@@ -11,6 +11,7 @@ import { GuestHostSelect } from "./guest-form/GuestHostSelect";
 import { AddGuestFormProps, GuestFormData } from "@/types/form";
 
 export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState<GuestFormData>({
     name: "",
     email: "",
@@ -19,7 +20,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     hostId: "",
     events: [],
     attributes: [],
-    side
+    side // Initialize with the provided side
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -58,7 +59,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       hostId: "",
       events: [],
       attributes: [],
-      side
+      side // Keep the current side when resetting form
     });
   };
 
