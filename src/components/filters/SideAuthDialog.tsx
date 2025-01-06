@@ -24,7 +24,7 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
     try {
       const { data, error } = await supabase
         .from('hosts')
-        .select('bride_side_password, groom_side_password')
+        .select(side === 'bride' ? 'bride_side_password' : 'groom_side_password')
         .eq('is_admin', true)
         .single();
 
@@ -33,16 +33,16 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
       const correctPassword = side === 'bride' ? data.bride_side_password : data.groom_side_password;
 
       if (password === correctPassword) {
-        onSuccess();
-        setPassword("");
         toast({
           title: "Access Granted",
           description: `You now have access to the ${side}'s side guest list.`,
         });
+        setPassword("");
+        onSuccess();
       } else {
         toast({
           title: "Access Denied",
-          description: "Incorrect password.",
+          description: "Incorrect password. Please try again.",
           variant: "destructive",
         });
       }
