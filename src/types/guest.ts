@@ -23,6 +23,7 @@ export interface Guest {
   accommodation_required: boolean;
   accommodation_count: number;
   invitation_sent: boolean;
+  side: "bride" | "groom";
 }
 
 export interface Host {

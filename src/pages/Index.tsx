@@ -2,12 +2,12 @@ import { useState } from "react";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useEventState } from "@/hooks/useEventState";
-import { useGuestStats } from "@/hooks/useGuestStats";
 import { EventSummary } from "@/components/EventSummary";
 import { Dashboard } from "@/components/Dashboard";
 import { EventConfiguration } from "@/components/EventConfiguration";
 import { HeaderSection } from "@/components/index/HeaderSection";
 import { GuestListSection } from "@/components/index/GuestListSection";
+import { SideSelector } from "@/components/filters/SideSelector";
 import { useToast } from "@/hooks/use-toast";
 import { EventType, GuestAttribute, Host } from "@/types/guest";
 
@@ -28,6 +28,7 @@ const Index = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [selectedSide, setSelectedSide] = useState<"bride" | "groom">("bride");
 
   const {
     guests,
@@ -41,28 +42,32 @@ const Index = () => {
   } = useGuestState();
 
   const { eventDetails, isLoading, addEvents } = useEventState();
+
+  // Filter guests by side first, then apply other filters
+  const sideFilteredGuests = guests.filter(guest => guest.side === selectedSide);
+  
   const stats = {
-    totalGuests: guests.length,
-    totalWithPlusOnes: guests.reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
-    confirmed: guests.reduce((acc, guest) => {
+    totalGuests: sideFilteredGuests.length,
+    totalWithPlusOnes: sideFilteredGuests.reduce((acc, guest) => acc + 1 + (guest.plus_count || 0), 0),
+    confirmed: sideFilteredGuests.reduce((acc, guest) => {
       if (guest.rsvp_status === "confirmed") {
         return acc + 1 + (guest.plus_count || 0);
       }
       return acc;
     }, 0),
-    declined: guests.reduce((acc, guest) => {
+    declined: sideFilteredGuests.reduce((acc, guest) => {
       if (guest.rsvp_status === "declined") {
         return acc + 1 + (guest.plus_count || 0);
       }
       return acc;
     }, 0),
-    pending: guests.reduce((acc, guest) => {
+    pending: sideFilteredGuests.reduce((acc, guest) => {
       if (guest.rsvp_status === "pending") {
         return acc + 1 + (guest.plus_count || 0);
       }
       return acc;
     }, 0),
-    accommodationRequired: guests.reduce((acc, guest) => {
+    accommodationRequired: sideFilteredGuests.reduce((acc, guest) => {
       if (guest.accommodation_required) {
         return acc + guest.accommodation_count;
       }
@@ -89,7 +94,7 @@ const Index = () => {
     }
   };
 
-  const filteredGuests = guests.filter(guest => {
+  const filteredGuests = sideFilteredGuests.filter(guest => {
     const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          guest.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          guest.phone?.includes(searchTerm);
@@ -105,6 +110,10 @@ const Index = () => {
       ...eventDetails,
       [eventType]: details
     });
+  };
+
+  const handleAddGuestWithSide = (data: any) => {
+    handleAddGuest({ ...data, side: selectedSide });
   };
 
   if (isLoading) {
@@ -133,6 +142,12 @@ const Index = () => {
               />
             ) : (
               <>
+                <div className="max-w-xl mx-auto mb-8">
+                  <SideSelector
+                    selectedSide={selectedSide}
+                    onSideChange={setSelectedSide}
+                  />
+                </div>
                 <EventSummary events={eventDetails} />
                 <Dashboard {...stats} onFilterByStatus={setStatusFilter} />
                 <GuestListSection
@@ -155,7 +170,7 @@ const Index = () => {
                   })}
                   hosts={hosts}
                   eventDetails={eventDetails}
-                  handleAddGuest={handleAddGuest}
+                  handleAddGuest={handleAddGuestWithSide}
                   handleDeleteGuest={handleDeleteGuest}
                   handleUpdateStatus={handleUpdateStatus}
                   defaultHost={defaultHost}

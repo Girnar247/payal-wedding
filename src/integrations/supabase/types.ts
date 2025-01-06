@@ -60,6 +60,7 @@ export type Database = {
           phone: string | null
           plus_count: number | null
           rsvp_status: string | null
+          side: string
         }
         Insert: {
           accommodation_count?: number | null
@@ -75,6 +76,7 @@ export type Database = {
           phone?: string | null
           plus_count?: number | null
           rsvp_status?: string | null
+          side?: string
         }
         Update: {
           accommodation_count?: number | null
@@ -90,6 +92,7 @@ export type Database = {
           phone?: string | null
           plus_count?: number | null
           rsvp_status?: string | null
+          side?: string
         }
         Relationships: [
           {
