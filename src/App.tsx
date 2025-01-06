@@ -1,6 +1,5 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from "@/components/ui/toaster";
 import './App.css';
 
 // Eagerly load the WeddingSummary component for faster initial render
@@ -42,7 +41,6 @@ const App = () => {
           }
         />
       </Routes>
-      <Toaster />
     </BrowserRouter>
   );
 };

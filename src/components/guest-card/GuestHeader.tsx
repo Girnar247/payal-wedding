@@ -6,11 +6,12 @@ import { Check, X } from "lucide-react";
 
 interface GuestHeaderProps {
   guest: Guest;
+  onEdit: () => void;
   onDelete: (id: string) => void;
   onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
 }
 
-export const GuestHeader = ({ guest, onDelete, onUpdateStatus }: GuestHeaderProps) => {
+export const GuestHeader = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestHeaderProps) => {
   const statusColors = {
     confirmed: "bg-green-100 text-green-800",
     declined: "bg-red-100 text-red-800",
@@ -41,6 +42,7 @@ export const GuestHeader = ({ guest, onDelete, onUpdateStatus }: GuestHeaderProp
         </div>
         <GuestActions
           guest={guest}
+          onEdit={onEdit}
           onDelete={onDelete}
           onUpdateStatus={onUpdateStatus}
         />

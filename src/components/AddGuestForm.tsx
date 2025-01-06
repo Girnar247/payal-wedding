@@ -1,14 +1,32 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { UserPlus } from "lucide-react";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 import { Card } from "./ui/card";
+import { UserPlus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { EventType, GuestAttribute, Host } from "@/types/guest";
 import { toast } from "./ui/use-toast";
 import { GuestBasicInfo } from "./guest-form/GuestBasicInfo";
 import { GuestCategories } from "./guest-form/GuestCategories";
 import { GuestEvents } from "./guest-form/GuestEvents";
-import { GuestPlusCount } from "./guest-form/GuestPlusCount";
-import { GuestHostSelect } from "./guest-form/GuestHostSelect";
-import { AddGuestFormProps, GuestFormData } from "@/types/form";
+
+interface GuestFormData {
+  name: string;
+  email?: string;
+  phone: string;
+  plusCount: number;
+  hostId: string;
+  events: EventType[];
+  attributes: GuestAttribute[];
+  side?: "bride" | "groom";
+}
+
+interface AddGuestFormProps {
+  onSubmit: (data: GuestFormData) => void;
+  hosts: Host[];
+  side?: "bride" | "groom";
+}
 
 export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
   const [formData, setFormData] = useState<GuestFormData>({
@@ -19,12 +37,11 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     hostId: "",
     events: [],
     attributes: [],
-    side
+    side: side
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (formData.plusCount > 20) {
       toast({
         title: "Error",
@@ -33,20 +50,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       });
       return;
     }
-    
-    const submissionData = {
-      ...formData,
-      side
-    };
-    
-    console.log('Submitting guest with side:', side);
-    onSubmit(submissionData);
-
-    toast({
-      title: "Success",
-      description: `The Guest has been successfully added to the ${side} side`,
-    });
-    
+    onSubmit(formData);
     setFormData({
       name: "",
       email: "",
@@ -55,7 +59,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       hostId: "",
       events: [],
       attributes: [],
-      side
+      side: side
     });
   };
 
@@ -76,16 +80,39 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
           onAttributeChange={(attributes) => setFormData({ ...formData, attributes })}
         />
 
-        <GuestPlusCount
-          plusCount={formData.plusCount}
-          onPlusCountChange={(count) => setFormData({ ...formData, plusCount: count })}
-        />
+        <div className="space-y-2">
+          <Label htmlFor="plusCount">Additional Guests</Label>
+          <Input
+            id="plusCount"
+            type="number"
+            min="0"
+            max="20"
+            value={formData.plusCount}
+            onChange={(e) =>
+              setFormData({ ...formData, plusCount: parseInt(e.target.value) })
+            }
+            className="bg-white/50"
+          />
+        </div>
 
-        <GuestHostSelect
-          hostId={formData.hostId}
-          hosts={hosts}
-          onHostChange={(hostId) => setFormData({ ...formData, hostId })}
-        />
+        <div className="space-y-2">
+          <Label htmlFor="host">Assigned Host *</Label>
+          <Select
+            value={formData.hostId}
+            onValueChange={(value) => setFormData({ ...formData, hostId: value })}
+          >
+            <SelectTrigger className="w-full bg-white/50">
+              <SelectValue placeholder="Select a host" />
+            </SelectTrigger>
+            <SelectContent>
+              {hosts.map((host) => (
+                <SelectItem key={host.id} value={host.id}>
+                  {host.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         <GuestEvents
           selectedEvents={formData.events}

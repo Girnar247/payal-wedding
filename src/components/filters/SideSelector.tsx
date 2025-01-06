@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SideAuthDialog } from "./SideAuthDialog";
 import { Side } from "@/types/guest";
-import { useToast } from "@/hooks/use-toast";
 
 interface SideSelectorProps {
   selectedSide: Side;
@@ -13,19 +12,10 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [sideToAuth, setSideToAuth] = useState<Side>("bride");
   const [authorizedSides, setAuthorizedSides] = useState<Side[]>([selectedSide]);
-  const { toast } = useToast();
 
   const handleSideClick = (side: Side) => {
-    // Log the current side and the side being switched to
-    console.log('Current side:', selectedSide);
-    console.log('Switching to side:', side);
-    
     if (authorizedSides.includes(side)) {
       onSideChange(side);
-      toast({
-        title: "Side Changed",
-        description: `Switched to ${side === 'bride' ? "Bride's" : "Groom's"} Side (${side})`,
-      });
     } else {
       setSideToAuth(side);
       setShowAuthDialog(true);
@@ -36,10 +26,6 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
     setAuthorizedSides([...authorizedSides, sideToAuth]);
     onSideChange(sideToAuth);
     setShowAuthDialog(false);
-    toast({
-      title: "Access Granted",
-      description: `You now have access to the ${sideToAuth === 'bride' ? "Bride's" : "Groom's"} Side (${sideToAuth})`,
-    });
   };
 
   return (

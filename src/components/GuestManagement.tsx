@@ -4,7 +4,7 @@ import { GuestList } from "@/components/GuestList";
 import { Button } from "@/components/ui/button";
 import { LayoutGrid, List } from "lucide-react";
 import { Guest, Host } from "@/types/guest";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface GuestManagementProps {
@@ -12,7 +12,7 @@ interface GuestManagementProps {
   hosts: Host[];
   defaultHost: Host;
   onDeleteGuest: (id: string) => void;
-  onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
+  onUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
 }
 
 export const GuestManagement = ({
@@ -38,6 +38,7 @@ export const GuestManagement = ({
       if (sortBy === "name") {
         return a.name.localeCompare(b.name);
       } else {
+        // Sort by first attribute if exists
         const aCategory = a.attributes[0] || "";
         const bCategory = b.attributes[0] || "";
         return aCategory.localeCompare(bCategory);
@@ -80,6 +81,7 @@ export const GuestManagement = ({
               key={guest.id}
               guest={guest}
               host={hosts.find((h) => h.id === guest.host_id) || defaultHost}
+              onEdit={() => {}}
               onDelete={onDeleteGuest}
               onUpdateStatus={onUpdateStatus}
             />

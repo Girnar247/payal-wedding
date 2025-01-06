@@ -9,10 +9,9 @@ import { toast } from "@/hooks/use-toast";
 interface AddGuestDialogProps {
   hosts: Host[];
   onSubmit: (data: any) => void;
-  side: "bride" | "groom";
 }
 
-export const AddGuestDialog = ({ hosts, onSubmit, side }: AddGuestDialogProps) => {
+export const AddGuestDialog = ({ hosts, onSubmit }: AddGuestDialogProps) => {
   const [open, setOpen] = useState(false);
 
   const handleSubmit = (data: any) => {
@@ -24,12 +23,7 @@ export const AddGuestDialog = ({ hosts, onSubmit, side }: AddGuestDialogProps) =
       });
       return;
     }
-    // Ensure the side is set correctly based on the current view
-    const guestData = {
-      ...data,
-      side: side
-    };
-    onSubmit(guestData);
+    onSubmit(data);
     setOpen(false);
     toast({
       title: "Success",
@@ -49,7 +43,7 @@ export const AddGuestDialog = ({ hosts, onSubmit, side }: AddGuestDialogProps) =
         <DialogHeader>
           <DialogTitle>Add New Guest</DialogTitle>
         </DialogHeader>
-        <AddGuestForm onSubmit={handleSubmit} hosts={hosts} side={side} />
+        <AddGuestForm onSubmit={handleSubmit} hosts={hosts} />
       </DialogContent>
     </Dialog>
   );

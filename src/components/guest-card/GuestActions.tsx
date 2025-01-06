@@ -1,6 +1,6 @@
 import { Guest } from "@/types/guest";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Trash, Check, X, Clock } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash, Check, X, Clock } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,11 +10,12 @@ import {
 
 interface GuestActionsProps {
   guest: Guest;
+  onEdit: () => void;
   onDelete: (id: string) => void;
   onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
 }
 
-export const GuestActions = ({ guest, onDelete, onUpdateStatus }: GuestActionsProps) => {
+export const GuestActions = ({ guest, onEdit, onDelete, onUpdateStatus }: GuestActionsProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,6 +24,10 @@ export const GuestActions = ({ guest, onDelete, onUpdateStatus }: GuestActionsPr
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={onEdit}>
+          <Pencil className="mr-2 h-4 w-4" />
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onUpdateStatus(guest.id, "confirmed")}>
           <Check className="mr-2 h-4 w-4 text-green-600" />
           Mark as Confirmed

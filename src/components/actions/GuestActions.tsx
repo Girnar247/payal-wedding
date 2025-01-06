@@ -10,7 +10,6 @@ interface GuestActionsProps {
   setViewMode: (mode: "grid" | "list") => void;
   resultCount?: number;
   onAddGuest: (data: any) => void;
-  side: "bride" | "groom";
 }
 
 export const GuestActions = ({
@@ -20,11 +19,10 @@ export const GuestActions = ({
   setViewMode,
   resultCount,
   onAddGuest,
-  side,
 }: GuestActionsProps) => {
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 w-full">
-      <AddGuestDialog hosts={hosts} onSubmit={onAddGuest} side={side} />
+      <AddGuestDialog hosts={hosts} onSubmit={onAddGuest} />
 
       <div className="flex items-center gap-2 text-sm text-gray-600">
         {resultCount !== undefined && (
