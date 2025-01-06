@@ -28,7 +28,6 @@ export const InitialSideDialog = ({ isOpen, onSideSelect }: InitialSideDialogPro
           <div className="grid gap-6 p-6">
             <h2 className="text-3xl font-playfair text-center">Select Guest List</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Bride's Side Card */}
               <div 
                 className="relative overflow-hidden rounded-xl cursor-pointer transition-transform hover:scale-105"
                 onClick={() => handleSideClick("bride")}
@@ -45,7 +44,6 @@ export const InitialSideDialog = ({ isOpen, onSideSelect }: InitialSideDialogPro
                 </div>
               </div>
 
-              {/* Groom's Side Card */}
               <div 
                 className="relative overflow-hidden rounded-xl cursor-pointer transition-transform hover:scale-105"
                 onClick={() => handleSideClick("groom")}

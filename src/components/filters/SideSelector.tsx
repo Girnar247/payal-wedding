@@ -14,7 +14,6 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
   const { isAdmin } = useAdmin();
   const [authorizedSides, setAuthorizedSides] = useState<Set<"bride" | "groom">>(new Set());
 
-  // Show auth dialog immediately if no side is authorized
   useEffect(() => {
     if (!isAdmin && authorizedSides.size === 0) {
       setAttemptedSide("bride");
@@ -38,7 +37,6 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
   };
 
   const handleDialogClose = () => {
-    // If no sides are authorized, keep showing the dialog
     if (!isAdmin && authorizedSides.size === 0) {
       return;
     }
