@@ -62,16 +62,12 @@ export const GuestListContent = ({
   });
 
   const handleAddGuestWithSide = (data: any) => {
-    // Ensure the side is set correctly based on the current selected side
+    console.log('GuestListContent - Adding guest with side:', selectedSide);
     const guestData = {
       ...data,
-      side: selectedSide
+      side: selectedSide // Ensure side is explicitly set here
     };
-    
-    // Log the side being set for debugging
-    console.log('GuestListContent - Adding guest with side:', selectedSide);
-    console.log('GuestListContent - Guest data being sent:', guestData);
-    
+    console.log('GuestListContent - Final guest data:', guestData);
     handleAddGuest(guestData);
   };
 
@@ -81,7 +77,7 @@ export const GuestListContent = ({
     setSelectedSide(newSide);
     toast({
       title: "Side Changed",
-      description: `Currently viewing: ${newSide === 'bride' ? "Bride's" : "Groom's"} Side (${newSide})`,
+      description: `Currently viewing: ${newSide === 'bride' ? "Bride's" : "Groom's"} Side`,
     });
   };
 
