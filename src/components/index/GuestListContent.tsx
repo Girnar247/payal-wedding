@@ -5,6 +5,7 @@ import { SideSelector } from "@/components/filters/SideSelector";
 import { SearchAndFilters } from "@/components/filters/SearchAndFilters";
 import { Host } from "@/types/guest";
 import { Dashboard } from "@/components/Dashboard";
+import { useToast } from "@/hooks/use-toast";
 
 interface GuestListContentProps {
   selectedSide: "bride" | "groom";
@@ -43,6 +44,7 @@ export const GuestListContent = ({
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Filter hosts based on the selected side
   const filteredHosts = hosts.filter(host => host.side === selectedSide);
@@ -60,14 +62,33 @@ export const GuestListContent = ({
   });
 
   const handleAddGuestWithSide = (data: any) => {
-    handleAddGuest({ ...data, side: selectedSide });
+    // Ensure the side is set correctly based on the current selected side
+    const guestData = {
+      ...data,
+      side: selectedSide
+    };
+    
+    // Log the side being set for debugging
+    console.log('Adding guest with side:', selectedSide);
+    
+    handleAddGuest(guestData);
+  };
+
+  // Handle side changes with toast notification
+  const handleSideChange = (newSide: "bride" | "groom") => {
+    setSelectedSide(newSide);
+    // Show toast with the current selected side value
+    toast({
+      title: "Side Changed",
+      description: `Currently viewing: ${newSide === 'bride' ? "Bride's" : "Groom's"} Side (${newSide})`,
+    });
   };
 
   return (
     <div className="space-y-4">
       <SideSelector
         selectedSide={selectedSide}
-        onSideChange={setSelectedSide}
+        onSideChange={handleSideChange}
       />
 
       <Dashboard
