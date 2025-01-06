@@ -22,6 +22,7 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
     setIsLoading(true);
     
     try {
+      // Get the admin host's passwords
       const { data, error } = await supabase
         .from('hosts')
         .select(side === 'bride' ? 'bride_side_password' : 'groom_side_password')
