@@ -14,6 +14,9 @@ interface GuestManagementProps {
   onDeleteGuest: (id: string) => void;
   onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
   searchTerm?: string;
+  selectedHost?: string;
+  selectedEvent?: string;
+  selectedAttribute?: string;
 }
 
 export const GuestManagement = ({
@@ -23,6 +26,9 @@ export const GuestManagement = ({
   onDeleteGuest,
   onUpdateStatus,
   searchTerm = "",
+  selectedHost = "all-hosts",
+  selectedEvent = "all-events",
+  selectedAttribute = "all-categories",
 }: GuestManagementProps) => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"name" | "category">("name");
@@ -39,20 +45,29 @@ export const GuestManagement = ({
       const phoneMatch = guest.phone?.toLowerCase().includes(searchLower) || false;
       const matchesSearch = nameMatch || emailMatch || phoneMatch;
 
-      // Apply status filter
+      // Apply host filter
+      const matchesHost = selectedHost === "all-hosts" || guest.host_id === selectedHost;
+
+      // Apply event filter
+      const matchesEvent = selectedEvent === "all-events" || guest.events.includes(selectedEvent);
+
+      // Apply category/attribute filter
+      const matchesAttribute = selectedAttribute === "all-categories" || guest.attributes.includes(selectedAttribute);
+
+      // Apply status filter if present
       if (statusFilter) {
         if (statusFilter === "accommodation") {
-          return guest.accommodation_required && matchesSearch;
+          return guest.accommodation_required && matchesSearch && matchesHost && matchesEvent && matchesAttribute;
         }
-        return guest.rsvp_status === statusFilter && matchesSearch;
+        return guest.rsvp_status === statusFilter && matchesSearch && matchesHost && matchesEvent && matchesAttribute;
       }
-      return matchesSearch;
+
+      return matchesSearch && matchesHost && matchesEvent && matchesAttribute;
     })
     .sort((a, b) => {
       if (sortBy === "name") {
         return a.name.localeCompare(b.name);
       } else {
-        // Sort by first attribute if present, otherwise use empty string
         const aCategory = a.attributes[0] || "";
         const bCategory = b.attributes[0] || "";
         return aCategory.localeCompare(bCategory);

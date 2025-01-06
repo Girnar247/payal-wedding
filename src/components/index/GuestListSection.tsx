@@ -73,6 +73,9 @@ export const GuestListSection = ({
         onDeleteGuest={handleDeleteGuest}
         onUpdateStatus={handleUpdateStatus}
         searchTerm={searchTerm}
+        selectedHost={selectedHost}
+        selectedEvent={selectedEvent}
+        selectedAttribute={selectedAttribute}
       />
     </div>
   );
