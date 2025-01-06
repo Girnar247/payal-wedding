@@ -4,7 +4,7 @@ import { Pencil } from "lucide-react";
 
 export const Title = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState("Payal's Wedding - Guest List");
+  const [title, setTitle] = useState("P&P - Guest's List");
 
   const handleTitleClick = () => {
     setIsEditing(true);
