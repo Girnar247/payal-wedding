@@ -108,8 +108,10 @@ export type Database = {
         Row: {
           admin_password: string | null
           avatar_url: string | null
+          bride_side_password: string | null
           created_at: string
           email: string
+          groom_side_password: string | null
           id: string
           is_admin: boolean | null
           name: string
@@ -118,8 +120,10 @@ export type Database = {
         Insert: {
           admin_password?: string | null
           avatar_url?: string | null
+          bride_side_password?: string | null
           created_at?: string
           email: string
+          groom_side_password?: string | null
           id?: string
           is_admin?: boolean | null
           name: string
@@ -128,8 +132,10 @@ export type Database = {
         Update: {
           admin_password?: string | null
           avatar_url?: string | null
+          bride_side_password?: string | null
           created_at?: string
           email?: string
+          groom_side_password?: string | null
           id?: string
           is_admin?: boolean | null
           name?: string

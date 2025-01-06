@@ -1,4 +1,7 @@
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { SideAuthDialog } from "./SideAuthDialog";
+import { useAdmin } from "@/contexts/AdminContext";
 
 interface SideSelectorProps {
   selectedSide: "bride" | "groom";
@@ -6,12 +9,50 @@ interface SideSelectorProps {
 }
 
 export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) => {
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [attemptedSide, setAttemptedSide] = useState<"bride" | "groom">("bride");
+  const { isAdmin } = useAdmin();
+  const [authorizedSides, setAuthorizedSides] = useState<Set<"bride" | "groom">>(new Set());
+
+  const handleSideClick = (side: "bride" | "groom") => {
+    if (isAdmin || authorizedSides.has(side)) {
+      onSideChange(side);
+    } else {
+      setAttemptedSide(side);
+      setShowAuthDialog(true);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setAuthorizedSides(prev => new Set([...prev, attemptedSide]));
+    onSideChange(attemptedSide);
+  };
+
   return (
-    <Tabs value={selectedSide} onValueChange={(value) => onSideChange(value as "bride" | "groom")}>
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="bride">Bride Side</TabsTrigger>
-        <TabsTrigger value="groom">Groom Side</TabsTrigger>
-      </TabsList>
-    </Tabs>
+    <div className="flex flex-col items-center space-y-4">
+      <div className="flex space-x-4">
+        <Button
+          variant={selectedSide === "bride" ? "default" : "outline"}
+          onClick={() => handleSideClick("bride")}
+          className="w-32"
+        >
+          Bride Side
+        </Button>
+        <Button
+          variant={selectedSide === "groom" ? "default" : "outline"}
+          onClick={() => handleSideClick("groom")}
+          className="w-32"
+        >
+          Groom Side
+        </Button>
+      </div>
+
+      <SideAuthDialog
+        side={attemptedSide}
+        isOpen={showAuthDialog}
+        onClose={() => setShowAuthDialog(false)}
+        onSuccess={handleAuthSuccess}
+      />
+    </div>
   );
 };
