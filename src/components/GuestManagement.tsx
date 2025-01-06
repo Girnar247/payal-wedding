@@ -3,7 +3,7 @@ import { GuestCard } from "@/components/GuestCard";
 import { GuestList } from "@/components/GuestList";
 import { Button } from "@/components/ui/button";
 import { LayoutGrid, List } from "lucide-react";
-import { Guest, Host } from "@/types/guest";
+import { Guest, Host, EventType, GuestAttribute } from "@/types/guest";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -15,8 +15,8 @@ interface GuestManagementProps {
   onUpdateStatus: (id: string, status: "confirmed" | "declined" | "pending") => void;
   searchTerm?: string;
   selectedHost?: string;
-  selectedEvent?: string;
-  selectedAttribute?: string;
+  selectedEvent?: string | "all-events";
+  selectedAttribute?: string | "all-categories";
 }
 
 export const GuestManagement = ({
@@ -48,11 +48,13 @@ export const GuestManagement = ({
       // Apply host filter
       const matchesHost = selectedHost === "all-hosts" || guest.host_id === selectedHost;
 
-      // Apply event filter
-      const matchesEvent = selectedEvent === "all-events" || guest.events.includes(selectedEvent);
+      // Apply event filter with type checking
+      const matchesEvent = selectedEvent === "all-events" || 
+        guest.events.includes(selectedEvent as EventType);
 
-      // Apply category/attribute filter
-      const matchesAttribute = selectedAttribute === "all-categories" || guest.attributes.includes(selectedAttribute);
+      // Apply category/attribute filter with type checking
+      const matchesAttribute = selectedAttribute === "all-categories" || 
+        guest.attributes.includes(selectedAttribute as GuestAttribute);
 
       // Apply status filter if present
       if (statusFilter) {
