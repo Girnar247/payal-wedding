@@ -20,13 +20,42 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     hostId: "",
     events: [],
     attributes: [],
-    side // Initialize with the provided side
+    side
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Function to programmatically add a test guest
+  const addTestGuest = () => {
+    console.log('Starting to add test guest on the groom side');
     
-    if (!formData.name.trim()) {
+    // Find Pranai Mehta's host ID
+    const pranaiHost = hosts.find(host => host.name === 'Pranai Mehta');
+    if (!pranaiHost) {
+      console.error('Could not find host: Pranai Mehta');
+      return;
+    }
+
+    const testData: GuestFormData = {
+      name: "test program",
+      email: "test@example.com",
+      phone: "+1234567890",
+      plusCount: 2,
+      hostId: pranaiHost.id,
+      events: ["wedding", "sangeet"],
+      attributes: ["friends"],
+      side: "groom"
+    };
+
+    console.log('Test guest data prepared:', testData);
+    handleSubmit(null, testData);
+  };
+
+  const handleSubmit = (e: React.FormEvent | null, testData?: GuestFormData) => {
+    if (e) e.preventDefault();
+    
+    const dataToSubmit = testData || formData;
+    console.log('Handling submit with data:', dataToSubmit);
+
+    if (!dataToSubmit.name.trim()) {
       toast({
         title: "Error",
         description: "Guest name is required",
@@ -35,7 +64,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
 
-    if (formData.attributes.length === 0) {
+    if (dataToSubmit.attributes.length === 0) {
       toast({
         title: "Error",
         description: "Please select at least one guest category",
@@ -44,7 +73,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
 
-    if (formData.events.length === 0) {
+    if (dataToSubmit.events.length === 0) {
       toast({
         title: "Error",
         description: "Please select at least one event",
@@ -53,7 +82,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
 
-    if (!formData.hostId) {
+    if (!dataToSubmit.hostId) {
       toast({
         title: "Error",
         description: "Please select a host",
@@ -62,7 +91,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
-    if (formData.plusCount > 20) {
+    if (dataToSubmit.plusCount > 20) {
       toast({
         title: "Error",
         description: "Contact admin to add more than the limit - 20 guests",
@@ -71,10 +100,9 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
-    // Create submission data with explicit side
     const submissionData = {
-      ...formData,
-      side // Ensure side is explicitly set here
+      ...dataToSubmit,
+      side
     };
     
     console.log('AddGuestForm - Current side:', side);
@@ -82,17 +110,18 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     
     onSubmit(submissionData);
 
-    // Reset form after successful submission
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      plusCount: 0,
-      hostId: "",
-      events: [],
-      attributes: [],
-      side // Keep the current side when resetting form
-    });
+    if (!testData) {
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        plusCount: 0,
+        hostId: "",
+        events: [],
+        attributes: [],
+        side
+      });
+    }
 
     toast({
       title: "Success",
@@ -100,9 +129,17 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     });
   };
 
+  // Call addTestGuest immediately after component mount
+  React.useEffect(() => {
+    if (side === "groom") {
+      console.log('Component mounted, adding test guest...');
+      addTestGuest();
+    }
+  }, []);
+
   return (
     <Card className="glass-card p-6 max-w-md mx-auto fade-in">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={(e) => handleSubmit(e)} className="space-y-6">
         <GuestBasicInfo
           name={formData.name}
           email={formData.email}
