@@ -25,6 +25,9 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('AddGuestForm - Current side value:', side);
+    console.log('AddGuestForm - Current form data:', formData);
+    
     if (formData.plusCount > 20) {
       toast({
         title: "Error",
@@ -39,7 +42,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       side
     };
     
-    console.log('Submitting guest with side:', side);
+    console.log('AddGuestForm - Submitting guest data:', submissionData);
     onSubmit(submissionData);
 
     toast({
