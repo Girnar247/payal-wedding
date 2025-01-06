@@ -12,6 +12,11 @@ interface SideAuthDialogProps {
   onSuccess: () => void;
 }
 
+interface HostPasswords {
+  bride_side_password: string | null;
+  groom_side_password: string | null;
+}
+
 export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDialogProps) => {
   const [password, setPassword] = useState("");
   const { toast } = useToast();
@@ -22,11 +27,20 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
     try {
       const { data, error } = await supabase
         .from('hosts')
-        .select(side === 'bride' ? 'bride_side_password' : 'groom_side_password')
+        .select<'hosts', HostPasswords>('bride_side_password, groom_side_password')
         .eq('is_admin', true)
         .single();
 
       if (error) throw error;
+
+      if (!data) {
+        toast({
+          title: "Error",
+          description: "No admin configuration found.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const correctPassword = side === 'bride' ? data.bride_side_password : data.groom_side_password;
 
