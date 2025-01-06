@@ -29,18 +29,14 @@ export const AddGuestDialog = ({ hosts, onSubmit, side }: AddGuestDialogProps) =
     // Ensure the side is set correctly based on the current view
     const guestData = {
       ...data,
-      side: side // Explicitly set the side here
+      side // Explicitly set the side here
     };
     
-    console.log('AddGuestDialog - Submitting guest with side:', side);
+    console.log('AddGuestDialog - Adding guest with side:', side);
     console.log('AddGuestDialog - Guest data:', guestData);
     
     onSubmit(guestData);
     setOpen(false);
-    toast({
-      title: "Success",
-      description: `Guest has been successfully added to the ${side === 'bride' ? "Bride's" : "Groom's"} side!`,
-    });
   };
 
   return (

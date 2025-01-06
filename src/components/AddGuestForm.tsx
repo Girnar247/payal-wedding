@@ -26,8 +26,41 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('AddGuestForm - Current side value:', side);
-    console.log('AddGuestForm - Current form data:', formData);
+    if (!formData.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Guest name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.attributes.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please select at least one guest category",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.events.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please select at least one event",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.hostId) {
+      toast({
+        title: "Error",
+        description: "Please select a host",
+        variant: "destructive",
+      });
+      return;
+    }
     
     if (formData.plusCount > 20) {
       toast({
@@ -38,19 +71,18 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
+    // Create submission data with explicit side
     const submissionData = {
       ...formData,
       side // Ensure side is explicitly set here
     };
     
+    console.log('AddGuestForm - Current side:', side);
     console.log('AddGuestForm - Submitting guest data:', submissionData);
+    
     onSubmit(submissionData);
 
-    toast({
-      title: "Success",
-      description: `The Guest has been successfully added to the ${side === 'bride' ? "Bride's" : "Groom's"} side`,
-    });
-    
+    // Reset form after successful submission
     setFormData({
       name: "",
       email: "",
@@ -60,6 +92,11 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       events: [],
       attributes: [],
       side // Keep the current side when resetting form
+    });
+
+    toast({
+      title: "Success",
+      description: `Guest has been successfully added to the ${side === 'bride' ? "Bride's" : "Groom's"} side`,
     });
   };
 
