@@ -44,6 +44,12 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     
     console.log('Submitting guest with side:', side); // Debug log
     onSubmit(submissionData);
+
+    // Show toast notification with side information
+    toast({
+      title: "Guest Added",
+      description: `Guest added to ${side === 'bride' ? "Bride's" : "Groom's"} Side (${side})`,
+    });
     
     // Reset form with the current side
     setFormData({
