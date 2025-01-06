@@ -1,34 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useEventState } from "@/hooks/useEventState";
-import { EventSummary } from "@/components/EventSummary";
-import { Dashboard } from "@/components/Dashboard";
 import { EventConfiguration } from "@/components/EventConfiguration";
 import { HeaderSection } from "@/components/index/HeaderSection";
-import { GuestListSection } from "@/components/index/GuestListSection";
-import { SideSelector } from "@/components/filters/SideSelector";
 import { InitialSideDialog } from "@/components/filters/InitialSideDialog";
+import { GuestListContent } from "@/components/index/GuestListContent";
 import { useToast } from "@/hooks/use-toast";
-import { EventType, GuestAttribute, Host } from "@/types/guest";
-
-const defaultHost: Host = {
-  id: "",
-  name: "Unassigned",
-  email: "",
-  phone: "",
-};
 
 const Index = () => {
   const { toast } = useToast();
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedHost, setSelectedHost] = useState<string>("all-hosts");
-  const [selectedEvent, setSelectedEvent] = useState<string>("all-events");
-  const [selectedAttribute, setSelectedAttribute] = useState<string>("all-categories");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [selectedSide, setSelectedSide] = useState<"bride" | "groom" | null>(null);
   const [showInitialDialog, setShowInitialDialog] = useState(true);
 
@@ -45,7 +27,7 @@ const Index = () => {
 
   const { eventDetails, isLoading, addEvents } = useEventState();
 
-  // Filter guests by side first, then apply other filters
+  // Filter guests by side first
   const sideFilteredGuests = guests.filter(guest => 
     selectedSide ? guest.side === selectedSide : true
   );
@@ -98,18 +80,7 @@ const Index = () => {
     }
   };
 
-  const filteredGuests = sideFilteredGuests.filter(guest => {
-    const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         guest.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         guest.phone?.includes(searchTerm);
-    const matchesHost = selectedHost === "all-hosts" || guest.host_id === selectedHost;
-    const matchesEvent = selectedEvent === "all-events" || guest.events.includes(selectedEvent as EventType);
-    const matchesAttribute = selectedAttribute === "all-categories" || guest.attributes.includes(selectedAttribute as GuestAttribute);
-    
-    return matchesSearch && matchesHost && matchesEvent && matchesAttribute;
-  });
-
-  const handleUpdateEventDetails = (eventType: EventType, details: any) => {
+  const handleUpdateEventDetails = (eventType: any, details: any) => {
     addEvents({
       ...eventDetails,
       [eventType]: details
@@ -156,41 +127,17 @@ const Index = () => {
                   onComplete={() => {}}
                 />
               ) : (
-                <>
-                  <div className="max-w-xl mx-auto mb-8">
-                    <SideSelector
-                      selectedSide={selectedSide}
-                      onSideChange={setSelectedSide}
-                    />
-                  </div>
-                  <EventSummary events={eventDetails} />
-                  <Dashboard {...stats} onFilterByStatus={setStatusFilter} />
-                  <GuestListSection
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    selectedHost={selectedHost}
-                    setSelectedHost={setSelectedHost}
-                    selectedEvent={selectedEvent}
-                    setSelectedEvent={setSelectedEvent}
-                    selectedAttribute={selectedAttribute}
-                    setSelectedAttribute={setSelectedAttribute}
-                    showAddForm={showAddForm}
-                    setShowAddForm={setShowAddForm}
-                    viewMode={viewMode}
-                    setViewMode={setViewMode}
-                    filteredGuests={filteredGuests.filter(guest => {
-                      if (!statusFilter) return true;
-                      if (statusFilter === "accommodation") return guest.accommodation_required;
-                      return guest.rsvp_status === statusFilter;
-                    })}
-                    hosts={hosts}
-                    eventDetails={eventDetails}
-                    handleAddGuest={handleAddGuestWithSide}
-                    handleDeleteGuest={handleDeleteGuest}
-                    handleUpdateStatus={handleUpdateStatus}
-                    defaultHost={defaultHost}
-                  />
-                </>
+                <GuestListContent
+                  selectedSide={selectedSide}
+                  setSelectedSide={setSelectedSide}
+                  guests={sideFilteredGuests}
+                  hosts={hosts}
+                  eventDetails={eventDetails}
+                  handleAddGuest={handleAddGuestWithSide}
+                  handleDeleteGuest={handleDeleteGuest}
+                  handleUpdateStatus={handleUpdateStatus}
+                  stats={stats}
+                />
               )}
             </div>
           </div>
