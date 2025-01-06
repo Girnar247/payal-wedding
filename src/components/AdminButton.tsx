@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { useAdmin } from "@/contexts/AdminContext";
-import { Lock, LogOut, Settings } from "lucide-react";
+import { Settings, LogOut, UserCog } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -112,8 +112,7 @@ export const AdminButton = () => {
         onClick={() => setIsOpen(true)}
         className="bg-white/50 hover:bg-white/80"
       >
-        <Lock className="h-4 w-4 mr-2" />
-        Admin
+        <UserCog className="h-4 w-4" />
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

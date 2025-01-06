@@ -1,13 +1,12 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 
-// Eagerly load the Index component for faster initial render
-import Index from './pages/Index';
+// Eagerly load the WeddingSummary component for faster initial render
+import WeddingSummary from './pages/WeddingSummary';
 
 // Lazy load other routes with loading states
-const WeddingSummary = lazy(() => import('./pages/WeddingSummary'));
-const Tasks = lazy(() => import('./pages/Tasks'));
+const Index = lazy(() => import('./pages/Index'));
 const MayraEvent = lazy(() => import('./pages/MayraEvent'));
 
 // Optimized loading component for better UX during lazy loading
@@ -21,23 +20,15 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Index route is not lazy loaded for faster initial render */}
-        <Route path="/" element={<Index />} />
+        {/* Make WeddingSummary the default landing page */}
+        <Route path="/" element={<WeddingSummary />} />
         
         {/* Other routes are lazy loaded */}
         <Route
-          path="/wedding-summary"
+          path="/guests"
           element={
             <Suspense fallback={<LoadingSpinner />}>
-              <WeddingSummary />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/tasks"
-          element={
-            <Suspense fallback={<LoadingSpinner />}>
-              <Tasks />
+              <Index />
             </Suspense>
           }
         />
