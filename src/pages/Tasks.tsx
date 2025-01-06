@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TaskBoard } from "@/components/tasks/TaskBoard";
+import TaskBoard from "@/components/tasks/TaskBoard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Host, Side } from "@/types/guest";
