@@ -60,10 +60,10 @@ export const GuestListContent = ({
   });
 
   const handleAddGuestWithSide = (data: any) => {
-    // Ensure the side is set correctly
+    // Ensure the side is set correctly based on the current selected side
     const guestData = {
       ...data,
-      side: selectedSide
+      side: selectedSide // This will be either 'bride' or 'groom'
     };
     handleAddGuest(guestData);
   };
