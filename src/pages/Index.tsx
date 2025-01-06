@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { useGuestState } from "@/hooks/useGuestState";
 import { useEventState } from "@/hooks/useEventState";
@@ -8,6 +8,7 @@ import { EventConfiguration } from "@/components/EventConfiguration";
 import { HeaderSection } from "@/components/index/HeaderSection";
 import { GuestListSection } from "@/components/index/GuestListSection";
 import { SideSelector } from "@/components/filters/SideSelector";
+import { InitialSideDialog } from "@/components/filters/InitialSideDialog";
 import { useToast } from "@/hooks/use-toast";
 import { EventType, GuestAttribute, Host } from "@/types/guest";
 
@@ -28,7 +29,8 @@ const Index = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [selectedSide, setSelectedSide] = useState<"bride" | "groom">("bride");
+  const [selectedSide, setSelectedSide] = useState<"bride" | "groom" | null>(null);
+  const [showInitialDialog, setShowInitialDialog] = useState(true);
 
   const {
     guests,
@@ -44,7 +46,9 @@ const Index = () => {
   const { eventDetails, isLoading, addEvents } = useEventState();
 
   // Filter guests by side first, then apply other filters
-  const sideFilteredGuests = guests.filter(guest => guest.side === selectedSide);
+  const sideFilteredGuests = guests.filter(guest => 
+    selectedSide ? guest.side === selectedSide : true
+  );
   
   const stats = {
     totalGuests: sideFilteredGuests.length,
@@ -116,6 +120,11 @@ const Index = () => {
     handleAddGuest({ ...data, side: selectedSide });
   };
 
+  const handleSideSelect = (side: "bride" | "groom") => {
+    setSelectedSide(side);
+    setShowInitialDialog(false);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -129,56 +138,63 @@ const Index = () => {
           onRefresh={handleRefresh}
         />
 
-        <div className="bg-wedding-cream">
-          <div className="max-w-7xl mx-auto px-6 md:px-8 py-8 space-y-8">
-            {Object.keys(eventDetails).length === 0 ? (
-              <EventConfiguration
-                eventDetails={eventDetails}
-                hosts={hosts}
-                onUpdateEvent={handleUpdateEventDetails}
-                onAddHost={handleAddHost}
-                onDeleteHost={handleDeleteHost}
-                onComplete={() => {}}
-              />
-            ) : (
-              <>
-                <div className="max-w-xl mx-auto mb-8">
-                  <SideSelector
-                    selectedSide={selectedSide}
-                    onSideChange={setSelectedSide}
-                  />
-                </div>
-                <EventSummary events={eventDetails} />
-                <Dashboard {...stats} onFilterByStatus={setStatusFilter} />
-                <GuestListSection
-                  searchTerm={searchTerm}
-                  setSearchTerm={setSearchTerm}
-                  selectedHost={selectedHost}
-                  setSelectedHost={setSelectedHost}
-                  selectedEvent={selectedEvent}
-                  setSelectedEvent={setSelectedEvent}
-                  selectedAttribute={selectedAttribute}
-                  setSelectedAttribute={setSelectedAttribute}
-                  showAddForm={showAddForm}
-                  setShowAddForm={setShowAddForm}
-                  viewMode={viewMode}
-                  setViewMode={setViewMode}
-                  filteredGuests={filteredGuests.filter(guest => {
-                    if (!statusFilter) return true;
-                    if (statusFilter === "accommodation") return guest.accommodation_required;
-                    return guest.rsvp_status === statusFilter;
-                  })}
-                  hosts={hosts}
+        <InitialSideDialog
+          isOpen={showInitialDialog}
+          onSideSelect={handleSideSelect}
+        />
+
+        {!showInitialDialog && selectedSide && (
+          <div className="bg-wedding-cream">
+            <div className="max-w-7xl mx-auto px-6 md:px-8 py-8 space-y-8">
+              {Object.keys(eventDetails).length === 0 ? (
+                <EventConfiguration
                   eventDetails={eventDetails}
-                  handleAddGuest={handleAddGuestWithSide}
-                  handleDeleteGuest={handleDeleteGuest}
-                  handleUpdateStatus={handleUpdateStatus}
-                  defaultHost={defaultHost}
+                  hosts={hosts}
+                  onUpdateEvent={handleUpdateEventDetails}
+                  onAddHost={handleAddHost}
+                  onDeleteHost={handleDeleteHost}
+                  onComplete={() => {}}
                 />
-              </>
-            )}
+              ) : (
+                <>
+                  <div className="max-w-xl mx-auto mb-8">
+                    <SideSelector
+                      selectedSide={selectedSide}
+                      onSideChange={setSelectedSide}
+                    />
+                  </div>
+                  <EventSummary events={eventDetails} />
+                  <Dashboard {...stats} onFilterByStatus={setStatusFilter} />
+                  <GuestListSection
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    selectedHost={selectedHost}
+                    setSelectedHost={setSelectedHost}
+                    selectedEvent={selectedEvent}
+                    setSelectedEvent={setSelectedEvent}
+                    selectedAttribute={selectedAttribute}
+                    setSelectedAttribute={setSelectedAttribute}
+                    showAddForm={showAddForm}
+                    setShowAddForm={setShowAddForm}
+                    viewMode={viewMode}
+                    setViewMode={setViewMode}
+                    filteredGuests={filteredGuests.filter(guest => {
+                      if (!statusFilter) return true;
+                      if (statusFilter === "accommodation") return guest.accommodation_required;
+                      return guest.rsvp_status === statusFilter;
+                    })}
+                    hosts={hosts}
+                    eventDetails={eventDetails}
+                    handleAddGuest={handleAddGuestWithSide}
+                    handleDeleteGuest={handleDeleteGuest}
+                    handleUpdateStatus={handleUpdateStatus}
+                    defaultHost={defaultHost}
+                  />
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </AdminProvider>
   );
