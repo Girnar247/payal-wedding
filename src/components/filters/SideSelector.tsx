@@ -24,7 +24,7 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
       onSideChange(side);
       toast({
         title: "Side Changed",
-        description: `Switched to ${side === 'bride' ? "Bride's" : "Groom's"} Side`,
+        description: `Switched to ${side === 'bride' ? "Bride's" : "Groom's"} Side (${side})`,
       });
     } else {
       setSideToAuth(side);
@@ -38,7 +38,7 @@ export const SideSelector = ({ selectedSide, onSideChange }: SideSelectorProps) 
     setShowAuthDialog(false);
     toast({
       title: "Access Granted",
-      description: `You now have access to the ${sideToAuth === 'bride' ? "Bride's" : "Groom's"} Side`,
+      description: `You now have access to the ${sideToAuth === 'bride' ? "Bride's" : "Groom's"} Side (${sideToAuth})`,
     });
   };
 

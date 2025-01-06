@@ -74,12 +74,12 @@ export const GuestListContent = ({
     handleAddGuest(guestData);
   };
 
-  // Add a function to handle side changes
+  // Handle side changes with toast notification
   const handleSideChange = (newSide: "bride" | "groom") => {
     setSelectedSide(newSide);
     // Show toast with the current selected side value
     toast({
-      title: "Current Side",
+      title: "Side Changed",
       description: `Currently viewing: ${newSide === 'bride' ? "Bride's" : "Groom's"} Side (${newSide})`,
     });
   };
