@@ -4,9 +4,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface AddHostFormProps {
-  onSubmit: (host: { name: string; email: string; phone: string; avatar_url: string }) => void;
+  onSubmit: (host: { name: string; email: string; phone: string; avatar_url: string; side: "bride" | "groom" }) => void;
 }
 
 export const AddHostForm = ({ onSubmit }: AddHostFormProps) => {
@@ -16,6 +17,7 @@ export const AddHostForm = ({ onSubmit }: AddHostFormProps) => {
     email: "",
     phone: "",
     avatar_url: "",
+    side: "bride" as "bride" | "groom",
   });
   const { toast } = useToast();
 
@@ -59,7 +61,7 @@ export const AddHostForm = ({ onSubmit }: AddHostFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(newHost);
-    setNewHost({ name: "", email: "", phone: "", avatar_url: "" });
+    setNewHost({ name: "", email: "", phone: "", avatar_url: "", side: "bride" });
   };
 
   return (
@@ -106,6 +108,21 @@ export const AddHostForm = ({ onSubmit }: AddHostFormProps) => {
           required
           className="bg-white/50"
         />
+      </div>
+      <div>
+        <Label htmlFor="side">Side</Label>
+        <Select 
+          value={newHost.side} 
+          onValueChange={(value: "bride" | "groom") => setNewHost({ ...newHost, side: value })}
+        >
+          <SelectTrigger className="bg-white/50">
+            <SelectValue placeholder="Select side" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="bride">Bride</SelectItem>
+            <SelectItem value="groom">Groom</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <Button type="submit" className="w-full" disabled={uploading}>
         {uploading ? "Uploading..." : "Add Host"}
