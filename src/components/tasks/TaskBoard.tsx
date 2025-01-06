@@ -1,11 +1,14 @@
 import { Task } from "@/types/task";
 import TaskColumn from "./TaskColumn";
 import { DragDropContext } from "@hello-pangea/dnd";
+import { Dispatch, SetStateAction } from "react";
 
 interface TaskBoardProps {
   tasks: Task[];
   selectedHost: string;
   selectedEvent: string;
+  setSelectedHost: Dispatch<SetStateAction<string>>;
+  setSelectedEvent: Dispatch<SetStateAction<string>>;
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => void;
 }
@@ -14,6 +17,8 @@ const TaskBoard = ({
   tasks,
   selectedHost,
   selectedEvent,
+  setSelectedHost,
+  setSelectedEvent,
   onEditTask,
   onDeleteTask,
 }: TaskBoardProps) => {
