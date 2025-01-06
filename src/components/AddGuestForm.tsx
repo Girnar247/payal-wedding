@@ -42,7 +42,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       hostId: pranaiHost.id,
       events: ["wedding", "sangeet"],
       attributes: ["friends"],
-      side: "groom"
+      side: "groom"  // Explicitly set to groom
     };
 
     console.log('Test guest data prepared:', testData);
@@ -100,9 +100,10 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
+    // Only use the side from props if it's not provided in the test data
     const submissionData = {
       ...dataToSubmit,
-      side
+      side: dataToSubmit.side || side
     };
     
     console.log('AddGuestForm - Current side:', side);
@@ -125,7 +126,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
 
     toast({
       title: "Success",
-      description: `Guest has been successfully added to the ${side === 'bride' ? "Bride's" : "Groom's"} side`,
+      description: `Guest has been successfully added to the ${submissionData.side === 'bride' ? "Bride's" : "Groom's"} side`,
     });
   };
 
