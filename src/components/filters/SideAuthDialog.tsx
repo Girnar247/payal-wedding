@@ -12,11 +12,6 @@ interface SideAuthDialogProps {
   onSuccess: () => void;
 }
 
-interface HostPasswords {
-  bride_side_password: string | null;
-  groom_side_password: string | null;
-}
-
 export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDialogProps) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,14 +24,15 @@ export const SideAuthDialog = ({ side, isOpen, onClose, onSuccess }: SideAuthDia
     try {
       const { data, error } = await supabase
         .from('hosts')
-        .select('bride_side_password, groom_side_password')
+        .select(side === 'bride' ? 'bride_side_password' : 'groom_side_password')
         .eq('is_admin', true)
         .single();
 
       if (error) throw error;
 
-      const passwords = data as HostPasswords;
-      const correctPassword = side === 'bride' ? passwords.bride_side_password : passwords.groom_side_password;
+      const correctPassword = side === 'bride' 
+        ? data?.bride_side_password 
+        : data?.groom_side_password;
 
       if (correctPassword && password === correctPassword) {
         toast({
