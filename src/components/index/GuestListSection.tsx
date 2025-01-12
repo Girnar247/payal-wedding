@@ -23,6 +23,7 @@ interface GuestListSectionProps {
   handleDeleteGuest: (id: string) => void;
   handleUpdateStatus: (id: string, status: "confirmed" | "declined") => void;
   defaultHost: Host;
+  side: "bride" | "groom"; // Added the side prop to the interface
 }
 
 export const GuestListSection = ({
@@ -45,6 +46,7 @@ export const GuestListSection = ({
   handleDeleteGuest,
   handleUpdateStatus,
   defaultHost,
+  side, // Added side to the destructured props
 }: GuestListSectionProps) => {
   return (
     <div className="space-y-4">
@@ -55,14 +57,14 @@ export const GuestListSection = ({
         setViewMode={setViewMode}
         resultCount={filteredGuests.length}
         onAddGuest={handleAddGuest}
-        side={defaultHost.side}
+        side={side}
       />
 
       {showAddForm && (
         <AddGuestForm 
           onSubmit={handleAddGuest} 
           hosts={hosts} 
-          side={defaultHost.side}
+          side={side}
         />
       )}
 
