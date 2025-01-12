@@ -12,6 +12,30 @@ import { AddGuestFormProps, GuestFormData } from "@/types/form";
 
 export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
   const { toast } = useToast();
+  const [formData, set
+
+Let's fix the issue by ensuring the `side` prop is correctly passed and maintained through the component chain. We need to modify how we handle the side value in the relevant components.
+
+<lov-code>
+We need to update these files to properly handle the side value:
+
+1. First, let's update `AddGuestForm.tsx` to properly handle the side prop:
+
+<lov-write file_path="src/components/AddGuestForm.tsx">
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { UserPlus } from "lucide-react";
+import { Card } from "./ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { GuestBasicInfo } from "./guest-form/GuestBasicInfo";
+import { GuestCategories } from "./guest-form/GuestCategories";
+import { GuestEvents } from "./guest-form/GuestEvents";
+import { GuestPlusCount } from "./guest-form/GuestPlusCount";
+import { GuestHostSelect } from "./guest-form/GuestHostSelect";
+import { AddGuestFormProps, GuestFormData } from "@/types/form";
+
+export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState<GuestFormData>({
     name: "",
     email: "",
@@ -20,7 +44,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     hostId: "",
     events: [],
     attributes: [],
-    side // Initialize with the provided side
+    side // Initialize with the provided side prop
   });
 
   const handleSubmit = (e: React.FormEvent | null) => {
@@ -74,17 +98,17 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
-    // Create submission data with explicit side value
+    // Create submission data with explicit side value from props
     const submissionData: GuestFormData = {
       ...formData,
-      side // Explicitly set the side from props
+      side // Always use the current side prop value
     };
     
     console.log('AddGuestForm - Final submission data:', submissionData);
     
     onSubmit(submissionData);
 
-    // Reset form after submission
+    // Reset form after submission, maintaining the current side
     setFormData({
       name: "",
       email: "",
@@ -93,7 +117,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       hostId: "",
       events: [],
       attributes: [],
-      side // Keep the correct side when resetting
+      side // Keep the current side when resetting
     });
 
     toast({
