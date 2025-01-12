@@ -12,30 +12,6 @@ import { AddGuestFormProps, GuestFormData } from "@/types/form";
 
 export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
   const { toast } = useToast();
-  const [formData, set
-
-Let's fix the issue by ensuring the `side` prop is correctly passed and maintained through the component chain. We need to modify how we handle the side value in the relevant components.
-
-<lov-code>
-We need to update these files to properly handle the side value:
-
-1. First, let's update `AddGuestForm.tsx` to properly handle the side prop:
-
-<lov-write file_path="src/components/AddGuestForm.tsx">
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { UserPlus } from "lucide-react";
-import { Card } from "./ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { GuestBasicInfo } from "./guest-form/GuestBasicInfo";
-import { GuestCategories } from "./guest-form/GuestCategories";
-import { GuestEvents } from "./guest-form/GuestEvents";
-import { GuestPlusCount } from "./guest-form/GuestPlusCount";
-import { GuestHostSelect } from "./guest-form/GuestHostSelect";
-import { AddGuestFormProps, GuestFormData } from "@/types/form";
-
-export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
-  const { toast } = useToast();
   const [formData, setFormData] = useState<GuestFormData>({
     name: "",
     email: "",
