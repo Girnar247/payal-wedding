@@ -50,11 +50,11 @@ export const GuestListContent = ({
   const filteredHosts = hosts.filter(host => host.side === selectedSide);
 
   const handleAddGuestWithSide = (data: any) => {
+    console.log('GuestListContent - Adding guest with explicit side:', selectedSide);
     const guestData = {
       ...data,
       side: selectedSide // Explicitly set the side from the current selectedSide
     };
-    console.log('GuestListContent - Adding guest with side:', selectedSide);
     console.log('GuestListContent - Final guest data:', guestData);
     handleAddGuest(guestData);
   };
@@ -117,6 +117,7 @@ export const GuestListContent = ({
         handleAddGuest={handleAddGuestWithSide}
         handleDeleteGuest={handleDeleteGuest}
         handleUpdateStatus={handleUpdateStatus}
+        side={selectedSide} // Explicitly pass the selected side
         defaultHost={filteredHosts[0] || {
           id: "",
           name: "Unassigned",

@@ -26,8 +26,8 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
   const handleSubmit = (e: React.FormEvent | null) => {
     if (e) e.preventDefault();
     
-    console.log('AddGuestForm - Starting submission with side:', side);
-    console.log('AddGuestForm - Form data:', formData);
+    console.log('AddGuestForm - Current side prop:', side);
+    console.log('AddGuestForm - Current form data:', formData);
 
     if (!formData.name.trim()) {
       toast({
@@ -74,10 +74,10 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
-    // Create submission data with the correct side
+    // Create submission data with explicit side value
     const submissionData: GuestFormData = {
       ...formData,
-      side // Ensure the side is set correctly
+      side // Explicitly set the side from props
     };
     
     console.log('AddGuestForm - Final submission data:', submissionData);

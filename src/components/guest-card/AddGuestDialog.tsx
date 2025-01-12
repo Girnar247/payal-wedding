@@ -26,10 +26,13 @@ export const AddGuestDialog = ({ hosts, onSubmit, side }: AddGuestDialogProps) =
       return;
     }
     
-    // Ensure the side is correctly set before submission
+    console.log('AddGuestDialog - Received side prop:', side);
+    console.log('AddGuestDialog - Initial data:', data);
+    
+    // Explicitly set the side in the guest data
     const guestData = {
       ...data,
-      side // This will override any other side value
+      side // Ensure the side is set correctly
     };
     
     console.log('AddGuestDialog - Final submission data:', guestData);
