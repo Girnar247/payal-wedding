@@ -27,7 +27,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
     if (e) e.preventDefault();
     
     console.log('AddGuestForm - Starting submission with side:', side);
-    console.log('AddGuestForm - Initial form data:', formData);
+    console.log('AddGuestForm - Form data:', formData);
 
     if (!formData.name.trim()) {
       toast({
@@ -74,13 +74,13 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       return;
     }
     
-    // Create submission data with forced side value
+    // Create submission data with the correct side
     const submissionData: GuestFormData = {
       ...formData,
-      side: side // Force the side to match the current view
+      side // Ensure the side is set correctly
     };
     
-    console.log('AddGuestForm - Submitting with forced side:', submissionData);
+    console.log('AddGuestForm - Final submission data:', submissionData);
     
     onSubmit(submissionData);
 
@@ -93,7 +93,7 @@ export const AddGuestForm = ({ onSubmit, hosts, side }: AddGuestFormProps) => {
       hostId: "",
       events: [],
       attributes: [],
-      side: side // Maintain the correct side
+      side // Keep the correct side when resetting
     });
 
     toast({
