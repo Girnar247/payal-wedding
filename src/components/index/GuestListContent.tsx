@@ -6,6 +6,7 @@ import { SearchAndFilters } from "@/components/filters/SearchAndFilters";
 import { Host } from "@/types/guest";
 import { Dashboard } from "@/components/Dashboard";
 import { useToast } from "@/hooks/use-toast";
+import { AddGuestDialog } from "@/components/guest-card/AddGuestDialog";
 
 interface GuestListContentProps {
   selectedSide: "bride" | "groom";
@@ -53,10 +54,15 @@ export const GuestListContent = ({
     console.log('GuestListContent - Adding guest with explicit side:', selectedSide);
     const guestData = {
       ...data,
-      side: selectedSide // Explicitly set the side from the current selectedSide
+      side: selectedSide
     };
     console.log('GuestListContent - Final guest data:', guestData);
     handleAddGuest(guestData);
+    
+    toast({
+      title: "Guest Added",
+      description: `Guest has been added to the ${selectedSide === 'bride' ? "Bride's" : "Groom's"} side`,
+    });
   };
 
   const handleSideChange = (newSide: "bride" | "groom") => {
@@ -84,6 +90,14 @@ export const GuestListContent = ({
         accommodationRequired={stats.accommodationRequired}
         onFilterByStatus={setStatusFilter}
       />
+
+      <div className="flex justify-end mb-4">
+        <AddGuestDialog
+          hosts={filteredHosts}
+          onSubmit={handleAddGuestWithSide}
+          side={selectedSide}
+        />
+      </div>
 
       <SearchAndFilters
         searchTerm={searchTerm}
@@ -117,7 +131,6 @@ export const GuestListContent = ({
         handleAddGuest={handleAddGuestWithSide}
         handleDeleteGuest={handleDeleteGuest}
         handleUpdateStatus={handleUpdateStatus}
-        side={selectedSide} // Explicitly pass the selected side
         defaultHost={filteredHosts[0] || {
           id: "",
           name: "Unassigned",
@@ -125,6 +138,7 @@ export const GuestListContent = ({
           phone: "",
           side: selectedSide
         }}
+        side={selectedSide}
       />
     </div>
   );

@@ -46,7 +46,7 @@ export const AddGuestDialog = ({ hosts, onSubmit, side }: AddGuestDialogProps) =
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full md:w-auto bg-white/50 hover:bg-white/80">
           <UserPlus className="mr-2 h-4 w-4" />
-          Add Guest
+          Add Guest to {side === 'bride' ? "Bride's" : "Groom's"} Side
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
